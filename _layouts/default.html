@@ -84,6 +84,104 @@
     <li>You can place your favorite wallpapers over the desktop when computer is locked.</li>
   </ul>
 
+
+        <h4>The Context Menu</h4>
+        <blockquote>
+            <img src="/retreat/../media/site/context_menu.png">
+
+            <ul>
+                <li>Disable - temporarily disable Angelic Retreat (it will not lock the system for two hours).</li>
+                <li>Delay - delay a break for the specified time.</li>
+                <li>Skip - skip a break (available only once per day).</li>
+                <li>Take Break Now - lock the system immediately.</li>
+                <li>Options - show the options dialog.</li>
+                <li>About - show copyright and versioning information.</li>
+                <li>Exit - close Angelic Retreat.</li>
+            </ul>
+        </blockquote>
+
+        <h4>Behaviour Settngs</h4>
+        <blockquote>
+            <img src="/retreat/../media/site/behaviour_settings.png">
+
+            <h5>Periodic Breaks</h5>
+            <p>A periodic break occurs once in a specified period of time (near to the end of it).</p>
+            <ul>
+                <li>Period Duration - period duration in minutes.</li>
+                <li>Break Duration - break duration in minutes.</li>
+                <li>Disable Periodic Breaks - do not use periodic breaks (only scheduled breaks will be available).</li>
+                <li>Synchronize With System Time - if checked, attach the start of the period to the beginning of a hour or to the program start time otherwise.</li>
+            </ul>
+
+            <h5>Common</h5>
+            <ul>
+                <li>Alert Before - show the alert timer by the specified time before a break start.</li>
+                <li>Break Duration - break duration in minutes.</li>
+                <li>Delay Time - it's possible to delay a break several times for the time specified in this setting.</li>
+                <li>Number of Delays - specifies maximum number of available delay attempts.</li>
+                <li>Use Restrictions - use restriction options (see below) to skip breaks when specific conditions are applicable.</li>
+                <li>Beep After Break - play sound after the break end (you may customize this in the appearance options).</li>
+            </ul>
+
+        </blockquote>
+
+        <h4>Scheduled Break Settings</h4>
+        <blockquote>
+            <p>A scheduled break occurs exactly in the time specified by a <a href="http://en.wikipedia.org/wiki/Crontab">crontab</a>-like record (this is not a real crontab).
+                For example, you can use the chrontab record, shown on screenshots below, to make 15 min. long break at 13:15 on each working day.
+                Leave the `Display Message' field blank, if you don't want any message after the break end to be displayed.</p>
+
+            <div style="white-space: nowrap">
+                <img src="/retreat/../media/site/scheduled_breaks.png">&nbsp;<img src="/retreat/../media/site/crontab.png">
+            </div>
+
+        </blockquote>
+
+        <h4>Appearance Settings</h4>
+        <blockquote>
+
+            <img src="/retreat/../media/site/appearance_settings.png">
+
+            <h5>Window</h5>
+            <ul>
+                <li>Mode - select how Angelic Retreat will lock you screen:</li>
+                <ul>
+                    <li>Fullscreen - show fullscreen image.</li>
+                    <li>Fullscreen (transparent) - the same as above, but image areas filled with the `Transparent Color' will be completely transparent (reasonable only for BMP images without compression artifacts).</li>
+                    <li>Windowed - show image in window which will match image dimensions.</li>
+                    <li>Windowed (transparent) - the same as above, but image areas filled with the `Transparent Color' will be completely transparent.</li>
+                </ul>
+                <li>Opacity Level - an opacity level of an Angelic Retreat window (0-255), also is adjustable with +/- numeric keyboard keys during the break.</li>
+                <li>Background Color - the background color of an Angelic Retreat window.</li>
+                <li>Transparent Color - the color of areas which will be completely transparent (will be taken from the top-left image pixel by default).</li>
+            </ul>
+
+            <h5>Timer</h5>
+
+            <ul>
+                <li>Hide Timer - do not display timer during the break.</li>
+                <li>Timer Font Color - the timer font color.</li>
+            </ul>
+
+            <h5>Media</h5>
+            <ul>
+                <li>Image Folder - if specified, a random image will be taken from this folder by Angelic Retreat to show it during the break (to show only one specific image, store a single image in this folder). JPEG, BMP and GIF image formats are supported.</li>
+                <li>Stretch Images - stretch images if they are too small to fit the screen.</li>
+                <li>Sound Folder - a folder for sounds to be played at the break end randomly (if not specified, Angelic Retreat will play the standard system sound).</li>
+            </ul>
+        </blockquote>
+
+        <h4>Restriction Settings</h4>
+        <blockquote>
+            <img src="/retreat/../media/site/restriction_settings.png">
+            <ul>
+                <li>Be quiet if no user activity has been detected... - do not lock the system if there have been no keyboard or mouse actions during the specified time before the start of a break.</li>
+                <li>Restriction List - Angelic Retreat will not lock the system if at least one of the programs specified here is running.</li>
+
+            </ul>
+        </blockquote>
+
+        </blockquote>
     </section>
     <footer>
     </footer>
