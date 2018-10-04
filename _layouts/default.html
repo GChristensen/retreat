@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: "en-US" }}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {% seo %}
+    <link rel="stylesheet" href="{{ "/assets/css/style.css?v=" | append: site.github.build_revision | relative_url }}">
+    <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="wrapper">
+    <header>
+        <h1><a href="{{ "/" | absolute_url }}">{{ site.title | default: site.github.repository_name }}</a></h1>
+
+        {% if site.logo %}
+        <img src="{{site.logo | relative_url}}" alt="Logo" />
+        {% endif %}
+
+        <p>{{ site.description | default: site.github.project_tagline }}</p>
+
+        {% if site.github.is_project_page %}
+        <p class="view"><a href="{{ site.github.repository_url }}" target="_blank">View the Project on GitHub <small>{{ site.github.repository_nwo }}</small></a></p>
+        {% endif %}
+
+        <p class="view"><a href="/" target="_blank">Software by g/christensen <small>gchristnsn.ghithub.io</small></a></p>
+
+        {% if site.github.is_user_page %}
+        <p class="view"><a href="{{ site.github.owner_url }}">View My GitHub Profile</a></p>
+        {% endif %}
+
+        {% if site.show_downloads %}
+        <ul class="downloads">
+            <li><a href="{{ site.github.zip_url }}">Download <strong>ZIP File</strong></a></li>
+            <li><a href="{{ site.github.tar_url }}">Download <strong>TAR Ball</strong></a></li>
+            <li><a href="{{ site.github.repository_url }}">View On <strong>GitHub</strong></a></li>
+        </ul>
+        {% endif %}
+    </header>
+    <section>
+
+        <h1 id="add-torrent">Enso Retreat</h1>
+
+        <p><img height="16px" width="16px" src="/windows.png" alt="Firefox"/>
+            <a id="app-link" href="#">Windows Application</a>
+            :: <img height="16px" width="16px" src="/youtube.png" alt="Youtube" style="max-width:100%;">
+            <a href="https://youtu.be/QFXBp2vuEEA" rel="nofollow">Video Manual</a>
+        </p>
+
+        <script>
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var release = JSON.parse(this.responseText);
+                    var link = document.getElementById("app-link");
+                    link.href = release.assets[0].browser_download_url;
+                }
+            };
+            xhr.open('GET', 'https://api.github.com/repos/gchristensen/enso-portable/releases/latest');
+            xhr.send();
+        </script>
+
+        <iframe width="500" height="280" src="https://www.youtube.com/embed/QFXBp2vuEEA?autoplay=1"
+                frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <br/>
+
+        <p>SEE ALSO: <a href="https://gchristensen.github.io/enso-portable/">Enso open-source</a>
+        <h4>Description</h4>
+        <p style="text-align: justify;">Enso Retreat is a simple program which periodically blocks your computer to force you rest. 
+        If you used similar ones before, you know about their cruel nature. 
+        Angelic Retreat is an attempt to create a humane software of such kind where the most significant aspects could be customized.
+        Enso Retreat is already embedded into <a href="https://gchristensen.github.io/enso-portable/">Enso open-source</a>, but you may use it as a separate application, if necessary.
+        </p>
+
+  <h4>Features</h4>
+  <ul>
+    <li>Gentle break notification.</li>
+    <li>Ability to skip the first break (once per day).</li>
+    <li>Ability to automatically skip breaks when a certain program is running or when user does not show any activity (this may be useful when you are watching a movie or playing a game).</li>
+    <li>During the break it's possible to control other software with keystrokes which include Alt, Ctrl or Shift keys (e.g. foobar2000).</li>
+    <li>You can place your favorite wallpapers over the desktop when computer is locked.</li>
+  </ul>
+
+    </section>
+    <footer>
+    </footer>
+</div>
+<script src="{{ "/assets/js/scale.fix.js" | relative_url }}"></script>
+</body>
+</html>
