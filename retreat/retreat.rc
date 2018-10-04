@@ -1,0 +1,414 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "atlres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_NEUTRAL
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_ABOUT               BITMAP                  "res\\nichiren.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_TRAY                ICON                    "res\\tray.ico"
+
+IDI_TRAY_AMETHYST       ICON                    "res\\tray_amethyst.ico"
+
+#endif    // English resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\main.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUT DIALOGEX 0, 0, 212, 118
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "About Enso Retreat"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,156,99,50,14
+    LTEXT           "Enso Retreat v0.5",IDC_STATIC,115,14,60,8
+    LTEXT           "(C) 2007-2018 g/christensen",IDC_STATIC,99,30,92,8
+    LTEXT           "gchristensen.github.io/retreat",IDC_LIME_LINK,98,58,96,8
+    GROUPBOX        "",IDC_STATIC,5,2,201,92
+    CONTROL         IDB_ABOUT,IDC_STATIC,"Static",SS_BITMAP,13,13,70,74
+    CTEXT           "www.mindful.org",IDC_MINDFUL_ORG,114,74,56,8
+END
+
+IDD_SETTINGS DIALOGEX 0, 0, 359, 228
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Enso Retreat Settings"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LISTBOX         IDC_SETTING_LIST,11,10,81,190,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Lock settings",IDC_BLOCK_SETTINGS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,211,57,10
+    DEFPUSHBUTTON   "OK",IDOK,191,210,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,246,210,50,14
+    PUSHBUTTON      "Apply",IDC_APPLY,301,210,50,14
+    GROUPBOX        "",IDC_STATIC,6,2,346,203
+    LTEXT           "",IDC_CUSTOM_PARENT,99,9,245,190,NOT WS_VISIBLE
+END
+
+IDD_GENERAL_OPTIONS DIALOGEX 0, 0, 245, 190
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Language",IDC_STATIC,4,7,32,8
+    COMBOBOX        IDC_LANGUAGE,40,4,72,73,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_ANGELIC_OPTIONS DIALOGEX 0, 0, 245, 190
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+END
+
+IDD_RESTRICTIONS DIALOGEX 0, 0, 245, 191
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_ACTIVITY_CHECK_MIN,209,3,33,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "",IDC_ACTIVITY_CHECK_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,233,3,11,14
+    LISTBOX         IDC_RESTRICT_PROCESSES,8,34,230,134,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Restriction List (be quiet if one of the listed programs is running)",IDC_STATIC,3,22,239,168
+    PUSHBUTTON      "Add...",IDC_ADD_PROCESS,9,172,45,14
+    PUSHBUTTON      "Remove",IDC_DELETE_PROCESS,59,172,45,14
+    LTEXT           "Be quiet if no user activity has been detected before (Min.)",IDC_STATIC,4,7,190,8
+END
+
+IDD_ANGELIC_BEHAVIOUR DIALOGEX 0, 0, 238, 175
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_PERIOD,9,13,33,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "",IDC_PERIOD_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,29,12,11,14
+    EDITTEXT        IDC_BREAK,9,30,33,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "",IDC_BREAK_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,29,28,11,14
+    CONTROL         "Disable Periodic Breaks",IDC_PERIODIC_OFF,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,121,15,89,10
+    CONTROL         "Synchronize With System Time",IDC_SYNC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,121,32,109,11
+    EDITTEXT        IDC_ALERT,10,81,33,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "",IDC_ALERT_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,30,81,11,14
+    EDITTEXT        IDC_DELAY,10,64,33,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "",IDC_DELAY_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,30,63,11,14
+    EDITTEXT        IDC_DELAY_LIMIT,122,64,33,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "",IDC_DELAY_LIMIT_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,142,62,11,14
+    CONTROL         "Use Restrictions",IDC_USE_RESTRICTIONS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,105,65,10
+    CONTROL         "Beep After Break",IDC_BEEP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,119,69,10
+    LTEXT           "Period Duration (Min.)",IDC_STATIC,46,16,70,8
+    LTEXT           "Alert Time (Min.)",IDC_STATIC,46,84,54,8
+    LTEXT           "Break Duration (Min.)",IDC_STATIC,46,33,69,8
+    LTEXT           "Delay Time (Min.)",IDC_STATIC,46,67,56,8
+    LTEXT           "Number of Delays",IDC_STATIC,158,67,58,8
+    GROUPBOX        "Periodic Breaks",IDC_STATIC,4,2,233,47
+    GROUPBOX        "Delays",IDC_STATIC,4,53,233,47
+END
+
+IDD_ANGELIC_APPEARANCE DIALOGEX 0, 0, 238, 175
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    COMBOBOX        IDC_ANGELIC_MODE_LIST,30,13,88,34,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_OPACITY_LEVEL,85,30,33,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "",IDC_OPACITY_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,70,30,11,14
+    PUSHBUTTON      "",IDC_BACKGROUND_COLOR,126,12,41,14
+    PUSHBUTTON      "",IDC_TRANSPARENT_COLOR,126,30,41,14
+    CONTROL         "Hide Timer",IDC_HIDE_TIMER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,67,49,10
+    PUSHBUTTON      "",IDC_TIMER_TEXT_COLOR,126,64,41,14
+    EDITTEXT        IDC_IMAGE_FOLDER,9,110,179,14,ES_AUTOHSCROLL
+    CONTROL         "Stretch Images",IDC_STRETCH_IMAGE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,128,65,10
+    PUSHBUTTON      "Browse...",IDC_BROWSE_IMAGE_FOLDER,191,110,41,14
+    EDITTEXT        IDC_SOUND_FOLDER,9,152,179,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_BROWSE_SOUND_FOLDER,191,152,41,14
+    GROUPBOX        "Window",IDC_STATIC,4,2,233,48
+    LTEXT           "Mode",IDC_STATIC,8,15,18,8
+    LTEXT           "Image Folder",IDC_STATIC,9,99,43,8
+    LTEXT           "Sound Folder",IDC_STATIC,9,140,43,8
+    LTEXT           "Background Color",IDC_STATIC,172,15,57,8
+    LTEXT           "Transparent Color",IDC_STATIC,172,33,59,8
+    LTEXT           "Timer Font Color",IDC_STATIC,172,67,54,8
+    LTEXT           "Opacity Level",IDC_STATIC,8,33,44,8
+    GROUPBOX        "Timer",IDC_STATIC,4,54,233,30
+    GROUPBOX        "Media",IDC_STATIC,4,88,233,83
+END
+
+IDD_TIMED_BREAK DIALOGEX 0, 0, 294, 93
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Scheduled Break"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_CRON0,11,25,41,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CRON1,57,25,41,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CRON2,103,25,41,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CRON3,149,25,41,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CRON4,195,25,41,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_TIMED_BREAK_DURATION,248,25,41,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_TIMED_BREAK_MESSAGE,66,52,176,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Clear",IDC_BUTTON_CLEAR,248,52,41,14
+    PUSHBUTTON      "Cancel",IDCANCEL,93,73,50,14
+    DEFPUSHBUTTON   "OK",IDOK,149,73,50,14
+    LTEXT           "Minute",IDC_STATIC,11,14,22,8
+    LTEXT           "Hour",IDC_STATIC,57,14,16,8
+    LTEXT           "Day",IDC_STATIC,103,14,14,8
+    LTEXT           "Month",IDC_STATIC,149,14,21,8
+    LTEXT           "Day of week",IDC_STATIC,195,14,41,8
+    LTEXT           "Duration",IDC_STATIC,248,14,28,8
+    GROUPBOX        "Crontab",IDC_STATIC,5,4,237,43
+    LTEXT           "Display message:",IDC_STATIC,7,55,56,8
+END
+
+IDD_ANGELIC_SCHEDULE DIALOGEX 0, 0, 238, 175
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_TIMED_BREAKS_LIST,"SysListView32",LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,8,12,225,137
+    GROUPBOX        "Scheduled Breaks",IDC_STATIC,4,2,233,169
+    PUSHBUTTON      "Add...",IDC_ADD_CRON,10,153,45,14
+    PUSHBUTTON      "Remove",IDC_DELETE_CRON,60,153,45,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 208
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 114
+    END
+
+    IDD_SETTINGS, DIALOG
+    BEGIN
+    END
+
+    IDD_GENERAL_OPTIONS, DIALOG
+    BEGIN
+    END
+
+    IDD_ANGELIC_OPTIONS, DIALOG
+    BEGIN
+    END
+
+    IDD_RESTRICTIONS, DIALOG
+    BEGIN
+    END
+
+    IDD_ANGELIC_BEHAVIOUR, DIALOG
+    BEGIN
+    END
+
+    IDD_ANGELIC_APPEARANCE, DIALOG
+    BEGIN
+    END
+
+    IDD_TIMED_BREAK, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 87
+    END
+
+    IDD_ANGELIC_SCHEDULE, DIALOG
+    BEGIN
+        RIGHTMARGIN, 186
+        BOTTOMMARGIN, 171
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""atlres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_SHELL_MENU MENU
+BEGIN
+    POPUP "Menu"
+    BEGIN
+        MENUITEM "Disable",                     ID_MENU_DISABLE
+        MENUITEM "Delay",                       ID_MENU_DELAY
+        MENUITEM "Skip",                        ID_MENU_SKIP
+        MENUITEM SEPARATOR
+        MENUITEM "Take break now",              ID_MENU_TAKEBREAK
+        MENUITEM "Options",                     ID_MENU_OPTIONS
+        MENUITEM SEPARATOR
+        MENUITEM "About",                       ID_MENU_ABOUT
+        MENUITEM "Exit",                        ID_MENU_EXIT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,4,0,0
+ PRODUCTVERSION 0,4,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "FileDescription", "Enso Retreat"
+            VALUE "FileVersion", "0.5.0.0"
+            VALUE "LegalCopyright", "(c) g/christensen"
+            VALUE "ProductVersion", "0.5.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_ABOUT AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_SETTINGS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_ANGELIC_BEHAVIOUR AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDR_MAINFRAME           "retreat"
+    IDS_APP_NAME            "Enso Retreat"
+    IDS_ENABLE_MENU_ITEM_NAME "Enable"
+    IDS_RESTRICTION_LIST_FILTER 
+                            "Executable Files (*.exe)|*.exe|All Files|*.*|"
+    IDS_TIMED_BREAK_NUMBER_COLUMN "#"
+    IDS_TIMED_BREAK_CRONTAB_COLUMN "Crontab"
+    IDS_TIMED_BREAK_DURATION_COLUMN "Duration (Min.)"
+    IDS_CONFIRM_DELETION_MESSAGE 
+                            "Do you really want to delete the selected item?"
+    IDS_FULLSCREEN_MODE_ITEM "Fullscreen"
+    IDS_WINDOWED_MODE_ITEM  "Windowed"
+    IDS_BEHAVIOUR_TAB       "Behaviour"
+    IDS_APPEARANCE_TAB      "Appearance"
+    IDS_BROWSE_IMAGE_FOLDER_TITLE "Please select image folder"
+    IDS_BROWSE_SOUND_FOLDER_TITLE "Please select sound folder"
+    IDS_DEFAULT_COLOR_TEXT  "Automatic"
+    IDS_CUSTOM_COLOR_TEXT   "More colors..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ANGELIC_OPTIONS_GROUP_NAME "Enso Retreat"
+    IDS_GENERAL_OPTIONS_GROUP_NAME "General"
+    IDS_RESTRICTION_OPTIONS_GROUP_NAME "Restrictions"
+    IDS_UNLOCK_OPTIONS_ITEM "Unlock"
+    IDS_UNLOCK_OPTIONS_MESSAGE 
+                            "Settings will be unlocked after system restart."
+    IDS_SCHEDULE_TAB        "Schedule"
+    IDS_TRANSPARENT_FULLSCREEN_MODE_ITEM "Fullscreen (transparent)"
+    IDS_TRANSPARENT_WINDOWED_MODE_ITEM "Windowed (transparent)"
+    IDS_TIMED_BREAK_MESSAGE_COLUMN "Message"
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+

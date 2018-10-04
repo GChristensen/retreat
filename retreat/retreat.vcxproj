@@ -1,0 +1,292 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release (python)|Win32">
+      <Configuration>Release (python)</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{ABE1B5D2-1B98-4D15-AC5D-80ED8BF07851}</ProjectGuid>
+    <RootNamespace>retreat</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfAtl>Static</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release (python)|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfAtl>Static</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfAtl>Static</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release (python)|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>15.0.26430.15</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>Debug\</OutDir>
+    <IntDir>Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>Release\</OutDir>
+    <IntDir>Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory);$(SolutionDir)\..\..\lib\dxsdk\Include;$(SolutionDir)\..\..\lib\wtl91\include;$(SolutionDir)\..\..\lib\boost;$(SolutionDir)\..\..\python\enso\enso\python\include</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(SolutionDir)\..\..\lib\boost\stage\lib;$(SolutionDir)\..\..\lib\dxsdk\Lib</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release (python)|Win32'">
+    <OutDir>Release\</OutDir>
+    <IntDir>Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory);$(SolutionDir)\..\..\lib\dxsdk\Include;$(SolutionDir)\..\..\lib\wtl91\include;$(SolutionDir)\..\..\lib\boost;$(SolutionDir)\..\..\python\enso\enso\python\include</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(SolutionDir)\..\..\lib\boost\stage\lib;$(SolutionDir)\..\..\lib\dxsdk\Lib;$(SolutionDir)\..\..\python\enso\enso\python\libs</LibraryPath>
+    <TargetExt>.pyd</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)retreat.tlb</TypeLibraryName>
+      <HeaderFileName>retreat.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>retreat_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>retreat_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)retreat.tlb</TypeLibraryName>
+      <HeaderFileName>retreat.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>retreat_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>retreat_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;%(PreprocessorDefinitions);_WTL_USE_VSSYM32</PreprocessorDefinitions>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat />
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>UxTheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release (python)|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)retreat.tlb</TypeLibraryName>
+      <HeaderFileName>retreat.h</HeaderFileName>
+      <DllDataFileName>
+      </DllDataFileName>
+      <InterfaceIdentifierFileName>retreat_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>retreat_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;%(PreprocessorDefinitions);_WTL_USE_VSSYM32;ENSO_LIBRARY</PreprocessorDefinitions>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>UxTheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="AngelicMachine\AlertState.cpp" />
+    <ClCompile Include="AngelicMachine\AngelicMachine.cpp" />
+    <ClCompile Include="AngelicMachine\AngelicOptionsDlg.cpp" />
+    <ClCompile Include="AngelicMachine\AngelicSettingsUIFactory.cpp" />
+    <ClCompile Include="AngelicMachine\AngelicWnd.cpp" />
+    <ClCompile Include="AngelicMachine\DelayState.cpp" />
+    <ClCompile Include="AngelicMachine\DisableState.cpp" />
+    <ClCompile Include="AngelicMachine\IdleState.cpp" />
+    <ClCompile Include="AngelicMachine\ListenActivityState.cpp" />
+    <ClCompile Include="AngelicMachine\LockState.cpp" />
+    <ClCompile Include="ColorButton.cpp" />
+    <ClCompile Include="DispatchWnd.cpp" />
+    <ClCompile Include="GeneralOptionsDlg.cpp" />
+    <ClCompile Include="GhostWnd.cpp" />
+    <ClCompile Include="MachineWrapper.cpp" />
+    <ClCompile Include="RestrictionOptionsDlg.cpp" />
+    <ClCompile Include="retreat.cpp" />
+    <ClCompile Include="Scheduler\CronSchedule.cpp" />
+    <ClCompile Include="Scheduler\CronTab.cpp" />
+    <ClCompile Include="Scheduler\EventScheduler.cpp" />
+    <ClCompile Include="Scheduler\MeanderSchedule.cpp" />
+    <ClCompile Include="Scheduler\MessageScheduler.cpp" />
+    <ClCompile Include="Scheduler\QueueSchedule.cpp" />
+    <ClCompile Include="settings.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release (python)|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release (python)|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="SettingsDlg.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Utility\BackBuffer.cpp" />
+    <ClCompile Include="Utility\GlobalEvent.cpp" />
+    <ClCompile Include="Utility\LayeredTextBuffer.cpp" />
+    <ClCompile Include="Utility\SystemHelper.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AboutDlg.h" />
+    <ClInclude Include="AbstractMachine.h" />
+    <ClInclude Include="AngelicMachine\AlertState.h" />
+    <ClInclude Include="AngelicMachine\AngelicMachine.h" />
+    <ClInclude Include="AngelicMachine\AngelicOptionsDlg.h" />
+    <ClInclude Include="AngelicMachine\AngelicSettings.h" />
+    <ClInclude Include="AngelicMachine\AngelicSettingsUIFactory.h" />
+    <ClInclude Include="AngelicMachine\AngelicWnd.h" />
+    <ClInclude Include="AngelicMachine\DelayState.h" />
+    <ClInclude Include="AngelicMachine\DisableState.h" />
+    <ClInclude Include="AngelicMachine\IdleState.h" />
+    <ClInclude Include="AngelicMachine\ListenActivityState.h" />
+    <ClInclude Include="AngelicMachine\LockState.h" />
+    <ClInclude Include="ColorButton.h" />
+    <ClInclude Include="DispatchWnd.h" />
+    <ClInclude Include="GeneralOptionsDlg.h" />
+    <ClInclude Include="GhostWnd.h" />
+    <ClInclude Include="LimitSingleInstance.h" />
+    <ClInclude Include="MachineWrapper.h" />
+    <ClInclude Include="OptionDialog.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="RestrictionOptionsDlg.h" />
+    <ClInclude Include="Scheduler\CronSchedule.h" />
+    <ClInclude Include="Scheduler\CronTab.h" />
+    <ClInclude Include="Scheduler\Event.h" />
+    <ClInclude Include="Scheduler\EventScheduler.h" />
+    <ClInclude Include="Scheduler\MeanderSchedule.h" />
+    <ClInclude Include="Scheduler\MessageScheduler.h" />
+    <ClInclude Include="Scheduler\MessageSchedulerAdapter.h" />
+    <ClInclude Include="Scheduler\QueueSchedule.h" />
+    <ClInclude Include="Scheduler\Schedule.h" />
+    <ClInclude Include="Scheduler\scheduler.h" />
+    <ClInclude Include="Scheduler\SchedulerCallback.h" />
+    <ClInclude Include="Scheduler\SimpleScheduler.h" />
+    <ClInclude Include="Scheduler\tstring.h" />
+    <ClInclude Include="SettingManager.h" />
+    <ClInclude Include="settings.h" />
+    <ClInclude Include="SettingsDlg.h" />
+    <ClInclude Include="SettingsUIFactory.h" />
+    <ClInclude Include="SettingTable.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="trayiconimpl.h" />
+    <ClInclude Include="tstring.h" />
+    <ClInclude Include="Utility\BackBuffer.h" />
+    <ClInclude Include="Utility\GlobalEvent.h" />
+    <ClInclude Include="Utility\LayeredTextBuffer.h" />
+    <ClInclude Include="Utility\SystemHelper.h" />
+    <ClInclude Include="WTLTabViewCtrl.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\logo.bmp" />
+    <Image Include="res\main.ico" />
+    <Image Include="res\nichiren.bmp" />
+    <Image Include="res\tray.ico" />
+    <Image Include="res\tray_amethyst.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="retreat.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\boost.1.68.0.0\build\boost.targets" Condition="Exists('..\packages\boost.1.68.0.0\build\boost.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\boost.1.68.0.0\build\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost.1.68.0.0\build\boost.targets'))" />
+  </Target>
+</Project>

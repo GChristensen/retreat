@@ -1,0 +1,298 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{552de17e-2668-4cdf-8923-831619d826ef}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm</Extensions>
+    </Filter>
+    <Filter Include="Source Files\AngelicMachine">
+      <UniqueIdentifier>{e53da0e7-737f-46d7-939b-f5f561a9d644}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utility">
+      <UniqueIdentifier>{f60ad4a3-19f0-4856-8571-0349f3a8d3d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scheduler">
+      <UniqueIdentifier>{dc1747b5-14a7-4c56-b334-fd7ddd51f52e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{ed601f43-ce74-4e15-ad27-efe4d532fe99}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc</Extensions>
+    </Filter>
+    <Filter Include="Header Files\AngelicMachine">
+      <UniqueIdentifier>{e9ff950a-4bd9-448b-94e0-07bafe24eb4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scheduler">
+      <UniqueIdentifier>{eace55af-0e68-45fe-9e0e-1d6c8ea9b554}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utility">
+      <UniqueIdentifier>{e7821627-f9f4-4e9b-93b9-430f316e8b50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{f86922b9-f883-48f5-b90f-2d1ec64a3e3f}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;jpg;jpeg;jpe;manifest</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ColorButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DispatchWnd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneralOptionsDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GhostWnd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MachineWrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RestrictionOptionsDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="retreat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="settings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AngelicMachine\AlertState.cpp">
+      <Filter>Source Files\AngelicMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="AngelicMachine\AngelicMachine.cpp">
+      <Filter>Source Files\AngelicMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="AngelicMachine\AngelicOptionsDlg.cpp">
+      <Filter>Source Files\AngelicMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="AngelicMachine\AngelicSettingsUIFactory.cpp">
+      <Filter>Source Files\AngelicMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="AngelicMachine\AngelicWnd.cpp">
+      <Filter>Source Files\AngelicMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="AngelicMachine\DelayState.cpp">
+      <Filter>Source Files\AngelicMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="AngelicMachine\DisableState.cpp">
+      <Filter>Source Files\AngelicMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="AngelicMachine\IdleState.cpp">
+      <Filter>Source Files\AngelicMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="AngelicMachine\ListenActivityState.cpp">
+      <Filter>Source Files\AngelicMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="AngelicMachine\LockState.cpp">
+      <Filter>Source Files\AngelicMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\BackBuffer.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\LayeredTextBuffer.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\SystemHelper.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler\CronSchedule.cpp">
+      <Filter>Source Files\Scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler\CronTab.cpp">
+      <Filter>Source Files\Scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler\EventScheduler.cpp">
+      <Filter>Source Files\Scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler\MeanderSchedule.cpp">
+      <Filter>Source Files\Scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler\MessageScheduler.cpp">
+      <Filter>Source Files\Scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler\QueueSchedule.cpp">
+      <Filter>Source Files\Scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\GlobalEvent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AboutDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractMachine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DispatchWnd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneralOptionsDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GhostWnd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LimitSingleInstance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MachineWrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RestrictionOptionsDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="settings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsUIFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="trayiconimpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tstring.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WTLTabViewCtrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AngelicMachine\AlertState.h">
+      <Filter>Header Files\AngelicMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="AngelicMachine\AngelicMachine.h">
+      <Filter>Header Files\AngelicMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="AngelicMachine\AngelicOptionsDlg.h">
+      <Filter>Header Files\AngelicMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="AngelicMachine\AngelicSettings.h">
+      <Filter>Header Files\AngelicMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="AngelicMachine\AngelicSettingsUIFactory.h">
+      <Filter>Header Files\AngelicMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="AngelicMachine\AngelicWnd.h">
+      <Filter>Header Files\AngelicMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="AngelicMachine\DelayState.h">
+      <Filter>Header Files\AngelicMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="AngelicMachine\DisableState.h">
+      <Filter>Header Files\AngelicMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="AngelicMachine\IdleState.h">
+      <Filter>Header Files\AngelicMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="AngelicMachine\ListenActivityState.h">
+      <Filter>Header Files\AngelicMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="AngelicMachine\LockState.h">
+      <Filter>Header Files\AngelicMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\CronSchedule.h">
+      <Filter>Header Files\Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\CronTab.h">
+      <Filter>Header Files\Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\Event.h">
+      <Filter>Header Files\Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\EventScheduler.h">
+      <Filter>Header Files\Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\MeanderSchedule.h">
+      <Filter>Header Files\Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\MessageScheduler.h">
+      <Filter>Header Files\Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\MessageSchedulerAdapter.h">
+      <Filter>Header Files\Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\QueueSchedule.h">
+      <Filter>Header Files\Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\Schedule.h">
+      <Filter>Header Files\Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\scheduler.h">
+      <Filter>Header Files\Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\SchedulerCallback.h">
+      <Filter>Header Files\Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\SimpleScheduler.h">
+      <Filter>Header Files\Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\tstring.h">
+      <Filter>Header Files\Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\BackBuffer.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\LayeredTextBuffer.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\SystemHelper.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\GlobalEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\logo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\main.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\nichiren.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\tray.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\tray_amethyst.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="retreat.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>
