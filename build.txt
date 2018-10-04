@@ -1,6 +1,6 @@
 BUILDING
 
-The following libraries are required to build Angelic Retreat:
+The following libraries are required to build Enso Retreat:
 
 WTL 9.1 (http://wtl.sourceforge.net)
 The Boost library (http://boost.org, boost 1.68 installed through NuGet will work)
