@@ -2,13 +2,15 @@
 
 ; Define your application name
 !define APPNAME "Enso Retreat"
-!define APPNAMEANDVERSION "Enso Retreat 0.5"
+!define VERSION "0.5.0"
+
+!define APPNAMEANDVERSION "Enso Retreat ${VERSION}"
 
 ; Main Install settings
 Name "${APPNAMEANDVERSION}"
 InstallDir "$PROGRAMFILES\Enso Retreat"
 InstallDirRegKey HKLM "Software\${APPNAME}" ""
-OutFile "retreat_setup.exe"
+OutFile "enso-retreat-${VERSION}.exe"
 
 ; Use compression
 SetCompressor LZMA
@@ -17,7 +19,7 @@ SetCompressor LZMA
 !include "MUI.nsh"
 
 !define MUI_ICON "..\media\tomoe.ico"
-!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\arrow2-uninstall.ico"
+!define MUI_UNICON "..\media\tomoe.ico"
 
 !define MUI_HEADERIMAGE
 ;!define MUI_HEADERIMAGE_LEFT

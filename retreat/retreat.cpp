@@ -179,6 +179,7 @@ static PyMethodDef enso_functions[] = {
 	{"skip", (PyCFunction)pyenso_retreat_skip, METH_NOARGS},
 	{"options", (PyCFunction)pyenso_retreat_options, METH_NOARGS},
 	{"about", (PyCFunction)pyenso_retreat_about, METH_NOARGS},
+//	{"version", (PyCFunction)pyenso_retreat_version, METH_NOARGS},
 	{"is_locked", (PyCFunction)pyenso_retreat_is_locked, METH_NOARGS},
 	{NULL, NULL, 0, NULL},
 };
@@ -208,7 +209,7 @@ static int enso_clear(PyObject *m) {
 
 static struct PyModuleDef moduledef = {
 		PyModuleDef_HEAD_INIT,
-		"enso.retreat",
+		"enso.contrib._retreat",
 		NULL,
 		sizeof(struct module_state),
 		enso_functions,
@@ -221,7 +222,7 @@ static struct PyModuleDef moduledef = {
 #define INITERROR return NULL
 
 PyMODINIT_FUNC
-PyInit_retreat(void)
+PyInit__retreat(void)
 {
 	PyObject *m = PyModule_Create(&moduledef);
 

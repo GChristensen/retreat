@@ -116,7 +116,7 @@ LRESULT CDispatchWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 	PyObject *os_path = PyImport_ImportModule("os.path");
 	PyObject *dict = PyModule_GetDict(os_path);
 	PyObject *expanduser = PyDict_GetItemString(dict, "expanduser");
-	PyObject *expanded = PyObject_CallFunction(expanduser, "(s)", "~/.enso/.retreatrc");
+	PyObject *expanded = PyObject_CallFunction(expanduser, "(s)", "~/.enso/retreat.cfg");
 
 	USES_CONVERSION;
 	settings_dir = A2T(PyUnicode_AsUTF8(expanded));
