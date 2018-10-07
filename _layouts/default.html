@@ -44,12 +44,11 @@
 
         <h1 id="add-torrent">Enso Retreat</h1>
 
-        <p><!--img height="16px" width="16px" src="/windows.png" alt="Firefox"/>
-            <a id="app-link" href="#">Windows Application</a-->
+        <p><img height="16px" width="16px" src="/download.png" alt="Download"/> <img height="16px" width="16px" src="/windows.png" alt="Firefox"/>
+            <a id="app-link" href="#">Windows Application</a>
             :: <img height="16px" width="16px" src="/youtube.png" alt="Youtube" style="max-width:100%;">
             <a href="https://youtu.be/jAxHGJGaSt4" rel="nofollow">Video Manual</a>
         </p>
-        Coming soon...
         <script>
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
@@ -59,7 +58,7 @@
                     link.href = release.assets[0].browser_download_url;
                 }
             };
-            xhr.open('GET', 'https://api.github.com/repos/gchristensen/enso-portable/releases/latest');
+            xhr.open('GET', 'https://api.github.com/repos/gchristensen/retreat/releases/latest');
             xhr.send();
         </script>
 
@@ -72,7 +71,8 @@
         <p style="text-align: justify;">Enso Retreat is a simple program which periodically blocks your computer to force you rest. 
         If you used similar ones before, you know about their cruel nature. 
         Enso Retreat is an attempt to create a humane software of such kind where the most significant aspects could be customized.
-        Enso Retreat is already embedded into <a href="https://gchristensen.github.io/enso-portable/">Enso open-source</a>, but you may use it as a separate application, if necessary.
+        Enso Retreat is already embedded into <a href="https://gchristensen.github.io/enso-portable/">Enso open-source</a> as an optional module, 
+        but you may use it as a separate application, if necessary.
         </p>
 
   <h4>Features</h4>
