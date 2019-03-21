@@ -66,6 +66,10 @@
                 document.getElementById('webm').style.display='block';
                 var video = document.querySelector('#webm video');
                 video.play();
+                setTimeout(function () {
+                    document.getElementById('webm').style.display = 'none';
+                    document.getElementById('placeholder').style.display = 'block';
+                }, 16000);
             }
 
             setTimeout(function() {
@@ -73,10 +77,6 @@
                     || navigator.userAgent.search("Firefox") >= 0) {
 
                     watch();
-                    setTimeout(function () {
-                        document.getElementById('webm').style.display = 'none';
-                        document.getElementById('placeholder').style.display = 'block';
-                    }, 16000)
                 }
             }, 500);
         </script>
