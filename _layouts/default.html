@@ -75,22 +75,22 @@
                     watch();
                     setTimeout(function () {
                         document.getElementById('webm').style.display = 'none';
-                        document.getElementById('placeholder').style.display = 'table';
-                    }, 12000)
+                        document.getElementById('placeholder').style.display = 'block';
+                    }, 16000)
                 }
-            }, 3000);
+            }, 500);
         </script>
 
-        <div id="placeholder">
+        <div id="placeholder" style="display: none;">
             <div style="position: relative; display: table;" onclick="watch()">
                 <!--img title="Watch on Youtube" style="cursor: pointer;" src="/enso-portable/screen.jpg" alt="screen" /-->
                 <img style="cursor: pointer;" src="/retreat/screen.jpg" alt="screen" />
-                <!--div style="position: absolute; right: 10px; bottom: 10px; color: white; font-weight: bold; cursor: pointer;" onclick="watch()">
-                    <img src="/youtube.png" style="vertical-align: middle; cursor: pointer;"> YouTube</div-->
+                <div style="position: absolute; right: 10px; bottom: 10px; color: white; font-weight: bold; cursor: pointer;" onclick="watch()"
+                ><img src="/play_video.png" style="vertical-align: middle; cursor: pointer;"></div>
             </div>
         </div>
 
-        <div id="webm" style="display: none;">
+        <div id="webm">
             <video src="/retreat/media/retreat.webm" width="500px" height="280px" type="video/webm" muted />
         </div>
 
