@@ -113,15 +113,16 @@ LRESULT CDispatchWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 #ifdef ENSO_LIBRARY
 	PyGILState_STATE gstate;
 	gstate = PyGILState_Ensure();
-	PyObject *os_path = PyImport_ImportModule("os.path");
-	PyObject *dict = PyModule_GetDict(os_path);
-	PyObject *expanduser = PyDict_GetItemString(dict, "expanduser");
-	PyObject *expanded = PyObject_CallFunction(expanduser, "(s)", "~/.enso/retreat.cfg");
+
+	PyObject* config = PyImport_ImportModule("enso.config");
+	PyObject* dict = PyModule_GetDict(config);
+	PyObject* enso_user_dir = PyDict_GetItem(dict, PyUnicode_FromString("ENSO_USER_DIR"));
 
 	USES_CONVERSION;
-	settings_dir = A2T(PyUnicode_AsUTF8(expanded));
+	settings_dir = A2T(PyUnicode_AsUTF8(enso_user_dir));
+	settings_dir.append(_T("/retreat.cfg"));
 
-	Py_DecRef(os_path);
+	Py_DecRef(config);
 	PyGILState_Release(gstate);
 #else
 	CAtlString s;
