@@ -1,0 +1,8 @@
+/.vs
+/.local
+/packages
+/Debug
+/Release
+/retreat/Debug
+/retreat/Release
+*.aps
