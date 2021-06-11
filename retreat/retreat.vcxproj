@@ -213,14 +213,22 @@
     <Image Include="res\retreat.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="controller.cppm">
+    <ClCompile Include="Controller.cppm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="misc\config.cpp" />
     <ClCompile Include="misc\dbgcout.cpp" />
-    <ClCompile Include="settings.cppm">
+    <ClCompile Include="scheduler\PeriodicScheduler.cppm" />
+    <ClCompile Include="scheduler\Scheduler.cppm" />
+    <ClCompile Include="scheduler\SchedulerFactory.cppm" />
+    <ClCompile Include="Settings.cppm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="statemachine\State.cppm" />
+    <ClCompile Include="statemachine\StateAlert.cppm" />
+    <ClCompile Include="statemachine\StateIdle.cppm" />
+    <ClCompile Include="statemachine\StateLocked.cppm" />
+    <ClCompile Include="statemachine\StateMachine.cppm" />
     <ClCompile Include="system.ixx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>

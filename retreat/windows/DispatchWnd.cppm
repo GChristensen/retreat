@@ -5,11 +5,11 @@ module;
 
 #include "tstring.h"
 
-#include <iostream>
-
 export module DispatchWnd;
 
-import controller;
+import <memory>;
+
+import Controller;
 import TrayIconImpl;
 
 #define WM_USER_TIMER (WM_USER + 1)
@@ -27,8 +27,8 @@ public:
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnTaskBarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	//LRESULT OnPowerBroadcast(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&);
-	//LRESULT OnQueryEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&);
+	//LRESULT OnPowerBroadcast(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	//LRESULT OnQueryEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
@@ -74,7 +74,7 @@ protected:
 module :private;
 
 import system;
-import settings;
+import Settings;
 import AboutDlg;
 
 const int TIMER_PERIOD = 1000;
@@ -90,7 +90,7 @@ CDispatchWnd::CDispatchWnd(HINSTANCE hInstance)
 
 LRESULT CDispatchWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	Settings settings(getConfigFilePath(CONFIG_FILE_DIR, CONFIG_FILE_NAME));
+	std::shared_ptr<Settings> settings(new Settings(getConfigFilePath(CONFIG_FILE_DIR, CONFIG_FILE_NAME)));
 	controller.updateSettings(settings);
 
 	// show icon on Explorer restart by receiving TaskbarCreated message
@@ -199,7 +199,8 @@ void CDispatchWnd::PrepareContextMenu(HMENU hMenu)
 
 // timer thread ///////////////////////////////////////////////////////////////
 
-void CDispatchWnd::startTimer(int period) {
+void CDispatchWnd::startTimer(int period) 
+{
 	timer = CreateWaitableTimer(NULL, FALSE, NULL);
 
 	LARGE_INTEGER timerExpires;
@@ -210,7 +211,8 @@ void CDispatchWnd::startTimer(int period) {
 	timerThread = (HANDLE)_beginthreadex(NULL, 0, timerThreadProc, (void*)this, 0, NULL);
 }
 
-void CDispatchWnd::stopTimer() {
+void CDispatchWnd::stopTimer() 
+{
 	SetEvent(timerEvent);
 	CancelWaitableTimer(timer);
 	WaitForSingleObject(timerThread, TIMER_PERIOD + 1000);
@@ -221,13 +223,16 @@ void CDispatchWnd::stopTimer() {
 }
 
 
-unsigned WINAPI CDispatchWnd::timerThreadProc(void* param) {
+unsigned WINAPI CDispatchWnd::timerThreadProc(void* param) 
+{
 	CDispatchWnd* pThis = static_cast<CDispatchWnd*>(param);
 	HANDLE handles[2] = { pThis->timer, pThis->timerEvent };
 
-	while (true) {
-		if (WaitForMultipleObjects(2, handles, FALSE, INFINITE) == WAIT_OBJECT_0) {
-			pThis->SendMessage(WM_USER_TIMER, 0, 0);
+	while (true) 
+	{
+		if (WaitForMultipleObjects(2, handles, FALSE, INFINITE) == WAIT_OBJECT_0) 
+		{
+			pThis->PostMessage(WM_USER_TIMER, 0, 0);
 		}
 		else
 			break;
@@ -236,7 +241,8 @@ unsigned WINAPI CDispatchWnd::timerThreadProc(void* param) {
 	return 0;
 }
 
-LRESULT CDispatchWnd::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+LRESULT CDispatchWnd::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) 
+{
 	controller.onTimer();
 
 	return 0;

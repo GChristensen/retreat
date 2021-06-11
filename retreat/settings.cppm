@@ -1,4 +1,4 @@
-﻿export module settings;
+﻿export module Settings;
 
 import <string>;
 import <unordered_map>;

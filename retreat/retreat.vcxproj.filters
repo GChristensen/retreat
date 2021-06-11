@@ -20,7 +20,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="controller.cppm" />
+    <ClCompile Include="Controller.cppm" />
     <ClCompile Include="retreat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -31,7 +31,7 @@
     <ClCompile Include="windows\TrayIconImpl.ixx" />
     <ClCompile Include="system.ixx" />
     <ClCompile Include="system_win32.cppm" />
-    <ClCompile Include="settings.cppm" />
+    <ClCompile Include="Settings.cppm" />
     <ClCompile Include="misc\dbgcout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -39,6 +39,14 @@
     <ClCompile Include="misc\config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="scheduler\PeriodicScheduler.cppm" />
+    <ClCompile Include="scheduler\Scheduler.cppm" />
+    <ClCompile Include="statemachine\State.cppm" />
+    <ClCompile Include="statemachine\StateAlert.cppm" />
+    <ClCompile Include="statemachine\StateIdle.cppm" />
+    <ClCompile Include="statemachine\StateLocked.cppm" />
+    <ClCompile Include="statemachine\StateMachine.cppm" />
+    <ClCompile Include="scheduler\SchedulerFactory.cppm" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
