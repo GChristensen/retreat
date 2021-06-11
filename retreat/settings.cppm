@@ -30,6 +30,8 @@ public:
     bool getBoolean(const tstring path, bool defaultValue);
     int getInt(const tstring path, int defaultValue);
 
+    void setString(const tstring path, const tstring value);
+
 private:
     std::unordered_map<tstring, tstring> values;
 };
@@ -90,4 +92,8 @@ int Settings::getInt(const tstring path, int defaultValue) {
     }
 
     return result;
+}
+
+void Settings::setString(const tstring path, const tstring value) {
+    values[path] = value;
 }

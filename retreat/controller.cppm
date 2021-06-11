@@ -1,6 +1,6 @@
 module;
 
-//#include <time.h>
+#include <time.h>
 
 export module controller;
 
@@ -13,6 +13,8 @@ public:
 
     void updateSettings(const Settings& settings);
 
+    void onTimer();
+
 private:
     Settings settings;
 };
@@ -21,12 +23,13 @@ private:
 module :private;
 
 Controller::Controller() {
-    //_tzset();
-
-    //// initialize random number generator
-    //srand((unsigned)time(0));
+    _tzset();
+    srand((unsigned)time(0));
 }
 
 void Controller::updateSettings(const Settings& settings) {
     this->settings = settings;
+}
+
+void Controller::onTimer() {
 }

@@ -88,7 +88,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)lib;$(ProjectDir)res;$(ProjectDir)pch</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)/misc;$(ProjectDir)/res;$(ProjectDir)/pch</AdditionalIncludeDirectories>
       <EnableModules>false</EnableModules>
       <DisableSpecificWarnings>5050;5105;4005</DisableSpecificWarnings>
       <AdditionalBMIDirectories>
@@ -155,7 +155,7 @@
       <DebugInformationFormat />
       <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)lib;$(ProjectDir)res;$(ProjectDir)pch</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)/misc;$(ProjectDir)/res;$(ProjectDir)/pch</AdditionalIncludeDirectories>
       <EnableModules>false</EnableModules>
       <DisableSpecificWarnings>5050;5105;4005</DisableSpecificWarnings>
       <AdditionalBMIDirectories>
@@ -216,8 +216,8 @@
     <ClCompile Include="controller.cppm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="lib\config.cpp" />
-    <ClCompile Include="lib\dbgcout.cpp" />
+    <ClCompile Include="misc\config.cpp" />
+    <ClCompile Include="misc\dbgcout.cpp" />
     <ClCompile Include="settings.cppm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -237,10 +237,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lib\config.h" />
-    <ClInclude Include="lib\dbgcout.h" />
-    <ClInclude Include="lib\LimitSingleInstance.h" />
-    <ClInclude Include="lib\tstring.h" />
+    <ClInclude Include="misc\config.h" />
+    <ClInclude Include="misc\dbgcout.h" />
+    <ClInclude Include="misc\LimitSingleInstance.h" />
+    <ClInclude Include="misc\tstring.h" />
     <ClInclude Include="res\resource.h" />
     <ClInclude Include="pch\stdafx.h" />
   </ItemGroup>

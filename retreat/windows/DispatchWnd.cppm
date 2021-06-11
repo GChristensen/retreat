@@ -12,6 +12,8 @@ export module DispatchWnd;
 import controller;
 import TrayIconImpl;
 
+#define WM_USER_TIMER (WM_USER + 1)
+
 typedef CWinTraits<WS_BORDER | WS_SYSMENU> DispatchTraits;
 
 export class CDispatchWnd : public CWindowImpl<CDispatchWnd, CWindow, DispatchTraits>,
@@ -23,7 +25,8 @@ public:
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT OnTaskBarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&);
+	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnTaskBarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	//LRESULT OnPowerBroadcast(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&);
 	//LRESULT OnQueryEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&);
 	LRESULT OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -36,6 +39,7 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		MESSAGE_HANDLER(WM_COMMAND, OnCommand)
+		MESSAGE_HANDLER(WM_USER_TIMER, OnTimer)
 		MESSAGE_HANDLER(msgTaskbarCreated, OnTaskBarCreated)
 		//MESSAGE_HANDLER(WM_POWERBROADCAST, OnPowerBroadcast)
 		//MESSAGE_HANDLER(WM_QUERYENDSESSION, OnQueryEndSession)
@@ -58,6 +62,13 @@ protected:
 	void showTrayIcon();
 	void enableMenu();
 	void disableMenu();
+
+	HANDLE timer = NULL;
+	HANDLE timerEvent = NULL;
+	HANDLE timerThread = NULL;
+	static unsigned WINAPI timerThreadProc(void *param);
+	void startTimer(int period);
+	void stopTimer();
 };
 
 module :private;
@@ -65,6 +76,8 @@ module :private;
 import system;
 import settings;
 import AboutDlg;
+
+const int TIMER_PERIOD = 1000;
 
 const TCHAR* CONFIG_FILE_DIR = _T("Enso Retreat");
 const TCHAR* CONFIG_FILE_NAME = _T("retreat.conf");
@@ -85,6 +98,8 @@ LRESULT CDispatchWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 
 	showTrayIcon();
 	SetDefaultItem(-1);
+
+	startTimer(TIMER_PERIOD);
 
 	return 0;
 }
@@ -129,6 +144,8 @@ LRESULT CDispatchWnd::OnTaskBarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 LRESULT CDispatchWnd::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	stopTimer();
+
 	RemoveIcon();
 	DestroyWindow();
 	return 0;
@@ -178,4 +195,49 @@ bool CDispatchWnd::IsMenuDisabled()
 // this function is used by the tray icon helper class
 void CDispatchWnd::PrepareContextMenu(HMENU hMenu)
 {
+}
+
+// timer thread ///////////////////////////////////////////////////////////////
+
+void CDispatchWnd::startTimer(int period) {
+	timer = CreateWaitableTimer(NULL, FALSE, NULL);
+
+	LARGE_INTEGER timerExpires;
+	timerExpires.QuadPart = Int32x32To64(-10000, period);
+	SetWaitableTimer(timer, &timerExpires, period, NULL, NULL, FALSE);
+
+	timerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	timerThread = (HANDLE)_beginthreadex(NULL, 0, timerThreadProc, (void*)this, 0, NULL);
+}
+
+void CDispatchWnd::stopTimer() {
+	SetEvent(timerEvent);
+	CancelWaitableTimer(timer);
+	WaitForSingleObject(timerThread, TIMER_PERIOD + 1000);
+
+	CloseHandle(timer);
+	CloseHandle(timerEvent);
+	CloseHandle(timerThread);
+}
+
+
+unsigned WINAPI CDispatchWnd::timerThreadProc(void* param) {
+	CDispatchWnd* pThis = static_cast<CDispatchWnd*>(param);
+	HANDLE handles[2] = { pThis->timer, pThis->timerEvent };
+
+	while (true) {
+		if (WaitForMultipleObjects(2, handles, FALSE, INFINITE) == WAIT_OBJECT_0) {
+			pThis->SendMessage(WM_USER_TIMER, 0, 0);
+		}
+		else
+			break;
+	}
+
+	return 0;
+}
+
+LRESULT CDispatchWnd::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	controller.onTimer();
+
+	return 0;
 }

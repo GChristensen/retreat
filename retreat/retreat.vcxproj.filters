@@ -32,11 +32,11 @@
     <ClCompile Include="system.ixx" />
     <ClCompile Include="system_win32.cppm" />
     <ClCompile Include="settings.cppm" />
-    <ClCompile Include="lib\dbgcout.cpp">
+    <ClCompile Include="misc\dbgcout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="windows\DispatchWnd.cppm" />
-    <ClCompile Include="lib\config.cpp">
+    <ClCompile Include="misc\config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,16 +50,16 @@
     <ClInclude Include="pch\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="lib\LimitSingleInstance.h">
+    <ClInclude Include="misc\LimitSingleInstance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="lib\tstring.h">
+    <ClInclude Include="misc\tstring.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="lib\dbgcout.h">
+    <ClInclude Include="misc\dbgcout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="lib\config.h">
+    <ClInclude Include="misc\config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
