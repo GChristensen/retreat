@@ -24,13 +24,21 @@
     <ClCompile Include="retreat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="settings.cppm" />
-    <ClCompile Include="lib\stdafx.cpp">
+    <ClCompile Include="pch\stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="windows\AboutDlg.cppm" />
-    <ClCompile Include="windows\DispatchWnd.cppm" />
     <ClCompile Include="windows\TrayIconImpl.ixx" />
+    <ClCompile Include="system.ixx" />
+    <ClCompile Include="system_win32.cppm" />
+    <ClCompile Include="settings.cppm" />
+    <ClCompile Include="lib\dbgcout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\DispatchWnd.cppm" />
+    <ClCompile Include="lib\config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -39,13 +47,19 @@
     <ClInclude Include="res\resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="lib\stdafx.h">
+    <ClInclude Include="pch\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="lib\LimitSingleInstance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="lib\tstring.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\dbgcout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

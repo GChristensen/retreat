@@ -3,8 +3,13 @@ module;
 #include "stdafx.h"
 #include "resource.h"
 
+#include "tstring.h"
+
+#include <iostream>
+
 export module DispatchWnd;
 
+import controller;
 import TrayIconImpl;
 
 typedef CWinTraits<WS_BORDER | WS_SYSMENU> DispatchTraits;
@@ -14,9 +19,7 @@ export class CDispatchWnd : public CWindowImpl<CDispatchWnd, CWindow, DispatchTr
 {
 public:
 
-	CDispatchWnd();
-
-	void PrepareContextMenu(HMENU hMenu);
+	CDispatchWnd(HINSTANCE hInstance);
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -40,33 +43,42 @@ public:
 	END_MSG_MAP()
 
 
-	bool isMenuDisabled();
-	void enableMenu();
-	void disableMenu();
-
+	bool IsMenuDisabled();
+	void PrepareContextMenu(HMENU hMenu);
 
 protected:
+
+	Controller controller;
+
+	HINSTANCE hInstance;
 
 	int menuDisabled = 0;
 	int msgTaskbarCreated;
 
 	void showTrayIcon();
+	void enableMenu();
+	void disableMenu();
 };
 
 module :private;
 
+import system;
+import settings;
 import AboutDlg;
 
-CDispatchWnd::CDispatchWnd()
+const TCHAR* CONFIG_FILE_DIR = _T("Enso Retreat");
+const TCHAR* CONFIG_FILE_NAME = _T("retreat.conf");
+
+
+CDispatchWnd::CDispatchWnd(HINSTANCE hInstance)
 {
+	this->hInstance = hInstance;
 }
 
 LRESULT CDispatchWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	_tzset();
-
-	// initialize random number generator
-	srand((unsigned)time(NULL));
+	Settings settings(getConfigFilePath(CONFIG_FILE_DIR, CONFIG_FILE_NAME));
+	controller.updateSettings(settings);
 
 	// show icon on Explorer restart by receiving TaskbarCreated message
 	msgTaskbarCreated = RegisterWindowMessage(_T("TaskbarCreated"));
@@ -158,7 +170,7 @@ void CDispatchWnd::disableMenu()
 }
 
 // this function is used by the tray icon helper class
-bool CDispatchWnd::isMenuDisabled()
+bool CDispatchWnd::IsMenuDisabled()
 {
 	return menuDisabled > 0;
 }

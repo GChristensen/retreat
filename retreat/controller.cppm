@@ -1,15 +1,17 @@
 module;
 
-export module controller;
+//#include <time.h>
 
-import std.core;
+export module controller;
 
 import settings;
 
 export class Controller {
 public: 
 
-    Controller(const Settings &settings);
+    Controller();
+
+    void updateSettings(const Settings& settings);
 
 private:
     Settings settings;
@@ -18,7 +20,13 @@ private:
 
 module :private;
 
-Controller::Controller(const Settings& settings): settings(std::move(settings)) {
+Controller::Controller() {
+    //_tzset();
 
+    //// initialize random number generator
+    //srand((unsigned)time(0));
 }
 
+void Controller::updateSettings(const Settings& settings) {
+    this->settings = settings;
+}

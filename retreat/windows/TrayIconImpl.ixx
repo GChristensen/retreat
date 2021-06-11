@@ -99,7 +99,7 @@ public:
 		// Was the right-button clicked?
 		if (LOWORD(lParam) == WM_RBUTTONUP)
 		{
-			if (pT->isMenuDisabled())
+			if (pT->IsMenuDisabled())
 			{
 				SetForegroundWindow(pT->m_hWnd);
 				return 0;

@@ -1,9 +1,8 @@
-// retreat.cpp : main source file for retreat.exe
+﻿// retreat.cpp : main source file for retreat.exe
 //
 
 #include "stdafx.h"
-#include "resource.h"
-
+#include "dbgcout.h"
 #include "LimitSingleInstance.h"
 
 import DispatchWnd;
@@ -12,10 +11,14 @@ CAppModule _Module;
 
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
+#ifdef _DEBUG
+	initdbgcout();
+#endif
+
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
 
-	CDispatchWnd wndMain;
+	CDispatchWnd wndMain(_Module.GetModuleInstance());
 
 	if(wndMain.Create(NULL) == NULL)
 	{

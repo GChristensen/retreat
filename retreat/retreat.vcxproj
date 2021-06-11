@@ -88,9 +88,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)lib;$(ProjectDir)res</AdditionalIncludeDirectories>
-      <EnableModules>true</EnableModules>
-      <DisableSpecificWarnings>5050</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)lib;$(ProjectDir)res;$(ProjectDir)pch</AdditionalIncludeDirectories>
+      <EnableModules>false</EnableModules>
+      <DisableSpecificWarnings>5050;5105;4005</DisableSpecificWarnings>
+      <AdditionalBMIDirectories>
+      </AdditionalBMIDirectories>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -152,9 +155,11 @@
       <DebugInformationFormat />
       <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)lib;$(ProjectDir)res</AdditionalIncludeDirectories>
-      <EnableModules>true</EnableModules>
-      <DisableSpecificWarnings>5050</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)lib;$(ProjectDir)res;$(ProjectDir)pch</AdditionalIncludeDirectories>
+      <EnableModules>false</EnableModules>
+      <DisableSpecificWarnings>5050;5105;4005</DisableSpecificWarnings>
+      <AdditionalBMIDirectories>
+      </AdditionalBMIDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -208,10 +213,22 @@
     <Image Include="res\retreat.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="controller.cppm" />
+    <ClCompile Include="controller.cppm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="lib\config.cpp" />
+    <ClCompile Include="lib\dbgcout.cpp" />
+    <ClCompile Include="settings.cppm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="system.ixx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="system_win32.cppm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="retreat.cpp" />
-    <ClCompile Include="settings.cppm" />
-    <ClCompile Include="lib\stdafx.cpp" />
+    <ClCompile Include="pch\stdafx.cpp" />
     <ClCompile Include="windows\AboutDlg.cppm" />
     <ClCompile Include="windows\DispatchWnd.cppm" />
     <ClCompile Include="windows\TrayIconImpl.ixx" />
@@ -220,10 +237,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="lib\config.h" />
+    <ClInclude Include="lib\dbgcout.h" />
     <ClInclude Include="lib\LimitSingleInstance.h" />
     <ClInclude Include="lib\tstring.h" />
     <ClInclude Include="res\resource.h" />
-    <ClInclude Include="lib\stdafx.h" />
+    <ClInclude Include="pch\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\retreat.rc" />
@@ -232,7 +251,6 @@
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\wtl.10.0.10320\build\native\wtl.targets" Condition="Exists('..\packages\wtl.10.0.10320\build\native\wtl.targets')" />
     <Import Project="..\packages\boost.1.76.0.0\build\boost.targets" Condition="Exists('..\packages\boost.1.76.0.0\build\boost.targets')" />
-    <Import Project="..\packages\boost_log-vc142.1.76.0.0\build\boost_log-vc142.targets" Condition="Exists('..\packages\boost_log-vc142.1.76.0.0\build\boost_log-vc142.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -240,6 +258,5 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\wtl.10.0.10320\build\native\wtl.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\wtl.10.0.10320\build\native\wtl.targets'))" />
     <Error Condition="!Exists('..\packages\boost.1.76.0.0\build\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost.1.76.0.0\build\boost.targets'))" />
-    <Error Condition="!Exists('..\packages\boost_log-vc142.1.76.0.0\build\boost_log-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_log-vc142.1.76.0.0\build\boost_log-vc142.targets'))" />
   </Target>
 </Project>
