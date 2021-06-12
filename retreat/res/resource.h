@@ -9,6 +9,7 @@
 #define IDI_TRAY_AMETHYST               227
 
 #define IDS_APP_NAME                    129
+#define IDS_ENABLE_MENU_ITEM_NAME       130
 
 
 #define IDC_GITHUB_LINK                 1045

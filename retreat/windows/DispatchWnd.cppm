@@ -62,6 +62,7 @@ protected:
 	void showTrayIcon();
 	void enableMenu();
 	void disableMenu();
+	void setMenuItemText(HMENU hMenu, int id, int resource);
 
 	HANDLE timer = NULL;
 	HANDLE timerEvent = NULL;
@@ -110,11 +111,20 @@ LRESULT CDispatchWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 	switch (command)
 	{
-	case ID_MENU_EXIT:
-		PostMessage(WM_CLOSE);
+	case ID_MENU_DISABLE:
+		controller.enable(controller.canEnable());
+		break;
+	case ID_MENU_DELAY:
+		controller.delay();
+		break;
+	case ID_MENU_SKIP:
+		controller.skip();
+		break;
+	case ID_MENU_TAKEBREAK:
+		controller.lock();
 		break;
 	case ID_MENU_OPTIONS:
-		//		showOptions();
+		//showOptions();
 		break;
 	case ID_MENU_ABOUT:
 		if (!menuDisabled)
@@ -127,8 +137,10 @@ LRESULT CDispatchWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 			enableMenu();
 		}
 		break;
+	case ID_MENU_EXIT:
+		PostMessage(WM_CLOSE);
+		break;
 	default:
-		// delegate to state machine
 		break;
 	}
 
@@ -195,6 +207,28 @@ bool CDispatchWnd::IsMenuDisabled()
 // this function is used by the tray icon helper class
 void CDispatchWnd::PrepareContextMenu(HMENU hMenu)
 {
+	if (controller.canEnable())
+		setMenuItemText(hMenu, ID_MENU_DISABLE, IDS_ENABLE_MENU_ITEM_NAME);
+
+	if (!controller.canDelay()) 
+		EnableMenuItem(hMenu, ID_MENU_DELAY, MF_DISABLED | MF_GRAYED);
+
+	if (!controller.canExit())
+		EnableMenuItem(hMenu, ID_MENU_EXIT, MF_DISABLED | MF_GRAYED);
+
+	if (!controller.canSkip())
+		EnableMenuItem(hMenu, ID_MENU_SKIP, MF_DISABLED | MF_GRAYED);
+}
+
+void CDispatchWnd::setMenuItemText(HMENU hMenu, int id, int resource)
+{
+	MENUITEMINFO itemInfo = { sizeof(MENUITEMINFO), MIIM_STRING | MIIM_FTYPE, MFT_STRING, };
+
+	CString itemText(MAKEINTRESOURCE(resource));
+
+	itemInfo.dwTypeData = const_cast<TCHAR*>((const TCHAR*)itemText);
+
+	SetMenuItemInfo(hMenu, id, FALSE, &itemInfo);
 }
 
 // timer thread ///////////////////////////////////////////////////////////////

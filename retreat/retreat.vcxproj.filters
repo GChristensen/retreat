@@ -45,8 +45,12 @@
     <ClCompile Include="statemachine\StateAlert.cppm" />
     <ClCompile Include="statemachine\StateIdle.cppm" />
     <ClCompile Include="statemachine\StateLocked.cppm" />
-    <ClCompile Include="statemachine\StateMachine.cppm" />
     <ClCompile Include="scheduler\SchedulerFactory.cppm" />
+    <ClCompile Include="scheduler\CronScheduler.cppm" />
+    <ClCompile Include="statemachine\StateDelay.cppm" />
+    <ClCompile Include="statemachine\StateSuspended.cppm" />
+    <ClCompile Include="statemachine\StateMachine.cppm" />
+    <ClCompile Include="statemachine\StateMachineImpl.cppm" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -68,6 +72,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="misc\config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="misc\debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

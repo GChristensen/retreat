@@ -113,6 +113,7 @@ IDR_SHELL_MENU MENU
 BEGIN
     POPUP "Menu"
     BEGIN
+        MENUITEM "Disable",                     ID_MENU_DISABLE
         MENUITEM "Delay",                       ID_MENU_DELAY
         MENUITEM "Skip",                        ID_MENU_SKIP
         MENUITEM SEPARATOR
@@ -178,8 +179,9 @@ END
 
 STRINGTABLE
 BEGIN
-    IDR_MAINFRAME           "retreat"
-    IDS_APP_NAME            "Enso Retreat"
+    IDR_MAINFRAME             "retreat"
+    IDS_APP_NAME              "Enso Retreat"
+    IDS_ENABLE_MENU_ITEM_NAME "Enable"
 END
 
 #endif    // English (United States) resources

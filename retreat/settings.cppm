@@ -1,7 +1,8 @@
 ﻿export module Settings;
 
+import <map>;
+import <memory>;
 import <string>;
-import <unordered_map>;
 
 import "config.h";
 
@@ -13,9 +14,13 @@ public:
     static const TCHAR *PERIOD_FROM_LAUNCH;
 
     static const TCHAR *BREAK_DURATION;
-    static const TCHAR *BREAK_DELAYS;
-    static const TCHAR *BREAK_DELAY;
-    static const TCHAR *BREAK_ALERT;
+    static const TCHAR *DELAY_AMOUNT;
+    static const TCHAR *DELAY_DURATION;
+    static const TCHAR *ALERT_DURATION;
+    static const TCHAR* SUSPENDED_DURATION;
+
+    static const TCHAR* SKIP_DATE;
+    static const TCHAR* SKIP_EXPENDED;
 
     static const TCHAR *BEHAVIOR_BEEP;
 
@@ -25,6 +30,7 @@ public:
 
     void load(const tstring& file);
     void save(const tstring& file);
+    void save();
 
     tstring getString(const tstring path, const tstring defaultValue);
     bool getBoolean(const tstring path, bool defaultValue);
@@ -33,8 +39,11 @@ public:
     void setString(const tstring path, const tstring value);
 
 private:
-    std::unordered_map<tstring, tstring> values;
+    tstring file;
+    std::map<tstring, tstring> values;
 };
+
+export using SettingsPtr = std::shared_ptr<Settings>;
 
 module :private;
 
@@ -42,9 +51,13 @@ const TCHAR *Settings::PERIOD_DURATION = _T("periods.duration");
 const TCHAR *Settings::PERIOD_FROM_LAUNCH = _T("periods.from_launch_time");
 
 const TCHAR *Settings::BREAK_DURATION = _T("breaks.duration");
-const TCHAR *Settings::BREAK_DELAYS = _T("breaks.delays");
-const TCHAR *Settings::BREAK_DELAY = _T("breaks.delay");
-const TCHAR *Settings::BREAK_ALERT = _T("breaks.alert");
+const TCHAR *Settings::DELAY_AMOUNT = _T("delays.amount");
+const TCHAR *Settings::DELAY_DURATION = _T("delays.duration");
+const TCHAR *Settings::ALERT_DURATION = _T("alerts.duration");
+const TCHAR *Settings::SUSPENDED_DURATION = _T("suspended.duration");
+
+const TCHAR *Settings::SKIP_DATE = _T("skip.date");
+const TCHAR *Settings::SKIP_EXPENDED = _T("skip.expended");
 
 const TCHAR *Settings::BEHAVIOR_BEEP = _T("behavior.beep");
 
@@ -52,12 +65,16 @@ Settings::Settings() {
     
 }
 
-Settings::Settings(const tstring &file) {
+Settings::Settings(const tstring &file): file(file) {
     load(file);
 }
 
 void Settings::load(const tstring& file) {
     readConfig(file, values);
+}
+
+void Settings::save() {
+    writeConfig(file, values);
 }
 
 void Settings::save(const tstring& file) {

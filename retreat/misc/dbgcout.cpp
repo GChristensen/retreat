@@ -6,9 +6,9 @@
 
 #include "tstring.h"
 
-class dbg_stream_for_cout : public tstringbuf {
+class DbgStream : public tstringbuf {
 public:
-    ~dbg_stream_for_cout() { sync(); }
+    ~DbgStream() { sync(); }
     int sync()
     {
         ::OutputDebugString(str().c_str());
@@ -17,8 +17,8 @@ public:
     }
 };
 
-dbg_stream_for_cout g_dbg_stream_for_cout;
+DbgStream dbgStream;
 
 void initdbgcout() {
-    tcout.rdbuf(&g_dbg_stream_for_cout);
+    tcout.rdbuf(&dbgStream);
 }

@@ -1,8 +1,5 @@
 export module Scheduler;
 
-import <memory>;
-
-import Settings;
 import StateMachine;
 
 export class Scheduler {

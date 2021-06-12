@@ -1,8 +1,8 @@
 #include "config.h"
 
+#include <map>
 #include <string>
 #include <iostream>
-#include <unordered_map>
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
@@ -11,7 +11,7 @@
 
 using namespace boost::property_tree;
 
-void readConfig(const tstring &file, std::unordered_map<tstring, tstring> &values) {
+void readConfig(const tstring &file, std::map<tstring, tstring> &values) {
     wptree ptree;
     tifstream iconfig(file);
     read_ini(iconfig, ptree);
@@ -25,7 +25,7 @@ void readConfig(const tstring &file, std::unordered_map<tstring, tstring> &value
     }
 }
 
-void writeConfig(const tstring& file, const std::unordered_map<tstring, tstring> &values) {
+void writeConfig(const tstring& file, const std::map<tstring, tstring> &values) {
     wptree ptree;
 
     for (auto& [path, value] : values)

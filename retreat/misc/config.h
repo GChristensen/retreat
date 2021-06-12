@@ -1,8 +1,9 @@
 #pragma once
 
-#include <unordered_map>
+#include <map>
+#include <string>
 
 #include "tstring.h"
 
-void readConfig(const tstring& file, std::unordered_map<tstring, tstring> &values);
-void writeConfig(const tstring& file, const std::unordered_map<tstring, tstring> &values);
+void readConfig(const tstring& file, std::map<tstring, tstring> &values);
+void writeConfig(const tstring& file, const std::map<tstring, tstring> &values);

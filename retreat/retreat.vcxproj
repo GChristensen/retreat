@@ -94,6 +94,8 @@
       <AdditionalBMIDirectories>
       </AdditionalBMIDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -160,6 +162,8 @@
       <DisableSpecificWarnings>5050;5105;4005</DisableSpecificWarnings>
       <AdditionalBMIDirectories>
       </AdditionalBMIDirectories>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -218,6 +222,7 @@
     </ClCompile>
     <ClCompile Include="misc\config.cpp" />
     <ClCompile Include="misc\dbgcout.cpp" />
+    <ClCompile Include="scheduler\CronScheduler.cppm" />
     <ClCompile Include="scheduler\PeriodicScheduler.cppm" />
     <ClCompile Include="scheduler\Scheduler.cppm" />
     <ClCompile Include="scheduler\SchedulerFactory.cppm" />
@@ -226,9 +231,12 @@
     </ClCompile>
     <ClCompile Include="statemachine\State.cppm" />
     <ClCompile Include="statemachine\StateAlert.cppm" />
+    <ClCompile Include="statemachine\StateDelay.cppm" />
     <ClCompile Include="statemachine\StateIdle.cppm" />
     <ClCompile Include="statemachine\StateLocked.cppm" />
     <ClCompile Include="statemachine\StateMachine.cppm" />
+    <ClCompile Include="statemachine\StateMachineImpl.cppm" />
+    <ClCompile Include="statemachine\StateSuspended.cppm" />
     <ClCompile Include="system.ixx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -247,6 +255,7 @@
   <ItemGroup>
     <ClInclude Include="misc\config.h" />
     <ClInclude Include="misc\dbgcout.h" />
+    <ClInclude Include="misc\debug.h" />
     <ClInclude Include="misc\LimitSingleInstance.h" />
     <ClInclude Include="misc\tstring.h" />
     <ClInclude Include="res\resource.h" />
