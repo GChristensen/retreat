@@ -6,9 +6,9 @@ import State;
 
 export class StateIdle: public State {
 public:
-
     StateIdle();
-    
+
+    virtual bool canDisable() override { return true; };    
 };
 
 module :private;

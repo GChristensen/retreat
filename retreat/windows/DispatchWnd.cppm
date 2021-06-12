@@ -207,6 +207,9 @@ bool CDispatchWnd::IsMenuDisabled()
 // this function is used by the tray icon helper class
 void CDispatchWnd::PrepareContextMenu(HMENU hMenu)
 {
+	if (!controller.canDisable())
+		EnableMenuItem(hMenu, ID_MENU_DISABLE, MF_DISABLED | MF_GRAYED);
+
 	if (controller.canEnable())
 		setMenuItemText(hMenu, ID_MENU_DISABLE, IDS_ENABLE_MENU_ITEM_NAME);
 

@@ -10,19 +10,30 @@ import "config.h";
 
 export class Settings {
 public:
-    static const TCHAR *PERIOD_DURATION;
-    static const TCHAR *PERIOD_FROM_LAUNCH;
+    static constexpr const TCHAR *PERIOD_DURATION = _T("periods.duration");
+    static constexpr const TCHAR *PERIOD_FROM_LAUNCH = _T("periods.from_launch_time");
 
-    static const TCHAR *BREAK_DURATION;
-    static const TCHAR *DELAY_AMOUNT;
-    static const TCHAR *DELAY_DURATION;
-    static const TCHAR *ALERT_DURATION;
-    static const TCHAR* SUSPENDED_DURATION;
+    static constexpr const TCHAR *BREAK_DURATION = _T("breaks.duration");
+    static constexpr const TCHAR *DELAY_AMOUNT = _T("delays.amount");
+    static constexpr const TCHAR *DELAY_DURATION = _T("delays.duration");
+    static constexpr const TCHAR *ALERT_DURATION = _T("alerts.duration");
+    static constexpr const TCHAR *SUSPENDED_DURATION = _T("suspended.duration");
 
-    static const TCHAR* SKIP_DATE;
-    static const TCHAR* SKIP_EXPENDED;
+    static constexpr const TCHAR *SKIP_DATE = _T("skip.date");
+    static constexpr const TCHAR *SKIP_EXPENDED = _T("skip.expended");
 
-    static const TCHAR *BEHAVIOR_BEEP;
+    static constexpr const TCHAR *BEHAVIOR_BEEP = _T("behavior.beep");
+
+    static constexpr const int DEFAULT_PERIOD_DURATION = 60;
+    static constexpr const bool DEFAULT_PERIOD_FROM_LAUNCH = false;
+
+    static constexpr const int DEFAULT_BREAK_DURATION = 10;
+    static constexpr const int DEFAULT_DELAY_AMOUNT = 2;
+    static constexpr const int DEFAULT_DELAY_DURATION = 3;
+    static constexpr const int DEFAULT_ALERT_DURATION = 1;
+    static constexpr const int DEFAULT_SUSPENDED_DURATION = 120;
+
+    static constexpr const bool DEFAULT_BEHAVIOR_BEEP = false;
 
 
     Settings();
@@ -46,20 +57,6 @@ private:
 export using SettingsPtr = std::shared_ptr<Settings>;
 
 module :private;
-
-const TCHAR *Settings::PERIOD_DURATION = _T("periods.duration");
-const TCHAR *Settings::PERIOD_FROM_LAUNCH = _T("periods.from_launch_time");
-
-const TCHAR *Settings::BREAK_DURATION = _T("breaks.duration");
-const TCHAR *Settings::DELAY_AMOUNT = _T("delays.amount");
-const TCHAR *Settings::DELAY_DURATION = _T("delays.duration");
-const TCHAR *Settings::ALERT_DURATION = _T("alerts.duration");
-const TCHAR *Settings::SUSPENDED_DURATION = _T("suspended.duration");
-
-const TCHAR *Settings::SKIP_DATE = _T("skip.date");
-const TCHAR *Settings::SKIP_EXPENDED = _T("skip.expended");
-
-const TCHAR *Settings::BEHAVIOR_BEEP = _T("behavior.beep");
 
 Settings::Settings() {
     

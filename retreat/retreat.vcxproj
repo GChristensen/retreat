@@ -237,6 +237,7 @@
     <ClCompile Include="statemachine\StateMachine.cppm" />
     <ClCompile Include="statemachine\StateMachineImpl.cppm" />
     <ClCompile Include="statemachine\StateSuspended.cppm" />
+    <ClCompile Include="statemachine\StateWindowAdapter.cppm" />
     <ClCompile Include="system.ixx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -246,7 +247,12 @@
     <ClCompile Include="retreat.cpp" />
     <ClCompile Include="pch\stdafx.cpp" />
     <ClCompile Include="windows\AboutDlg.cppm" />
+    <ClCompile Include="windows\AlertWindowAdapter.cppm" />
     <ClCompile Include="windows\DispatchWnd.cppm" />
+    <ClCompile Include="windows\gdi\BitmapBuffer.cppm" />
+    <ClCompile Include="windows\gdi\TextBuffer.cppm" />
+    <ClCompile Include="windows\TimerWindow.cppm" />
+    <ClCompile Include="windows\TranslucentWindow.cppm" />
     <ClCompile Include="windows\TrayIconImpl.ixx" />
   </ItemGroup>
   <ItemGroup>

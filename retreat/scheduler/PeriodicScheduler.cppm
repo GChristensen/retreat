@@ -35,10 +35,10 @@ module :private;
 time_t PeriodicScheduler::startTime = 0;
 
 PeriodicScheduler::PeriodicScheduler(Settings &settings) {
-    fromLaunchTime = settings.getBoolean(Settings::PERIOD_FROM_LAUNCH, false);
-    periodDurationSec = settings.getInt(Settings::PERIOD_DURATION, 60) /** 60*/;;
-    breakDurationSec = settings.getInt(Settings::BREAK_DURATION, 10) /** 60*/;
-    alertDurationSec = settings.getInt(Settings::ALERT_DURATION, 1) /** 60*/;
+    fromLaunchTime = settings.getBoolean(Settings::PERIOD_FROM_LAUNCH, Settings::DEFAULT_PERIOD_FROM_LAUNCH);
+    periodDurationSec = settings.getInt(Settings::PERIOD_DURATION, Settings::DEFAULT_PERIOD_DURATION) /** 60*/;
+    breakDurationSec = settings.getInt(Settings::BREAK_DURATION, Settings::DEFAULT_BREAK_DURATION) /** 60*/;
+    alertDurationSec = settings.getInt(Settings::ALERT_DURATION, Settings::DEFAULT_ALERT_DURATION) /** 60*/;
 
     eventBoundarySec = breakDurationSec + alertDurationSec;
     timeToEventSec = periodDurationSec - eventBoundarySec;

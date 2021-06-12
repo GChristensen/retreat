@@ -22,6 +22,7 @@ public:
 
     void onTimer();
 
+    bool canDisable() { return stateMachine->canDisable(); }
     bool canEnable() { return stateMachine->isSuspended(); }
     bool canDelay() { return stateMachine->canDelay(); }
     bool canExit() { return stateMachine->canExit(); }

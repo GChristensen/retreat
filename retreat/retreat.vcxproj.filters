@@ -51,6 +51,12 @@
     <ClCompile Include="statemachine\StateSuspended.cppm" />
     <ClCompile Include="statemachine\StateMachine.cppm" />
     <ClCompile Include="statemachine\StateMachineImpl.cppm" />
+    <ClCompile Include="windows\TranslucentWindow.cppm" />
+    <ClCompile Include="windows\gdi\BitmapBuffer.cppm" />
+    <ClCompile Include="windows\TimerWindow.cppm" />
+    <ClCompile Include="windows\gdi\TextBuffer.cppm" />
+    <ClCompile Include="statemachine\StateWindowAdapter.cppm" />
+    <ClCompile Include="windows\AlertWindowAdapter.cppm" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

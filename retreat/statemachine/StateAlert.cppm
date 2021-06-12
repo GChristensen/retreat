@@ -5,10 +5,12 @@ module;
 
 export module StateAlert;
 
+import <memory>;
+
 import State;
 import StateDelay;
-
 import StateMachine;
+import AlertWindowAdapter;
 
 #include "debug.h"
 
@@ -28,14 +30,6 @@ public:
     static int setSkipExpended();
     static bool setSkippable(int date, bool expended);
 
-    //static class _init
-    //{
-    //public:
-    //    _init() { 
-    //        StateAlert::currentDay = StateAlert::getCurrentDay();
-    //    }
-    //} _initializer;
-
 private:
     int counter;
 
@@ -43,14 +37,14 @@ private:
     static int skippable;
 
     StateMachine &stateMachine;
+
+    std::unique_ptr<AlertWindowAdapter> alertWindow;
 };
 
 module :private;
 
 int StateAlert::skippable = true;
 int StateAlert::currentDay = 0;
-
-//StateAlert::_init StateAlert::_initializer;
 
 int StateAlert::getCurrentDay() {
     tm local;
@@ -73,7 +67,10 @@ bool StateAlert::setSkippable(int date, bool expended) {
     return skippable;
 }
 
-StateAlert::StateAlert(StateMachine &stateMachine): stateMachine(stateMachine) {
+StateAlert::StateAlert(StateMachine &stateMachine):
+    stateMachine(stateMachine),
+    alertWindow(std::make_unique<AlertWindowAdapter>(*stateMachine.getSettings())) {
+
     counter = stateMachine.getAlertDuration();
 
     int currentDay = getCurrentDay();
@@ -89,6 +86,8 @@ StateAlert::StateAlert(StateMachine &stateMachine): stateMachine(stateMachine) {
 void StateAlert::onTimer() {
     counter -= 1;
 
-    if (!counter)
+    alertWindow->onTimer();
+
+    if (counter < 0)     
         stateMachine.setLocked();
 }

@@ -22,15 +22,18 @@ public:
     void onTimer();
 
     bool isSuspended();
+    bool canDisable();
     bool canDelay();
     bool canExit();
     bool canSkip();
 
-    int getSuspendedDuration() { return suspendedDurationSec; };
-    int getBreakDuration() { return breakDurationSec; };
-    int getAlertDuration() { return alertDurationSec; };
-    int getDelayDuration() { return delayDurationSec; };
-    int getDelayAmount() { return delayAmount; };
+    int getSuspendedDuration() { return suspendedDurationSec; }
+    int getBreakDuration() { return breakDurationSec; }
+    int getAlertDuration() { return alertDurationSec; }
+    int getDelayDuration() { return delayDurationSec; }
+    int getDelayAmount() { return delayAmount; }
+
+    SettingsPtr &getSettings() { return settings; }
 
 private:
     std::shared_ptr<State> state;
