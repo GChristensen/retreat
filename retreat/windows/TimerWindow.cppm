@@ -8,23 +8,18 @@ import <memory>;
 
 import TranslucentWindow;
 import TextBuffer;
+import Shapes;
 
 
 export class CTimerWindow: public CTranslucentWindow
 {
-	static const COLORREF SPECIAL_BACKGORUND_COLOR = RGB(254, 0, 254);
 	static const int TIMER_TEXT_ITEM = 0;
-
+	static const COLORREF TRANSPARENT_BACKGORUND_COLOR = RGB(254, 0, 254);
 public:
 
 	enum
 	{
 		WM_TIMER_WND_NOTIFY = WM_USER + 2
-	};
-
-	enum SPECIAL
-	{
-		STARS
 	};
 
 	CTimerWindow(HWND parent, CRect* pRect, CRect* pWorkArea);
@@ -72,7 +67,7 @@ protected:
 	bool isBackgroundLoaded;
 	bool showTimer;
 
-	typedef std::shared_ptr<CTextBuffer> text_buff_ptr_t;
+	typedef std::unique_ptr<CTextBuffer> text_buff_ptr_t;
 	text_buff_ptr_t pTexBuffer;
 	COLORREF textColor;
 	CPoint timerPos;
@@ -95,16 +90,14 @@ module :private;
 
 CTimerWindow::CTimerWindow(HWND parent, CRect* pRect, CRect* pWorkArea) :
 	CTranslucentWindow(parent, pRect, pWorkArea),
+	pTexBuffer(std::make_unique<CTextBuffer>(CClientDC(m_hWnd), 1)),
 	isBackgroundLoaded(false),
 	hParentWnd(parent),
 	showTimer(true),
-	timerPos(0, 0)
+	timerPos(0, 0),
+	textColor(0)
 {
-	CClientDC dc(m_hWnd);
-
-	pTexBuffer = std::make_shared<CTextBuffer>(dc, 1);
-
-	textColor = 0;
+	
 }
 
 CTimerWindow::~CTimerWindow()
@@ -161,11 +154,15 @@ bool CTimerWindow::LoadBackground(const TCHAR* name, bool stretch, COLORREF canv
 
 void CTimerWindow::DefaultBackground()
 {
+	bitmapBuffer->NewBitmap(displayRect.Width(), displayRect.Width(), TRANSPARENT_BACKGORUND_COLOR);
+	bitmapBuffer->SelectBitmapToInternalDC();
+
+	randomStars(bitmapBuffer->GetDC(), displayRect.Width(), displayRect.Height());
+
+	bitmapBuffer->DeselectBitmapFromInternalDC();
+
 	CRect windowRect;
 	GetWindowRect(&windowRect);
-
-	bitmapBuffer->StarrySky(
-		displayRect.Width(), displayRect.Height(), SPECIAL_BACKGORUND_COLOR);
 
 	int heightDelta = (windowRect.Height() - displayRect.Height()) / 2;
 	int widthDelta = (windowRect.Width() - displayRect.Width()) / 2;
@@ -177,7 +174,7 @@ void CTimerWindow::DefaultBackground()
 
 	bitmapBuffer->SetPlotRect(windowRect);
 
-	SetTransparentColor(SPECIAL_BACKGORUND_COLOR);
+	SetTransparentColor(TRANSPARENT_BACKGORUND_COLOR);
 
 	isBackgroundLoaded = true;
 }
@@ -270,9 +267,9 @@ void CTimerWindow::setTimer(int seconds)
 	{
 		SetWindowPos(NULL, 0, 0, textSize.cx, textSize.cy, SWP_NOMOVE | SWP_NOZORDER);
 
-		bitmapBuffer->FillBackground(textSize.cx, textSize.cy, SPECIAL_BACKGORUND_COLOR);
+		bitmapBuffer->FillBackground(textSize.cx, textSize.cy, TRANSPARENT_BACKGORUND_COLOR);
 
-		SetTransparentColor(SPECIAL_BACKGORUND_COLOR);
+		SetTransparentColor(TRANSPARENT_BACKGORUND_COLOR);
 	}
 
 	CClientDC dc(m_hWnd);

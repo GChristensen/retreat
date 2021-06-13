@@ -217,6 +217,7 @@
     <Image Include="res\retreat.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="algorithms.cppm" />
     <ClCompile Include="Controller.cppm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -250,6 +251,7 @@
     <ClCompile Include="windows\AlertWindowAdapter.cppm" />
     <ClCompile Include="windows\DispatchWnd.cppm" />
     <ClCompile Include="windows\gdi\BitmapBuffer.cppm" />
+    <ClCompile Include="windows\gdi\Shapes.cppm" />
     <ClCompile Include="windows\gdi\TextBuffer.cppm" />
     <ClCompile Include="windows\LockWindowAdapter.cppm" />
     <ClCompile Include="windows\TimerWindow.cppm" />

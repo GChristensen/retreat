@@ -58,6 +58,8 @@
     <ClCompile Include="statemachine\StateWindowAdapter.cppm" />
     <ClCompile Include="windows\AlertWindowAdapter.cppm" />
     <ClCompile Include="windows\LockWindowAdapter.cppm" />
+    <ClCompile Include="algorithms.cppm" />
+    <ClCompile Include="windows\gdi\Shapes.cppm" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

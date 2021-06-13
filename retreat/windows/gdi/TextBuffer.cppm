@@ -208,9 +208,7 @@ void CTextBuffer::SetTextItem
 	if (doublebuffered)
 	{
 		textItem.pBackgroundCopy2 = std::make_shared<CBitmap>();
-
-		textItem.pBackgroundCopy2->CreateCompatibleBitmap(
-			dc, textItem.textExtent.cx, textItem.textExtent.cy);
+		textItem.pBackgroundCopy2->CreateCompatibleBitmap(dc, textItem.textExtent.cx, textItem.textExtent.cy);
 	}
 	else
 	{
@@ -298,8 +296,7 @@ void CTextBuffer::SetItemText
 		CSize newTextSize;
 		getTextSize(text, newTextSize);
 
-		textExtentChanged = newTextSize.cx > textItem.textExtent.cx
-			|| newTextSize.cy > textItem.textExtent.cy;
+		textExtentChanged = newTextSize.cx > textItem.textExtent.cx || newTextSize.cy > textItem.textExtent.cy;
 
 		// refresh old background copy if new text size exceeds old one
 		if (textExtentChanged)
@@ -322,8 +319,7 @@ void CTextBuffer::SetItemText
 			{
 				textItem.pBackgroundCopy2->DeleteObject();
 
-				textItem.pBackgroundCopy2->CreateCompatibleBitmap(
-					dc, newTextSize.cx, newTextSize.cy);
+				textItem.pBackgroundCopy2->CreateCompatibleBitmap(dc, newTextSize.cx, newTextSize.cy);
 			}
 		}
 

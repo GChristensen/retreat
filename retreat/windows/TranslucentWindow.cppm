@@ -4,6 +4,8 @@ module;
 
 export module TranslucentWindow;
 
+import <memory>;
+
 import BitmapBuffer;
 
 using WindowTraits = CWinTraits<0, WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TOOLWINDOW>;
@@ -13,7 +15,7 @@ export class CTranslucentWindow: public CWindowImpl<CTranslucentWindow, CWindow,
 public:
 
 	CTranslucentWindow(HWND parent, CRect *pRect, CRect *pWorkArea);
-	~CTranslucentWindow();
+	//~CTranslucentWindow();
 
 	// option determines if there should be totally transparent regions 
 	// in the window
@@ -61,11 +63,9 @@ protected:
 
 	CRect displayRect;
 	CRect workAreaRect;
-	CBitmapBuffer *bitmapBuffer;
+	std::unique_ptr<CBitmapBuffer> bitmapBuffer;
 
 	COLORREF transparentColor;
-
-	virtual CBitmapBuffer *getBitmapBuffer(CDC *pDC);
 
 	virtual void postPanitHook(HDC dc);
 
@@ -81,12 +81,12 @@ protected:
 
 	// random number in range from min_ to max_ - 1
 	static int randRange(int min_, int max_);
-
 };
 
 module :private;
 
 CTranslucentWindow::CTranslucentWindow(HWND parent, CRect *pRect, CRect *pWorkArea) :
+	bitmapBuffer(std::make_unique<CBitmapBuffer>(CClientDC(m_hWnd))),
 	isUsingTransparency(false),
 	isFullScreen(pWorkArea == nullptr),
 	windowAlpha(255)
@@ -101,14 +101,6 @@ CTranslucentWindow::CTranslucentWindow(HWND parent, CRect *pRect, CRect *pWorkAr
 
 	if (pRect)
 		displayRect.CopyRect(pRect);
-
-	CClientDC clientDC(m_hWnd);
-	bitmapBuffer = getBitmapBuffer(&clientDC);
-}
-
-CTranslucentWindow::~CTranslucentWindow()
-{
-	delete bitmapBuffer;
 }
 
 void CTranslucentWindow::SetTransparentColor(COLORREF crTransparentColor)
@@ -170,11 +162,11 @@ bool CTranslucentWindow::LoadBackground(const TCHAR *name, bool stretch, COLORRE
 	{
 		if (isFullScreen)
 		{
-			AdjustToScreen(bitmapBuffer, stretch, canvas);
+			AdjustToScreen(bitmapBuffer.get(), stretch, canvas);
 		}
 		else
 		{
-			AdjustToVPort(bitmapBuffer);
+			AdjustToVPort(bitmapBuffer.get());
 		}
 
 		return true;
@@ -269,11 +261,6 @@ LRESULT CTranslucentWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 LRESULT CTranslucentWindow::OnEraseBkgnd(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
 {
 	return 0;
-}
-
-CBitmapBuffer *CTranslucentWindow::getBitmapBuffer(CDC *pDC)
-{
-	return new CBitmapBuffer(pDC->m_hDC);
 }
 
 void CTranslucentWindow::postPanitHook(HDC dc)

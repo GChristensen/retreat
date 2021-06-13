@@ -4,15 +4,6 @@ module;
 
 export module BitmapBuffer;
 
-import <set>;
-import <list>;
-import <vector>;
-import <algorithm>;
-import <functional>;
-
-import <memory>;
-import <numbers>;
-
 export class CBitmapBuffer: public CBitmap
 {
 public:
@@ -24,9 +15,11 @@ public:
 	int GetHeight();
 	int GetWitdth();
 	const CSize& GetSize();
+	CDC &GetDC();
 
 	void SetPlotRect(const CRect& rect);
 
+	void NewBitmap(int cx, int cy, COLORREF color);
 	void FillBackground(int width, int height, COLORREF color);
 	void Resize(const CSize& newSize);
 	void Draw(HDC dc);
@@ -34,7 +27,7 @@ public:
 	HDC SelectBitmapToInternalDC();
 	void DeselectBitmapFromInternalDC();
 
-	void StarrySky(int cx, int cy, COLORREF background);
+	//void StarrySky(int cx, int cy, COLORREF background);
 
 protected:
 
@@ -44,57 +37,14 @@ protected:
 	HBITMAP m_hOldBitmap;
 
 	CRect m_plotRect;
-
-	struct EDGE
-	{
-		int Yl;		// lower y point
-		int Yu;		// upper y point
-		double Xl;	// current x intersection
-		double w;	// 1/slope of edge
-
-		bool horisontal() { return Yl == Yu; }
-
-		static bool edge_x_sort_p(const EDGE& e1, const EDGE& e2)
-		{
-			return e1.Xl < e2.Xl;
-		}
-
-		static bool edge_xw_sort_p(const EDGE& e1, const EDGE& e2)
-		{
-			return e1.Xl <= e2.Xl && e1.w < e2.w;
-		}
-	};
-
 	
-	void drawStar(HDC dc, CPoint c, int r, int ang, COLORREF color);
-	void fillPolygon(HDC dc, POINT* points, int npoints, COLORREF color);
-	
-
-	// random number in range from min_ to max_ - 1
-	static int randRange(int min_, int max_)
-	{
-		return min_ + rand() % (max_ - min_);
-	}
+	//void drawStar2(HDC dc, CPoint c, int r, int ang, COLORREF color);
+	//void fillPolygon(HDC dc, POINT* points, int npoints, COLORREF color);
 };
 
 module :private;
 
-/*#include <cmath>
-#include <cassert>
-
-#include <set>
-#include <list>
-#include <vector>
-#include <algorithm>
-
-#include "boost/lambda/lambda.hpp"
-#include "boost/lambda/bind.hpp"
-#include "boost/shared_ptr.hpp"*/
-
 #define DEFAULT_BPP 32
-#define SLICE_SIDE  120
-
-#define round_int(x) ((int)floor((x) + 0.5))
 
 CBitmapBuffer::CBitmapBuffer(HDC compatibleDC) :
 	m_hOldBitmap(NULL)
@@ -186,9 +136,33 @@ const CSize& CBitmapBuffer::GetSize()
 	return m_imageSize;
 }
 
+CDC &CBitmapBuffer::GetDC() 
+{ 
+	return m_memDC; 
+}
+
 void CBitmapBuffer::SetPlotRect(const CRect& rect)
 {
 	m_plotRect.CopyRect(rect);
+}
+
+void CBitmapBuffer::NewBitmap(int cx, int cy, COLORREF color) {
+	ATLASSERT(m_hOldBitmap == NULL);
+
+	if (m_hBitmap)
+		DeleteObject();
+
+	CreateBitmap(cx, cy, 1, DEFAULT_BPP, NULL);
+
+	m_imageSize.SetSize(cx, cy);
+
+	HBITMAP hOldBitmap = m_memDC.SelectBitmap(m_hBitmap);
+
+	CBrush back;
+	back.CreateSolidBrush(color);
+	m_memDC.FillRect(CRect(CPoint(0, 0), CSize(cx + 1, cy + 1)), back);
+
+	m_memDC.SelectBitmap(hOldBitmap);
 }
 
 void CBitmapBuffer::FillBackground(int width, int height, COLORREF color)
@@ -304,234 +278,3 @@ void CBitmapBuffer::Draw(HDC dc)
 }
 
 
-// zvezdochki
-void CBitmapBuffer::StarrySky(int cx, int cy, COLORREF background)
-{
-	ATLASSERT(m_hOldBitmap == NULL);
-
-	if (m_hBitmap)
-		DeleteObject();
-
-	CreateBitmap(cx, cy, 1, DEFAULT_BPP, NULL);
-
-	m_imageSize.SetSize(cx, cy);
-
-	HBITMAP hOldBitmap = m_memDC.SelectBitmap(m_hBitmap);
-
-	CBrush back;
-	back.CreateSolidBrush(background);
-	m_memDC.FillRect(CRect(CPoint(0, 0), CSize(cx + 1, cy + 1)), back);
-
-	COLORREF colors[] =
-	{
-		RGB(31, 176, 255),
-		RGB(141, 255,  65),
-		RGB(252,  75, 105),
-		RGB(189, 161, 255),
-		RGB(243, 159,  58),
-		RGB(250, 255,  91),
-		RGB(255, 173, 207)
-	};
-
-	int slices_x = cx / SLICE_SIDE;
-	int slices_y = cy / SLICE_SIDE;
-	int slice_cx = cx / slices_x;
-	int slice_cy = cy / slices_y;
-
-	for (int i = 0; i < slices_x; ++i)
-		for (int j = 0; j < slices_y; ++j)
-		{
-			drawStar(
-				m_memDC,
-				CPoint(
-					randRange(slice_cx * i, slice_cx * (i + 1)),
-					randRange(slice_cy * j, slice_cy * (j + 1))
-				),
-				randRange(20, 90),
-				rand() % 360,
-				colors[rand() % 7]
-			);
-		}
-
-	m_memDC.SelectBitmap(hOldBitmap);
-}
-
-// draws star with the circumcircle radius *r*, at the center point *c*, the initial vertex
-// angle *ang*, filled by the color *color* on the appropriate DC *dc*
-void CBitmapBuffer::drawStar(HDC dc, CPoint c, int r, int ang, COLORREF color)
-{
-	using namespace std::numbers;
-	
-	const int vertexes = 10;
-	const double rad = pi / 180;
-	const double rcp_fi2 = 0.38197; // 1/fi^2, magic constant (fi - golden ratio)
-	const int section = 360 / vertexes;
-
-	int inner_cricle = round_int(r * rcp_fi2);
-
-	POINT points[vertexes + 1];
-
-	// find vertexes of a star
-	for (int i = 0; i < vertexes; ++i)
-	{
-		double pt_angle = ((ang + i * section) % 360) * rad;
-		int pt_r = (i % 2 == 0) ? r : inner_cricle;
-
-		points[i].x = round_int(pt_r * cos(pt_angle)) + c.x;
-		points[i].y = round_int(pt_r * sin(pt_angle)) + c.y;
-	}
-
-	points[vertexes] = points[0];
-
-	fillPolygon(dc, points, vertexes + 1, color);
-
-	// stroke star
-	CPen pen;
-	pen.CreatePen(PS_SOLID, 1, color);
-	HGDIOBJ old_obj = ::SelectObject(dc, pen);
-
-	Polyline(dc, points, vertexes + 1);
-
-	::SelectObject(dc, old_obj);
-}
-
-// variation of fast scan-conversion fill algorithm
-void CBitmapBuffer::fillPolygon(HDC dc, POINT* points, int npoints, COLORREF color)
-{
-	using namespace std;
-	using namespace std::placeholders;
-
-	list<EDGE> edges;
-
-	ATLASSERT(npoints);
-	int first_line = points[0].y;
-	int last_line = points[0].y;
-
-	// find edges
-	for (int i = 0; i < npoints - 1; ++i)
-	{
-		EDGE edge;
-		double Xu;
-
-		int next = i + 1;
-
-		if (points[i].y < points[next].y)
-		{
-			edge.Yl = points[i].y;
-			edge.Yu = points[next].y;
-			edge.Xl = points[i].x;
-			Xu = points[next].x;
-		}
-		else
-		{
-			edge.Yl = points[next].y;
-			edge.Yu = points[i].y;
-			edge.Xl = points[next].x;
-			Xu = points[i].x;
-		}
-
-		if (edge.Yl < first_line)
-			first_line = edge.Yl;
-
-		if (edge.Yu > last_line)
-			last_line = edge.Yu;
-
-		if (!edge.horisontal())
-			// reciprocal slope of edge
-			edge.w = (Xu - edge.Xl) / (edge.Yu - edge.Yl);
-
-		edges.push_back(edge);
-	}
-
-	int lines = last_line - first_line + 1;
-
-	typedef list<EDGE> edge_list_t;
-	typedef shared_ptr<edge_list_t> edge_list_ptr_t;
-	vector<edge_list_ptr_t> edge_table(lines);
-
-	edge_list_t active_edge_table;
-
-	// fill edge table
-	for (EDGE &edge : edges)
-	{
-		if (!edge.horisontal())
-		{
-			int y = edge.Yl - first_line;
-
-			edge_list_ptr_t edge_list = edge_table[y];
-
-			if (edge_list == NULL)
-			{
-				edge_list = edge_list_ptr_t(new edge_list_t);
-				edge_table[y] = edge_list;
-			}
-
-			edge_list->insert(edge_list->end(), edge);
-		}
-	}
-
-	CPen pen;
-	pen.CreatePen(PS_SOLID, 1, color);
-
-	HGDIOBJ old_obj = ::SelectObject(dc, pen);
-
-	for (int y = 0; y < lines; ++y)
-	{
-		edge_list_ptr_t edge_list = edge_table[y];
-		int scanline = y + first_line;
-
-		// add edges to active edge table
-		if (edge_list != NULL)
-		{
-			active_edge_table.insert(
-				active_edge_table.end(),
-				edge_list->begin(),
-				edge_list->end()
-			);
-
-			// sort by x
-			active_edge_table.sort(EDGE::edge_x_sort_p);
-
-			// then put w in ascending order within elements with equal x
-			// actually these two steps are some kind of bucket sort
-			stable_sort(
-				active_edge_table.begin(),
-				active_edge_table.end(),
-				EDGE::edge_xw_sort_p
-			);
-		}
-
-		// remove rendered edges from active edge table
-		active_edge_table.remove_if([&scanline](const EDGE &edge) { return edge.Yu == scanline; });
-
-		if (active_edge_table.empty())
-		{
-			break;
-		}
-
-		edge_list_t::iterator current = active_edge_table.begin();
-		edge_list_t::iterator next = ++active_edge_table.begin();
-		int k = 0;
-
-		// draw scanline parts
-		do
-		{
-			if (k++ % 2 == 0)
-			{
-				::MoveToEx(dc, round_int(current->Xl), scanline, NULL);
-				::LineTo(dc, round_int(next->Xl), scanline);
-			}
-
-			current = next;
-			++next;
-		} while (next != active_edge_table.end());
-
-		// increment current x value for each edge
-		for (EDGE &edge : active_edge_table)
-		{
-			edge.Xl += edge.w;
-		}
-	}
-
-	::SelectObject(dc, old_obj);
-}

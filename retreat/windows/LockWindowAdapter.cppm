@@ -61,13 +61,6 @@ auto LockWindowAdapter::createTimerWindow(CRect* pRect, bool primary) {
 		pWorkArea = &workArea;
 	}
 
-	DBGLOG(pWorkArea);
-	DBGLOG(pRect->left);
-	DBGLOG(pRect->top);
-	DBGLOG(pRect->right);
-	DBGLOG(pRect->bottom);
-	DBGLOG(_T("---"));
-
 	auto pTimerWnd = std::make_shared<CTimerWindow>((HWND)0, pRect, pWorkArea);
 
 //	tstring imageDir = appearance(machine).ImageFolder[mode];
@@ -177,8 +170,9 @@ auto LockWindowAdapter::createTimerWindow(CRect* pRect, bool primary) {
 		true
 	);
 
-	pTimerWnd->SetTimerDuration(breakDurationSec);
+	
 	pTimerWnd->SetTimerPos(160, 140);
+	pTimerWnd->SetTimerDuration(breakDurationSec);
 	pTimerWnd->SetAlpha(128);
 
 	pTimerWnd->CenterWindowOnWorkArea();
@@ -205,15 +199,11 @@ BOOL CALLBACK LockWindowAdapter::monitorEnumProc(HMONITOR hMonitor, HDC hdcMonit
 	if (GetMonitorInfo(hMonitor, &info)) {
 		bool primary = (info.dwFlags & MONITORINFOF_PRIMARY) != 0;
 		
-		//if (!adapter->fullscreen && !primary)
-		//	return TRUE;
+		if (!adapter->fullscreen && !primary)
+			return TRUE;
 
 		CRect rect(*lprcMonitor);
 		adapter->windows.push_back(adapter->createTimerWindow(&rect, primary));
-
-		//if (primary) {
-		//	state->m_pPrimaryWindow = state->m_pAngelicWnds.back();
-		//}
 	}
 
 	return TRUE;
