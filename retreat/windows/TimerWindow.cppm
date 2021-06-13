@@ -10,6 +10,9 @@ import TranslucentWindow;
 import TextBuffer;
 import Shapes;
 
+import algorithms;
+
+#include "debug.h"
 
 export class CTimerWindow: public CTranslucentWindow
 {
@@ -37,7 +40,7 @@ public:
 		bool italic
 	);
 
-	void SetTimerDuration(int seconds);
+	void SetTimer(int durationSec, bool showStar = false);
 	void SetShowTimer(bool show);
 	void SetTimerPos(int x, int y);
 
@@ -79,7 +82,7 @@ protected:
 
 	virtual void postPanitHook(HDC dc);
 
-	void setTimer(int seconds);
+	void setTimer(int seconds, bool showStar = false);
 
 	void adjustWindowSize(text_buff_ptr_t buffer, unsigned item);
 
@@ -128,9 +131,9 @@ void CTimerWindow::SetTimerProperties
 	this->textColor = textColor;
 }
 
-void CTimerWindow::SetTimerDuration(int seconds)
+void CTimerWindow::SetTimer(int durationSec, bool showStar)
 {
-	setTimer(seconds);
+	setTimer(durationSec, showStar);
 }
 
 void CTimerWindow::SetShowTimer(bool show)
@@ -249,25 +252,49 @@ void CTimerWindow::postPanitHook(HDC dc)
 	}
 }
 
-void CTimerWindow::setTimer(int seconds)
+void CTimerWindow::setTimer(int durationSec, bool showStar)
 {
-	displayDuration = seconds;
+	displayDuration = durationSec;
 
-	CString timerText = parseSeconds(seconds);
+	CString timerText = parseSeconds(durationSec);
 
 	CSize textSize;
 	pTexBuffer->GetTextExtent(timerText, textSize);
 
 	// resize window if it not fits the timer
 	// do not resize when in fullscreen mode
-	// resize only when there is no background and window not fits the timer
+	// resize only when there is no background and window does not fit the timer
 	if (!isFullScreen && !isBackgroundLoaded
 		&& (bitmapBuffer->GetWitdth() < textSize.cx
 			|| bitmapBuffer->GetHeight() < textSize.cy))
 	{
+		long offset = 0;
+
+		if (showStar) {
+			offset = textSize.cy + 4;
+			textSize.cx += offset;
+			SetTimerPos(offset, 0);
+		}
+
 		SetWindowPos(NULL, 0, 0, textSize.cx, textSize.cy, SWP_NOMOVE | SWP_NOZORDER);
 
 		bitmapBuffer->FillBackground(textSize.cx, textSize.cy, TRANSPARENT_BACKGORUND_COLOR);
+
+		if (showStar) {
+			bitmapBuffer->SelectBitmapToInternalDC();
+
+			long radius = textSize.cy / 2;
+			POINT2 point = { .x = radius, .y = radius };
+			drawStar(
+				bitmapBuffer->GetDC(),
+				point,
+				radius,
+				80,
+				getRandomShapeColor()
+			);
+
+			bitmapBuffer->DeselectBitmapFromInternalDC();
+		}
 
 		SetTransparentColor(TRANSPARENT_BACKGORUND_COLOR);
 	}

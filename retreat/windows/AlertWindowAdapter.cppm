@@ -58,7 +58,7 @@ auto AlertWindowAdapter::createTimerWindow(CRect* pRect) {
 		true
 	);
 
-	pTimerWnd->SetTimerDuration(alertDurationSec);
+	pTimerWnd->SetTimer(alertDurationSec, true);
 	pTimerWnd->PlaceWindowOnWorkArea(160, 140);
 	pTimerWnd->SetAlpha(128);
 

@@ -16,6 +16,10 @@ export COLORREF SHAPE_COLORS[] = {
 	RGB(255, 173, 207)
 };
 
+export COLORREF getRandomShapeColor() {
+	return SHAPE_COLORS[rand() % (sizeof(SHAPE_COLORS) / sizeof(COLORREF))];
+}
+
 // draws star with the circumcircle radius *r*, at the center point *c*, the initial vertex
 // angle *ang*, filled by the color *color* on the appropriate DC *dc*
 export void drawStar(HDC dc, POINT2 &c, int r, int ang, COLORREF color) {

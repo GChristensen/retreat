@@ -74,10 +74,10 @@ protected:
 	static void AdjustDimensions(const CSize& bounds, const CSize& oldSize, CSize& newSize);
 
 	// image dimensions should not exceed specified size
-	static void AdjustImageToVPort(CBitmapBuffer *pBackBuffer, const CSize& vpSize, bool stretch = false);
+	static void AdjustImageToVPort(CBitmapBuffer *pBitmapBuffer, const CSize& vpSize, bool stretch = false);
 
-	void AdjustToVPort(CBitmapBuffer *pBackBuffer);
-	void AdjustToScreen(CBitmapBuffer *pBackBuffer, bool stretch, COLORREF canvas);
+	void AdjustToVPort(CBitmapBuffer *pBitmapBuffer);
+	void AdjustToScreen(CBitmapBuffer *pBitmapBuffer, bool stretch, COLORREF canvas);
 
 	// random number in range from min_ to max_ - 1
 	static int randRange(int min_, int max_);
@@ -305,13 +305,13 @@ void CTranslucentWindow::AdjustDimensions
 
 void CTranslucentWindow::AdjustImageToVPort
 (
-	CBitmapBuffer *pBackBuffer,
+	CBitmapBuffer *pBitmapBuffer,
 	const CSize& vpSize,
 	bool stretch /*= false*/
 )
 {
-	int imageWidth = pBackBuffer->GetWitdth();
-	int imageHeight = pBackBuffer->GetHeight();
+	int imageWidth = pBitmapBuffer->GetWitdth();
+	int imageHeight = pBitmapBuffer->GetHeight();
 
 	int vpWidth = vpSize.cx;
 	int vpHeight = vpSize.cy;
@@ -328,23 +328,23 @@ void CTranslucentWindow::AdjustImageToVPort
 			imageNewSize);
 	}
 
-	pBackBuffer->Resize(imageNewSize);
+	pBitmapBuffer->Resize(imageNewSize);
 }
 
-void CTranslucentWindow::AdjustToVPort(CBitmapBuffer *pBackBuffer)
+void CTranslucentWindow::AdjustToVPort(CBitmapBuffer *pBitmapBuffer)
 {
 	CSize targetSize;
 	targetSize.SetSize(workAreaRect.Width(), workAreaRect.Height());
-	AdjustImageToVPort(pBackBuffer, targetSize, false);
+	AdjustImageToVPort(pBitmapBuffer, targetSize, false);
 
-	SetWindowPos(NULL, 0, 0, pBackBuffer->GetWitdth(),
-		pBackBuffer->GetHeight(), SWP_NOZORDER | SWP_NOMOVE);
+	SetWindowPos(NULL, 0, 0, pBitmapBuffer->GetWitdth(),
+		pBitmapBuffer->GetHeight(), SWP_NOZORDER | SWP_NOMOVE);
 
-	pBackBuffer->SetPlotRect(
+	pBitmapBuffer->SetPlotRect(
 		CRect(
 			0, 0,
-			pBackBuffer->GetWitdth(),
-			pBackBuffer->GetHeight()
+			pBitmapBuffer->GetWitdth(),
+			pBitmapBuffer->GetHeight()
 		)
 	);
 }

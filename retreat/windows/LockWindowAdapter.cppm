@@ -172,7 +172,7 @@ auto LockWindowAdapter::createTimerWindow(CRect* pRect, bool primary) {
 
 	
 	pTimerWnd->SetTimerPos(160, 140);
-	pTimerWnd->SetTimerDuration(breakDurationSec);
+	pTimerWnd->SetTimer(breakDurationSec);
 	pTimerWnd->SetAlpha(128);
 
 	pTimerWnd->CenterWindowOnWorkArea();
