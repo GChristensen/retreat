@@ -4,6 +4,15 @@ module;
 
 export module BitmapBuffer;
 
+import <set>;
+import <list>;
+import <vector>;
+import <algorithm>;
+import <functional>;
+
+import <memory>;
+import <numbers>;
+
 export class CBitmapBuffer: public CBitmap
 {
 public:
@@ -25,7 +34,7 @@ public:
 	HDC SelectBitmapToInternalDC();
 	void DeselectBitmapFromInternalDC();
 
-	//void StarrySky(int cx, int cy, COLORREF background);
+	void StarrySky(int cx, int cy, COLORREF background);
 
 protected:
 
@@ -56,10 +65,10 @@ protected:
 		}
 	};
 
-	/*
+	
 	void drawStar(HDC dc, CPoint c, int r, int ang, COLORREF color);
 	void fillPolygon(HDC dc, POINT* points, int npoints, COLORREF color);
-	*/
+	
 
 	// random number in range from min_ to max_ - 1
 	static int randRange(int min_, int max_)
@@ -294,11 +303,11 @@ void CBitmapBuffer::Draw(HDC dc)
 		m_memDC.SelectBitmap(hOldBitmap);
 }
 
-/*
+
 // zvezdochki
 void CBitmapBuffer::StarrySky(int cx, int cy, COLORREF background)
 {
-	assert(m_hOldBitmap == NULL);
+	ATLASSERT(m_hOldBitmap == NULL);
 
 	if (m_hBitmap)
 		DeleteObject();
@@ -347,12 +356,14 @@ void CBitmapBuffer::StarrySky(int cx, int cy, COLORREF background)
 	m_memDC.SelectBitmap(hOldBitmap);
 }
 
-// draws star with circumcircle radius *r*, at center point *c*, initial vertex
-// angle *ang*, filled by color *color* on appropriate DC *dc*
+// draws star with the circumcircle radius *r*, at the center point *c*, the initial vertex
+// angle *ang*, filled by the color *color* on the appropriate DC *dc*
 void CBitmapBuffer::drawStar(HDC dc, CPoint c, int r, int ang, COLORREF color)
 {
+	using namespace std::numbers;
+	
 	const int vertexes = 10;
-	const double rad = M_PI / 180;
+	const double rad = pi / 180;
 	const double rcp_fi2 = 0.38197; // 1/fi^2, magic constant (fi - golden ratio)
 	const int section = 360 / vertexes;
 
@@ -360,7 +371,7 @@ void CBitmapBuffer::drawStar(HDC dc, CPoint c, int r, int ang, COLORREF color)
 
 	POINT points[vertexes + 1];
 
-	// find vertexes of star
+	// find vertexes of a star
 	for (int i = 0; i < vertexes; ++i)
 	{
 		double pt_angle = ((ang + i * section) % 360) * rad;
@@ -388,12 +399,11 @@ void CBitmapBuffer::drawStar(HDC dc, CPoint c, int r, int ang, COLORREF color)
 void CBitmapBuffer::fillPolygon(HDC dc, POINT* points, int npoints, COLORREF color)
 {
 	using namespace std;
-	using namespace boost::lambda;
-	using boost::shared_ptr;
+	using namespace std::placeholders;
 
 	list<EDGE> edges;
 
-	assert(npoints);
+	ATLASSERT(npoints);
 	int first_line = points[0].y;
 	int last_line = points[0].y;
 
@@ -442,7 +452,7 @@ void CBitmapBuffer::fillPolygon(HDC dc, POINT* points, int npoints, COLORREF col
 	edge_list_t active_edge_table;
 
 	// fill edge table
-	foreach(EDGE & edge, edges)
+	for (EDGE &edge : edges)
 	{
 		if (!edge.horisontal())
 		{
@@ -484,8 +494,6 @@ void CBitmapBuffer::fillPolygon(HDC dc, POINT* points, int npoints, COLORREF col
 
 			// then put w in ascending order within elements with equal x
 			// actually these two steps are some kind of bucket sort
-			// probably it's possible to perform bucket sort with one operation
-			// using stl
 			stable_sort(
 				active_edge_table.begin(),
 				active_edge_table.end(),
@@ -493,9 +501,8 @@ void CBitmapBuffer::fillPolygon(HDC dc, POINT* points, int npoints, COLORREF col
 			);
 		}
 
-		using namespace boost::lambda;
 		// remove rendered edges from active edge table
-		active_edge_table.remove_if(boost::lambda::bind(&EDGE::Yu, _1) == scanline);
+		active_edge_table.remove_if([&scanline](const EDGE &edge) { return edge.Yu == scanline; });
 
 		if (active_edge_table.empty())
 		{
@@ -520,7 +527,7 @@ void CBitmapBuffer::fillPolygon(HDC dc, POINT* points, int npoints, COLORREF col
 		} while (next != active_edge_table.end());
 
 		// increment current x value for each edge
-		foreach(EDGE & edge, active_edge_table)
+		for (EDGE &edge : active_edge_table)
 		{
 			edge.Xl += edge.w;
 		}
@@ -528,4 +535,3 @@ void CBitmapBuffer::fillPolygon(HDC dc, POINT* points, int npoints, COLORREF col
 
 	::SelectObject(dc, old_obj);
 }
-*/

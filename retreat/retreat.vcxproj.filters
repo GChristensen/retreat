@@ -57,6 +57,7 @@
     <ClCompile Include="windows\gdi\TextBuffer.cppm" />
     <ClCompile Include="statemachine\StateWindowAdapter.cppm" />
     <ClCompile Include="windows\AlertWindowAdapter.cppm" />
+    <ClCompile Include="windows\LockWindowAdapter.cppm" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

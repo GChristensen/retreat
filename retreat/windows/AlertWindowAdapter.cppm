@@ -20,7 +20,7 @@ public:
 	virtual ~AlertWindowAdapter();
 
 private:
-	int alertDuration;
+	int alertDurationSec;
 	std::vector<WindowPtr> windows;
 
 	auto createTimerWindow(CRect* rect);
@@ -30,7 +30,7 @@ private:
 module :private;
 
 AlertWindowAdapter::AlertWindowAdapter(Settings& settings) {
-	alertDuration = settings.getInt(Settings::ALERT_DURATION, Settings::DEFAULT_ALERT_DURATION);
+	alertDurationSec = settings.getMinutesInSec(Settings::ALERT_DURATION, Settings::DEFAULT_ALERT_DURATION);
 
     EnumDisplayMonitors(NULL, NULL, monitorEnumProc, (LPARAM)this);
 }
@@ -45,8 +45,8 @@ void AlertWindowAdapter::onTimer() {
 		window->PostMessage(CTimerWindow::WM_TIMER_WND_NOTIFY);
 }
 
-auto AlertWindowAdapter::createTimerWindow(CRect* rect) {
-	auto pTimerWnd = std::make_shared<CTimerWindow>((HWND)0, nullptr, rect);
+auto AlertWindowAdapter::createTimerWindow(CRect* pRect) {
+	auto pTimerWnd = std::make_shared<CTimerWindow>((HWND)0, nullptr, pRect);
 
 	pTimerWnd->SetTimerProperties(
 		_T("Arial"),
@@ -58,7 +58,7 @@ auto AlertWindowAdapter::createTimerWindow(CRect* rect) {
 		true
 	);
 
-	pTimerWnd->SetTimerDuration(alertDuration);
+	pTimerWnd->SetTimerDuration(alertDurationSec);
 	pTimerWnd->PlaceWindowOnWorkArea(160, 140);
 	pTimerWnd->SetAlpha(128);
 

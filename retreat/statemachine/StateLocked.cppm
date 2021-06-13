@@ -4,6 +4,7 @@ import State;
 import StateDelay;
 
 import StateMachine;
+import LockWindowAdapter;
 
 #include "debug.h"
 
@@ -17,11 +18,16 @@ private:
     int counter;
 
     StateMachine &stateMachine;
+
+    std::unique_ptr<LockWindowAdapter> lockWindow;
 };
 
 module :private;
 
-StateLocked::StateLocked(StateMachine& stateMachine): stateMachine(stateMachine) {
+StateLocked::StateLocked(StateMachine& stateMachine): 
+    stateMachine(stateMachine),
+    lockWindow(std::make_unique<LockWindowAdapter>(*stateMachine.getSettings())) {
+    
     counter = stateMachine.getBreakDuration();
     StateDelay::resetDelays();
 
@@ -31,6 +37,8 @@ StateLocked::StateLocked(StateMachine& stateMachine): stateMachine(stateMachine)
 void StateLocked::onTimer() {
     counter -= 1;
 
-    if (!counter)
+    lockWindow->onTimer();
+
+    if (counter < 0)
         stateMachine.setIdle();
 }

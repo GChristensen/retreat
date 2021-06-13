@@ -47,7 +47,7 @@ public:
 	void SetTimerPos(int x, int y);
 
 	bool LoadBackground(const TCHAR* name, bool stretch, COLORREF canvas);
-	void SpecialBackground(int index);
+	void DefaultBackground();
 
 	void GrabUserInput();
 	void ReturnUserInput();
@@ -159,27 +159,27 @@ bool CTimerWindow::LoadBackground(const TCHAR* name, bool stretch, COLORREF canv
 	return isBackgroundLoaded;
 }
 
-void CTimerWindow::SpecialBackground(int index)
+void CTimerWindow::DefaultBackground()
 {
-	/*CRect windowRect;
+	CRect windowRect;
 	GetWindowRect(&windowRect);
 
 	bitmapBuffer->StarrySky(
-		m_displayRect.Width(), m_displayRect.Height(), SPECIAL_BACKGORUND_COLOR);
+		displayRect.Width(), displayRect.Height(), SPECIAL_BACKGORUND_COLOR);
 
-	int heightDelta = (windowRect.Height() - m_displayRect.Height()) / 2;
-	int widthDelta = (windowRect.Width() - m_displayRect.Width()) / 2;
+	int heightDelta = (windowRect.Height() - displayRect.Height()) / 2;
+	int widthDelta = (windowRect.Width() - displayRect.Width()) / 2;
 
 	windowRect.top = heightDelta;
 	windowRect.left = heightDelta;
-	windowRect.bottom = m_displayRect.Height() + heightDelta;
-	windowRect.right = m_displayRect.Width() + widthDelta;
+	windowRect.bottom = displayRect.Height() + heightDelta;
+	windowRect.right = displayRect.Width() + widthDelta;
 
 	bitmapBuffer->SetPlotRect(windowRect);
 
 	SetTransparentColor(SPECIAL_BACKGORUND_COLOR);
 
-	isBackgroundLoaded = true;*/
+	isBackgroundLoaded = true;
 }
 
 void CTimerWindow::GrabUserInput()

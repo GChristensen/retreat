@@ -251,6 +251,7 @@
     <ClCompile Include="windows\DispatchWnd.cppm" />
     <ClCompile Include="windows\gdi\BitmapBuffer.cppm" />
     <ClCompile Include="windows\gdi\TextBuffer.cppm" />
+    <ClCompile Include="windows\LockWindowAdapter.cppm" />
     <ClCompile Include="windows\TimerWindow.cppm" />
     <ClCompile Include="windows\TranslucentWindow.cppm" />
     <ClCompile Include="windows\TrayIconImpl.ixx" />

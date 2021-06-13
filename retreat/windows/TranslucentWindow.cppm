@@ -88,7 +88,7 @@ module :private;
 
 CTranslucentWindow::CTranslucentWindow(HWND parent, CRect *pRect, CRect *pWorkArea) :
 	isUsingTransparency(false),
-	isFullScreen(pWorkArea == NULL),
+	isFullScreen(pWorkArea == nullptr),
 	windowAlpha(255)
 {
 	Create(parent, pRect, NULL, isFullScreen ? WS_MAXIMIZE : 0);

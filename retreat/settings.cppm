@@ -27,6 +27,8 @@ public:
 
     static constexpr const TCHAR *BEHAVIOR_BEEP = _T("behavior.beep");
 
+    static constexpr const TCHAR* APPEARANCE_FULLSCREEN = _T("appearance.fullscreen");
+
     static constexpr const int DEFAULT_PERIOD_DURATION = 60;
     static constexpr const bool DEFAULT_PERIOD_FROM_LAUNCH = false;
 
@@ -37,6 +39,8 @@ public:
     static constexpr const int DEFAULT_SUSPENDED_DURATION = 120;
 
     static constexpr const bool DEFAULT_BEHAVIOR_BEEP = false;
+
+    static constexpr const bool DEFAULT_APPEARANCE_FULLSCREEN = true;
 
 
     Settings();
