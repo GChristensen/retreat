@@ -20,10 +20,10 @@ StateMachine::StateMachine(SettingsPtr settings) {
     this->settings = settings;
     state = std::make_shared<StateIdle>();
 
-    suspendedDurationSec = settings->getInt(Settings::SUSPENDED_DURATION, Settings::DEFAULT_SUSPENDED_DURATION) /** 60*/;
-    breakDurationSec = settings->getInt(Settings::BREAK_DURATION, Settings::DEFAULT_BREAK_DURATION) /** 60*/;
-    alertDurationSec = settings->getInt(Settings::ALERT_DURATION, Settings::DEFAULT_ALERT_DURATION) /** 60*/;
-    delayDurationSec = settings->getInt(Settings::DELAY_DURATION, Settings::DEFAULT_DELAY_DURATION) /** 60*/;
+    suspendedDurationSec = settings->getMinutesInSec(Settings::SUSPENDED_DURATION, Settings::DEFAULT_SUSPENDED_DURATION);
+    breakDurationSec = settings->getMinutesInSec(Settings::BREAK_DURATION, Settings::DEFAULT_BREAK_DURATION);
+    alertDurationSec = settings->getMinutesInSec(Settings::ALERT_DURATION, Settings::DEFAULT_ALERT_DURATION);
+    delayDurationSec = settings->getMinutesInSec(Settings::DELAY_DURATION, Settings::DEFAULT_DELAY_DURATION);
     delayAmount = settings->getInt(Settings::DELAY_AMOUNT, Settings::DEFAULT_DELAY_AMOUNT);
 
     int skipDate = settings->getInt(Settings::SKIP_DATE, 0);

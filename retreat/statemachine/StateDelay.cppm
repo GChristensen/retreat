@@ -4,7 +4,7 @@ import State;
 
 import StateMachine;
 
-#include "debug.h"
+import "debug.h";
 
 export class StateDelay : public State {
 public:
@@ -39,7 +39,7 @@ StateDelay::StateDelay(StateMachine& stateMachine) : stateMachine(stateMachine) 
 
     delaysRequested += 1;
 
-    tcout << "delay" << std::endl;
+    DBGLOG(_T("delay"));
 }
 
 void StateDelay::onTimer() {

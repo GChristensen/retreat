@@ -3,10 +3,13 @@
 import <map>;
 import <memory>;
 import <string>;
+import <utility>;
 
 import "config.h";
 
 #include "tstring.h"
+#include "debug.h"
+
 
 export class Settings {
 public:
@@ -46,6 +49,8 @@ public:
     tstring getString(const tstring path, const tstring defaultValue);
     bool getBoolean(const tstring path, bool defaultValue);
     int getInt(const tstring path, int defaultValue);
+    int getMinutesInSec(const tstring path, int defaultValue);
+    int getHoursInSec(const tstring path, int defaultValue);
 
     void setString(const tstring path, const tstring value);
 
@@ -106,6 +111,18 @@ int Settings::getInt(const tstring path, int defaultValue) {
     }
 
     return result;
+}
+
+int Settings::getMinutesInSec(const tstring path, int defaultValue) {
+    int result = getInt(std::move(path), defaultValue);
+
+    return result * DBG_SECONDS;
+}
+
+int Settings::getHoursInSec(const tstring path, int defaultValue) {
+    int result = getInt(std::move(path), defaultValue);
+
+    return result * DBG_SECONDS * 60;
 }
 
 void Settings::setString(const tstring path, const tstring value) {

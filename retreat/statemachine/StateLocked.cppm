@@ -25,7 +25,7 @@ StateLocked::StateLocked(StateMachine& stateMachine): stateMachine(stateMachine)
     counter = stateMachine.getBreakDuration();
     StateDelay::resetDelays();
 
-    tcout << "locked" << std::endl;
+    DBGLOG(_T("locked"));
 }
 
 void StateLocked::onTimer() {

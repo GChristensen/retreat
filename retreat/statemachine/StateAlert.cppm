@@ -80,7 +80,7 @@ StateAlert::StateAlert(StateMachine &stateMachine):
         skippable = true;
     }
 
-    tcout << "alert" << std::endl;
+    DBGLOG(_T("alert"));
 }
 
 void StateAlert::onTimer() {

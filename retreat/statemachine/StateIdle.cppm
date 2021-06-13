@@ -14,5 +14,5 @@ public:
 module :private;
 
 StateIdle::StateIdle() {
-    tcout << "idle" << std::endl;
+    DBGLOG(_T("idle"));
 }

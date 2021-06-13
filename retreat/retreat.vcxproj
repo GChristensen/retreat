@@ -94,7 +94,7 @@
       <AdditionalBMIDirectories>
       </AdditionalBMIDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
@@ -162,7 +162,7 @@
       <DisableSpecificWarnings>5050;5105;4005</DisableSpecificWarnings>
       <AdditionalBMIDirectories>
       </AdditionalBMIDirectories>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
@@ -261,7 +261,10 @@
   <ItemGroup>
     <ClInclude Include="misc\config.h" />
     <ClInclude Include="misc\dbgcout.h" />
-    <ClInclude Include="misc\debug.h" />
+    <ClInclude Include="misc\debug.h">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsHeaderUnit</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsHeaderUnit</CompileAs>
+    </ClInclude>
     <ClInclude Include="misc\LimitSingleInstance.h" />
     <ClInclude Include="misc\tstring.h" />
     <ClInclude Include="res\resource.h" />

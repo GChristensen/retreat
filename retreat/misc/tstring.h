@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __TSTRING_H__
+#define __TSTRING_H__
 
 #ifdef UNICODE
 #   ifndef _T
@@ -29,3 +30,5 @@
 #   define tofstream std::ofstream
 #   define tcout std::cout
 #endif
+
+#endif // __TSTRING_H__

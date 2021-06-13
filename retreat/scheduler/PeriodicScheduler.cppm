@@ -36,9 +36,9 @@ time_t PeriodicScheduler::startTime = 0;
 
 PeriodicScheduler::PeriodicScheduler(Settings &settings) {
     fromLaunchTime = settings.getBoolean(Settings::PERIOD_FROM_LAUNCH, Settings::DEFAULT_PERIOD_FROM_LAUNCH);
-    periodDurationSec = settings.getInt(Settings::PERIOD_DURATION, Settings::DEFAULT_PERIOD_DURATION) /** 60*/;
-    breakDurationSec = settings.getInt(Settings::BREAK_DURATION, Settings::DEFAULT_BREAK_DURATION) /** 60*/;
-    alertDurationSec = settings.getInt(Settings::ALERT_DURATION, Settings::DEFAULT_ALERT_DURATION) /** 60*/;
+    periodDurationSec = settings.getMinutesInSec(Settings::PERIOD_DURATION, Settings::DEFAULT_PERIOD_DURATION);
+    breakDurationSec = settings.getMinutesInSec(Settings::BREAK_DURATION, Settings::DEFAULT_BREAK_DURATION);
+    alertDurationSec = settings.getMinutesInSec(Settings::ALERT_DURATION, Settings::DEFAULT_ALERT_DURATION);
 
     eventBoundarySec = breakDurationSec + alertDurationSec;
     timeToEventSec = periodDurationSec - eventBoundarySec;
@@ -59,8 +59,7 @@ void PeriodicScheduler::schedule(StateMachine &machine) {
 
     if (elapsed % periodDurationSec == timeToEventSec) {
         machine.setAlert();
-        //tcout << _T("event") << std::endl;
     }
 
-    tcout << elapsed << std::endl;
+    DBGLOG(elapsed);
 }
