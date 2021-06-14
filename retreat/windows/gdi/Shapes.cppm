@@ -2,12 +2,21 @@ module;
 
 #include "stdafx.h"
 
+#include <windows.h>
+#include <objidl.h>
+#include <gdiplus.h>
+
+#pragma comment (lib,"Gdiplus.lib")
+
+
 export module Shapes;
 
 import algorithms;
 
+#include "debug.h"
+
 export COLORREF SHAPE_COLORS[] = {
-	RGB(31, 176, 255),
+	RGB(31,  176, 255),
 	RGB(141, 255,  65),
 	RGB(252,  75, 105),
 	RGB(189, 161, 255),
@@ -21,8 +30,9 @@ export COLORREF getRandomShapeColor() {
 }
 
 // draws star with the circumcircle radius *r*, at the center point *c*, the initial vertex
-// angle *ang*, filled by the color *color* on the appropriate DC *dc*
-export void drawStar(HDC dc, POINT2 &c, int r, int ang, COLORREF color) {
+// angle *ang*, filled by the color *color* on the appropriate DC *dc* using pure GDI 
+// and portable algorithms
+export void drawStarGDI(HDC dc, POINT2 &c, int r, int ang, COLORREF color) {
 	auto star = generateStar(c.x, c.y, r, ang);
 
 	CPen pen;
@@ -42,10 +52,27 @@ export void drawStar(HDC dc, POINT2 &c, int r, int ang, COLORREF color) {
 	::SelectObject(dc, old_obj);
 }
 
+// but using GDI+ is 3~4 times faster
+export void drawStar(HDC dc, POINT2& c, int r, int ang, COLORREF color) {
+	using namespace Gdiplus;
+	
+	auto star = generateStar(c.x, c.y, r, ang);
+
+	Color clr;
+	clr.SetFromCOLORREF(color);
+
+	Graphics graphics(dc);
+
+	Pen pen(clr);
+	graphics.DrawPolygon(&pen, (const Point*)star->data(), star->size());
+
+	SolidBrush brush(clr);
+	graphics.FillPolygon(&brush, (const Point *)star->data(), star->size());
+}
 
 // zvezdochki
 export void randomStars(HDC dc, int width, int height) {
-	auto points = randomlyPlaceObjectsOnArea(width, height);
+	auto points = randomlyPlacePointsOnArea(width, height);
 
 	for (POINT2 &point : *points) {
 		drawStar(
@@ -53,7 +80,7 @@ export void randomStars(HDC dc, int width, int height) {
 			point,
 			randRange(20, 90),
 			rand() % 360,
-			SHAPE_COLORS[rand() % (sizeof(SHAPE_COLORS) / sizeof(COLORREF))]
+			getRandomShapeColor()
 		);
 	}
 }

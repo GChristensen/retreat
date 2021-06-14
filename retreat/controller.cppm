@@ -16,7 +16,7 @@ import StateMachineImpl;
 export class Controller {
 public: 
 
-    Controller();
+    Controller(void *appInstance);
 
     void updateSettings(std::shared_ptr<Settings> settings);
 
@@ -34,6 +34,7 @@ public:
     void lock() { stateMachine->setLocked(); }
 
 private:
+    void *appInstance;
     std::shared_ptr<Settings> settings;
     std::shared_ptr<Scheduler> scheduler;
     std::shared_ptr<StateMachine> stateMachine;
@@ -42,7 +43,7 @@ private:
 
 module :private;
 
-Controller::Controller() {
+Controller::Controller(void *appInstance): appInstance(appInstance) {
     _tzset();
     srand((unsigned)time(nullptr));
 }
@@ -51,7 +52,7 @@ void Controller::updateSettings(std::shared_ptr<Settings> settings) {
     this->settings = settings;
 
     scheduler = SchedulerFactory::createScheduler(*settings);
-    stateMachine = std::make_shared<StateMachine>(settings);
+    stateMachine = std::make_shared<StateMachine>(settings, appInstance);
 }
 
 void Controller::onTimer() {

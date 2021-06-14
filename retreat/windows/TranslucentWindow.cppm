@@ -65,6 +65,9 @@ protected:
 	CRect workAreaRect;
 	std::unique_ptr<CBitmapBuffer> bitmapBuffer;
 
+	// currently only used to shift the alert window with a star displayed
+	int displayOffsetX = 0;
+
 	COLORREF transparentColor;
 
 	virtual void postPanitHook(HDC dc);
@@ -184,7 +187,7 @@ void CTranslucentWindow::PlaceWindowOnWorkArea(int x, int y)
 
 	SetWindowPos(
 		NULL,
-		workAreaRect.left + x,
+		workAreaRect.left + x + displayOffsetX,
 		workAreaRect.top + y,
 		0, 0, SWP_NOZORDER | SWP_NOSIZE
 	);

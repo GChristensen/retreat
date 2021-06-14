@@ -7,30 +7,37 @@ export module AlertWindowAdapter;
 import <memory>;
 import <vector>;
 
+#include "debug.h"
+
 import Settings;
 import TimerWindow;
+import StateMachine;
 import StateWindowAdapter;
 
 using WindowPtr = std::shared_ptr<CTimerWindow>;
 
 export class AlertWindowAdapter: public StateWindowAdapter {
 public:
-    AlertWindowAdapter(Settings& settings);
+    AlertWindowAdapter(StateMachine &stateMachine);
     virtual void onTimer() override;
 	virtual ~AlertWindowAdapter();
 
 private:
 	int alertDurationSec;
+	Settings &settings;
+
 	std::vector<WindowPtr> windows;
 
 	auto createTimerWindow(CRect* rect);
-	static BOOL CALLBACK monitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData);
+	static BOOL CALLBACK monitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, 
+		LPRECT lprcMonitor, LPARAM dwData);
 };
 
 module :private;
 
-AlertWindowAdapter::AlertWindowAdapter(Settings& settings) {
-	alertDurationSec = settings.getMinutesInSec(Settings::ALERT_DURATION, Settings::DEFAULT_ALERT_DURATION);
+AlertWindowAdapter::AlertWindowAdapter(StateMachine &stateMachine): settings(*stateMachine.getSettings()) {
+	alertDurationSec = settings.getMinutesInSec(Settings::ALERT_DURATION, 
+		Settings::DEFAULT_ALERT_DURATION);
 
     EnumDisplayMonitors(NULL, NULL, monitorEnumProc, (LPARAM)this);
 }
@@ -48,19 +55,23 @@ void AlertWindowAdapter::onTimer() {
 auto AlertWindowAdapter::createTimerWindow(CRect* pRect) {
 	auto pTimerWnd = std::make_shared<CTimerWindow>((HWND)0, nullptr, pRect);
 
+	COLORREF timerTextColor = settings.getInt(Settings::APPEARANCE_TIMER_TEXT_COLOR, 
+		Settings::DEFAULT_APPEARANCE_TIMER_TEXT_COLOR);
+
 	pTimerWnd->SetTimerProperties(
-		_T("Arial"),
+		DEFAULT_TIMER_FONT_FACE,
+		DEFAULT_TIMER_FONT_SIZE,
 		DEFAULT_CHARSET,
-		32,
-		RGB(239, 27, 27),
+		timerTextColor,
 		false,
 		true,
 		true
 	);
 
 	pTimerWnd->SetTimer(alertDurationSec, true);
-	pTimerWnd->PlaceWindowOnWorkArea(160, 140);
-	pTimerWnd->SetAlpha(128);
+	pTimerWnd->PlaceWindowOnWorkArea(DEFAULT_TIMER_X, DEFAULT_TIMER_Y);
+	pTimerWnd->SetAlpha(settings.getInt(Settings::APPEARANCE_OPACITY_LEVEL, 
+		Settings::DEFAULT_APPEARANCE_OPACITY_LEVEL));
 
 	pTimerWnd->ApplyLayeredWindowAttributes();
 	pTimerWnd->ShowWindow(SW_SHOWNOACTIVATE);
@@ -68,7 +79,9 @@ auto AlertWindowAdapter::createTimerWindow(CRect* pRect) {
 	return pTimerWnd;
 }
 
-BOOL CALLBACK AlertWindowAdapter::monitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData) {
+BOOL CALLBACK AlertWindowAdapter::monitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, 
+		LPRECT lprcMonitor, LPARAM dwData) {
+
 	AlertWindowAdapter* adapter = (AlertWindowAdapter *)dwData;
 
 	CRect rect(*lprcMonitor);

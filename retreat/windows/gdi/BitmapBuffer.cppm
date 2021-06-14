@@ -1,9 +1,11 @@
 module;
 
 #include "stdafx.h"
+#include <atlimage.h>
 
 export module BitmapBuffer;
 
+// keeps a bitmap that can be drawn on and could be drawn on a window DC
 export class CBitmapBuffer: public CBitmap
 {
 public:
@@ -27,8 +29,6 @@ public:
 	HDC SelectBitmapToInternalDC();
 	void DeselectBitmapFromInternalDC();
 
-	//void StarrySky(int cx, int cy, COLORREF background);
-
 protected:
 
 	CSize m_imageSize;
@@ -37,9 +37,6 @@ protected:
 	HBITMAP m_hOldBitmap;
 
 	CRect m_plotRect;
-	
-	//void drawStar2(HDC dc, CPoint c, int r, int ang, COLORREF color);
-	//void fillPolygon(HDC dc, POINT* points, int npoints, COLORREF color);
 };
 
 module :private;
@@ -69,54 +66,17 @@ HRESULT CBitmapBuffer::LoadFromFile(const TCHAR* fileName)
 
 	m_imageSize.SetSize(0, 0);
 
-	CComPtr<IPicture> pPicture;
-	CComBSTR file_path = fileName;
+	CImage image;
+	HRESULT result = image.Load(fileName);
 
-	// load image
-	HRESULT hr = ::OleLoadPicturePath(
-		file_path,
-		0, 0, 0,
-		IID_IPicture,
-		(void**)&pPicture
-	);
+	if (SUCCEEDED(result)) {
+		int nWidth = image.GetWidth();
+		int nHeight = image.GetHeight();
 
-	if (FAILED(hr))
-		return hr;
+		m_imageSize.SetSize(nWidth, nHeight);
 
-	// get image dimensions
-	long hmWidth = 0;
-	long hmHeight = 0;
-
-	pPicture->get_Width(&hmWidth);
-	pPicture->get_Height(&hmHeight);
-
-	int nWidth = MulDiv(hmWidth, m_memDC.GetDeviceCaps(LOGPIXELSX), HIMETRIC_INCH);
-	int nHeight = MulDiv(hmHeight, m_memDC.GetDeviceCaps(LOGPIXELSY), HIMETRIC_INCH);
-
-	m_imageSize.SetSize(nWidth, nHeight);
-
-	// render image
-	CreateBitmap(nWidth, nHeight, 1, DEFAULT_BPP, NULL);
-	HBITMAP hOldBitmap = m_memDC.SelectBitmap(m_hBitmap);
-
-	HRESULT result = E_FAIL;
-
-	if (pPicture)
-	{
-		result = pPicture->Render(
-			m_memDC.m_hDC,
-			0, 0,
-			nWidth,
-			nHeight,
-			0,
-			hmHeight,
-			hmWidth,
-			-hmHeight,
-			NULL
-		);
+		Attach(image.Detach());
 	}
-
-	m_memDC.SelectBitmap(hOldBitmap);
 
 	return result;
 }

@@ -7,6 +7,7 @@ export module TextBuffer;
 import <memory>;
 import <vector>;
 
+// allows to draw changing double-buffered text with the preservation of background
 export class CTextBuffer
 {
 public:

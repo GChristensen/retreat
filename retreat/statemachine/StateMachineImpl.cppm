@@ -16,7 +16,7 @@ StateMachine::StateMachine() {
 
 }
 
-StateMachine::StateMachine(SettingsPtr settings) {
+StateMachine::StateMachine(SettingsPtr settings, void* appInstance): appInstance(appInstance) {
     this->settings = settings;
     state = std::make_shared<StateIdle>();
 

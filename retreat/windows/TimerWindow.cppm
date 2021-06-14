@@ -27,13 +27,13 @@ public:
 
 	CTimerWindow(HWND parent, CRect* pRect, CRect* pWorkArea);
 
-	~CTimerWindow();
+	virtual ~CTimerWindow();
 
 	void SetTimerProperties
 	(
 		const TCHAR* faceName,
-		BYTE charSet,
 		int fontSize,
+		BYTE charSet,
 		COLORREF textColor,
 		bool antialiased,
 		bool bold,
@@ -56,12 +56,10 @@ public:
 	// Messages
 	//////////////////////////////////////////////////////////////////////
 
-	LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnTimerNotify(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&);
 
 	BEGIN_MSG_MAP(CTimerWindow)
 		MESSAGE_HANDLER(WM_TIMER_WND_NOTIFY, OnTimerNotify)
-		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
 		CHAIN_MSG_MAP(CTranslucentWindow)
 	END_MSG_MAP()
 
@@ -105,14 +103,13 @@ CTimerWindow::CTimerWindow(HWND parent, CRect* pRect, CRect* pWorkArea) :
 
 CTimerWindow::~CTimerWindow()
 {
-	ATLTRACE(_T("CTimerWindow has gone...\n"));
 }
 
 void CTimerWindow::SetTimerProperties
 (
 	const TCHAR* faceName,
-	BYTE charSet,
 	int fontSize,
+	BYTE charSet,
 	COLORREF textColor,
 	bool antialiased,
 	bool bold,
@@ -211,21 +208,6 @@ void CTimerWindow::ReturnUserInput()
 	::AttachThreadInput(currentThreadID, foregroundWndThreadID, FALSE);
 }
 
-LRESULT CTimerWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-	if (wParam == VK_ADD)
-	{
-		AlterAlpha(10);
-	}
-	else if (wParam == VK_SUBTRACT)
-	{
-		AlterAlpha(-10);
-	}
-
-	bHandled = FALSE;
-	return 0;
-}
-
 LRESULT CTimerWindow::OnTimerNotify(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
 {
 	displayDuration -= 1;
@@ -274,6 +256,7 @@ void CTimerWindow::setTimer(int durationSec, bool showStar)
 			offset = textSize.cy + 4;
 			textSize.cx += offset;
 			SetTimerPos(offset, 0);
+			displayOffsetX = -offset;
 		}
 
 		SetWindowPos(NULL, 0, 0, textSize.cx, textSize.cy, SWP_NOMOVE | SWP_NOZORDER);

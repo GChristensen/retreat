@@ -2,6 +2,8 @@
 //
 
 #include "stdafx.h"
+#include <gdiplus.h>
+
 #include "dbgcout.h"
 #include "LimitSingleInstance.h"
 
@@ -11,10 +13,6 @@ CAppModule _Module;
 
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
-#ifdef _DEBUG
-	initdbgcout();
-#endif
-
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
 
@@ -25,8 +23,6 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		ATLTRACE(_T("Main window creation failed!\n"));
 		return 0;
 	}
-
-	//wndMain.ShowWindow(nCmdShow);
 
 	int nRet = theLoop.Run();
 
@@ -48,12 +44,22 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 	AtlInitCommonControls(ICC_BAR_CLASSES);	// add flags to support other controls
 
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+	ULONG_PTR					 gdiplusToken;
+	Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+
+#ifdef _DEBUG
+	initdebug();
+#endif
+
 	hRes = _Module.Init(NULL, hInstance);
 	ATLASSERT(SUCCEEDED(hRes));
 
 	int nRet = Run(lpstrCmdLine, nCmdShow);
 
 	_Module.Term();
+
+	Gdiplus::GdiplusShutdown(gdiplusToken);
 	::CoUninitialize();
 
 	return nRet;

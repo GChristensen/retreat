@@ -10,6 +10,13 @@ import "config.h";
 #include "tstring.h"
 #include "debug.h"
 
+export const TCHAR* DEFAULT_TIMER_FONT_FACE = _T("Arial");
+export const int DEFAULT_TIMER_FONT_SIZE = 32;
+export const int DEFAULT_TIMER_X_WINDOWED = 25;
+export const int DEFAULT_TIMER_Y_WINDOWED = 25;
+export const int DEFAULT_TIMER_X = 160;
+export const int DEFAULT_TIMER_Y = 140;
+
 
 export class Settings {
 public:
@@ -25,9 +32,18 @@ public:
     static constexpr const TCHAR *SKIP_DATE = _T("skip.date");
     static constexpr const TCHAR *SKIP_EXPENDED = _T("skip.expended");
 
-    static constexpr const TCHAR *BEHAVIOR_BEEP = _T("behavior.beep");
-
     static constexpr const TCHAR* APPEARANCE_FULLSCREEN = _T("appearance.fullscreen");
+    static constexpr const TCHAR* APPEARANCE_TRANSPARENT = _T("appearance.transparent");
+    static constexpr const TCHAR* APPEARANCE_OPACITY_LEVEL = _T("appearance.opacity_level");
+    static constexpr const TCHAR* APPEARANCE_BACKGROUND_COLOR = _T("appearance.background_color");
+    static constexpr const TCHAR* APPEARANCE_IMAGE_DIRECTORY = _T("appearance.image_directory");
+    static constexpr const TCHAR* APPEARANCE_STRETCH_IMAGES = _T("appearance.stretch_images");
+    static constexpr const TCHAR* APPEARANCE_SHOW_TIMER = _T("appearance.show_timer");
+    static constexpr const TCHAR* APPEARANCE_TIMER_TEXT_COLOR = _T("appearance.timer_text_color");
+
+    static constexpr const TCHAR* SOUNDS_ENABLE = _T("sounds.enable");
+    static constexpr const TCHAR* SOUNDS_AUDIO_DIRECTORY = _T("sounds.audio_directory");
+
 
     static constexpr const int DEFAULT_PERIOD_DURATION = 60;
     static constexpr const bool DEFAULT_PERIOD_FROM_LAUNCH = false;
@@ -41,6 +57,14 @@ public:
     static constexpr const bool DEFAULT_BEHAVIOR_BEEP = false;
 
     static constexpr const bool DEFAULT_APPEARANCE_FULLSCREEN = true;
+    static constexpr const bool DEFAULT_APPEARANCE_TRANSPARENT = false;
+    static constexpr const int DEFAULT_APPEARANCE_OPACITY_LEVEL = 128;
+    static constexpr const int DEFAULT_APPEARANCE_BACKGROUND_COLOR = 0xFFFFFF;
+    static constexpr const bool DEFAULT_APPEARANCE_STRETCH_IMAGES = true;
+    static constexpr const bool DEFAULT_APPEARANCE_SHOW_TIMER = true;
+    static constexpr const int DEFAULT_APPEARANCE_TIMER_TEXT_COLOR = 0x1B1BEF;
+
+    static constexpr const bool DEFAULT_SOUNDS_ENABLE = false;
 
 
     Settings();
@@ -88,21 +112,21 @@ void Settings::save(const tstring& file) {
 }
 
 tstring Settings::getString(const tstring path, const tstring defaultValue) {
-    if (values.find(path) == values.end())
+    if (values.find(path) == values.end() || values[path].empty())
         return defaultValue;
 
     return values[path];
 }
 
 bool Settings::getBoolean(const tstring path, bool defaultValue) {
-    if (values.find(path) == values.end())
+    if (values.find(path) == values.end() || values[path].empty())
         return defaultValue;
 
     return !values[path].compare(_T("true"));
 }
 
 int Settings::getInt(const tstring path, int defaultValue) {
-    if (values.find(path) == values.end())
+    if (values.find(path) == values.end() || values[path].empty())
         return defaultValue;
 
     int result;

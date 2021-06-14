@@ -10,7 +10,8 @@ import <memory>;
 import State;
 import StateDelay;
 import StateMachine;
-import AlertWindowAdapter;
+import StateWindowAdapter;
+import StateWindowFactory;
 
 #include "debug.h"
 
@@ -38,7 +39,7 @@ private:
 
     StateMachine &stateMachine;
 
-    std::unique_ptr<AlertWindowAdapter> alertWindow;
+    StateWindowPtr alertWindow;
 };
 
 module :private;
@@ -69,7 +70,8 @@ bool StateAlert::setSkippable(int date, bool expended) {
 
 StateAlert::StateAlert(StateMachine &stateMachine):
     stateMachine(stateMachine),
-    alertWindow(std::make_unique<AlertWindowAdapter>(*stateMachine.getSettings())) {
+    alertWindow(StateWindowFactory::createStateWindow(
+        StateWindowFactory::STATE_WINDOW_ALERT, stateMachine)) {
 
     counter = stateMachine.getAlertDuration();
 

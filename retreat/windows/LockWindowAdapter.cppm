@@ -9,39 +9,90 @@ import <vector>;
 
 #include "debug.h"
 
+import system;
 import Settings;
+import InputLock;
 import TimerWindow;
+import StateMachine;
 import StateWindowAdapter;
 
 using WindowPtr = std::shared_ptr<CTimerWindow>;
 
 export class LockWindowAdapter: public StateWindowAdapter {
 public:
-    LockWindowAdapter(Settings& settings);
+    LockWindowAdapter(StateMachine& stateMachine);
     virtual void onTimer() override;
 	virtual ~LockWindowAdapter();
 
 private:
 	bool fullscreen;
-	int breakDurationSec;
+	Settings &settings;
+	InputLock inputLock;
+	bool settingsChanged = false;
+
 	std::vector<WindowPtr> windows;
 
 	auto createTimerWindow(CRect* rect, bool primary);
-	static BOOL CALLBACK monitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData);
+	static BOOL CALLBACK monitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, 
+		LPRECT lprcMonitor, LPARAM dwData);
 };
 
 module :private;
 
-LockWindowAdapter::LockWindowAdapter(Settings& settings) {
-	fullscreen = settings.getBoolean(Settings::APPEARANCE_FULLSCREEN, Settings::DEFAULT_APPEARANCE_FULLSCREEN);
-	breakDurationSec = settings.getMinutesInSec(Settings::BREAK_DURATION, Settings::DEFAULT_BREAK_DURATION);
+LockWindowAdapter::LockWindowAdapter(StateMachine& stateMachine): 
+	settings(*stateMachine.getSettings()),
+	inputLock(stateMachine) {
+
+	fullscreen = settings.getBoolean(Settings::APPEARANCE_FULLSCREEN, 
+		Settings::DEFAULT_APPEARANCE_FULLSCREEN);
+
+	inputLock.setFullScreenMode(fullscreen);
+
+	inputLock.onNumpadPlus = [this]() {
+		for (const WindowPtr& window: this->windows)
+			window->AlterAlpha(10);
+
+		if (!this->windows.empty())
+			this->settings.setString(Settings::APPEARANCE_OPACITY_LEVEL, 
+				to_tstring(this->windows[0]->GetAlpha()));
+
+		this->settingsChanged = true;
+	};
+
+	inputLock.onNumpadMinus = [this]() {
+		for (const WindowPtr& window : this->windows)
+			window->AlterAlpha(-10);
+
+		if (!this->windows.empty())
+			this->settings.setString(Settings::APPEARANCE_OPACITY_LEVEL,
+				to_tstring(this->windows[0]->GetAlpha()));
+
+		this->settingsChanged = true;
+	};
+
+	inputLock.lock();
 
     EnumDisplayMonitors(NULL, NULL, monitorEnumProc, (LPARAM)this);
 }
 
 LockWindowAdapter::~LockWindowAdapter() {
+	if (settingsChanged)
+		settings.save();
+
 	for (const WindowPtr &window : windows)
 		window->SendMessage(WM_CLOSE);
+
+	if (settings.getBoolean(Settings::SOUNDS_ENABLE, Settings::DEFAULT_SOUNDS_ENABLE)) {
+		tstring audioDir = settings.getString(Settings::SOUNDS_AUDIO_DIRECTORY, _T(""));
+
+		if (!audioDir.empty()) {
+			tstring audioFilePath = getRandomFile(audioDir,
+				std::vector<tstring>{ _T("wav"), _T("mp3"), _T("wma"), _T("flac") });
+
+			if (!audioFilePath.empty())
+				playAudioFile(audioFilePath);
+		}
+	}
 }
 
 void LockWindowAdapter::onTimer() {
@@ -50,9 +101,6 @@ void LockWindowAdapter::onTimer() {
 }
 
 auto LockWindowAdapter::createTimerWindow(CRect* pRect, bool primary) {
-
-//	int mode = appearance(machine).Mode;
-//	m_hideCursor = mode == AM_FULLSCREEN_MODE;
 
 	CRect workArea, *pWorkArea = nullptr;
 
@@ -63,133 +111,86 @@ auto LockWindowAdapter::createTimerWindow(CRect* pRect, bool primary) {
 
 	auto pTimerWnd = std::make_shared<CTimerWindow>((HWND)0, pRect, pWorkArea);
 
-//	tstring imageDir = appearance(machine).ImageFolder[mode];
-//	tstring backgroundImagePath;
-//
-//	if (!imageDir.empty())
-//	{
-//		SystemHelper::getInstance()->
-//			getArbitraryFilePath(imageDir, _T("jp*"), _T("bmp"), _T("gif"), backgroundImagePath);
-//	}
-//
-//	bool backgroundLoaded =
-//		pAngelicWnd->LoadBackground(
-//			backgroundImagePath.c_str(),
-//			appearance(machine).StretchImage,
-//			appearance(machine).BackgroundColor
-//		);
-//
-//	if (backgroundLoaded)
-//	{
-//		if (appearance(machine).UseTransparency)
-//		{
-//			COLORREF transparent = appearance(machine).TransparentColor;
-//
-//			if (transparent == AM_DEFAULT_TRANSPARENT_COLOR)
-//			{
-//				pAngelicWnd->SetTransparentColorFromImageLeftUpperPixel();
-//			}
-//			else
-//			{
-//				pAngelicWnd->SetTransparentColor(transparent);
-//			}
-//		}
-//	}
-//	else
-//	{
-//		if (mode != AM_FULLSCREEN_MODE)
-//		{
-//			mode = AM_FULLSCREEN_MODE;
-//			pAngelicWnd->SendMessage(WM_CLOSE);
-//			pAngelicWnd = angelic_wnd_ptr_t(new CAngelicWnd(0, NULL, NULL));
-//		}
-//
-//		pAngelicWnd->SpecialBackground(CAngelicWnd::STARS);
-//		m_hideCursor = false;
-//	}
-//
-//	pAngelicWnd->SetAlpha(appearance(machine).TransparencyLevel);
-//
-//	if (primary && appearance(machine).ShowTimer)
-//	{
-//		AM_APPEARANCE_SETTINGS::TEXT_SETTINGS& text =
-//			appearance(machine).TimerFontSettings[mode];
-//
-//		bool antialias =
-//			backgroundLoaded && !appearance(machine).UseTransparency;
-//
-//		int breakLengthMin =
-//			boost::any_cast<int>(getCell(machine, BREAK_DURATION_CELL));
-//
-//		pAngelicWnd->SetTimerProperties(
-//			text.Face.c_str(),
-//			DEFAULT_CHARSET,
-//			text.Size,
-//			text.Color,
-//			antialias,
-//			text.Bold,
-//			text.Italic
-//		);
-//
-//		pAngelicWnd->SetTimerPos(text.x, text.y);
-//		pAngelicWnd->SetTimer(breakLengthMin * 60);
-//	}
-//	else
-//	{
-//		pAngelicWnd->SetShowTimer(false);
-//	}
-//
-//#ifndef _DEBUG
-//	if (!m_locked)
-//	{
-//		SystemHelper::getInstance()->lockUserInput(
-//			getParentWindow(machine),
-//			behaviour(machine).MagicWords,
-//			ID_USER_UNLOCK_COMMAND
-//		);
-//
-//		if (m_hideCursor)
-//		{
-//			ShowCursor(FALSE);
-//		}
-//
-//		m_locked = true;
-//	}
-//#endif
-//
+	bool transparent = settings.getBoolean(Settings::APPEARANCE_TRANSPARENT, 
+		Settings::DEFAULT_APPEARANCE_TRANSPARENT);
 
-	pTimerWnd->DefaultBackground();
+	tstring imageDir = settings.getString(Settings::APPEARANCE_IMAGE_DIRECTORY, _T(""));
+	bool backgroundLoaded = false;
 
-	pTimerWnd->SetTimerProperties(
-		_T("Arial"),
-		DEFAULT_CHARSET,
-		32,
-		RGB(239, 27, 27),
-		false,
-		true,
-		true
-	);
+	if (!imageDir.empty()) {
+		tstring backgroundImagePath = getRandomFile(imageDir,
+			std::vector<tstring>{ _T("jp*"), _T("bmp"), _T("gif"), _T("png") });
 
-	
-	pTimerWnd->SetTimerPos(160, 140);
-	pTimerWnd->SetTimer(breakDurationSec);
-	pTimerWnd->SetAlpha(128);
+		if (!backgroundImagePath.empty())
+			backgroundLoaded = pTimerWnd->LoadBackground(
+				backgroundImagePath.c_str(),
+				settings.getBoolean(Settings::APPEARANCE_STRETCH_IMAGES, 
+					Settings::DEFAULT_APPEARANCE_STRETCH_IMAGES),
+				settings.getInt(Settings::APPEARANCE_BACKGROUND_COLOR, 
+					Settings::DEFAULT_APPEARANCE_BACKGROUND_COLOR)
+			);
+	}
+
+	if (backgroundLoaded) {
+		if (transparent)
+			pTimerWnd->SetTransparentColorFromImage();
+	}
+	else {
+		if (!fullscreen) {
+			fullscreen = true;
+			pTimerWnd->SendMessage(WM_CLOSE);
+			pTimerWnd = std::make_shared<CTimerWindow>((HWND)0, pRect, nullptr);
+		}
+
+		pTimerWnd->DefaultBackground();
+	}
+
+	pTimerWnd->SetAlpha(settings.getInt(Settings::APPEARANCE_OPACITY_LEVEL, 
+		Settings::DEFAULT_APPEARANCE_OPACITY_LEVEL));
+
+	bool showTimer = settings.getBoolean(Settings::APPEARANCE_SHOW_TIMER, 
+		Settings::DEFAULT_APPEARANCE_SHOW_TIMER);
+
+	if (primary && showTimer) {
+		bool antialias = backgroundLoaded && !transparent;
+
+		COLORREF timerTextColor = settings.getInt(Settings::APPEARANCE_TIMER_TEXT_COLOR, 
+			Settings::DEFAULT_APPEARANCE_TIMER_TEXT_COLOR);
+
+		int breakDurationSec = settings.getMinutesInSec(Settings::BREAK_DURATION, 
+			Settings::DEFAULT_BREAK_DURATION);
+		
+		pTimerWnd->SetTimerProperties(
+			DEFAULT_TIMER_FONT_FACE,
+			fullscreen? DEFAULT_TIMER_FONT_SIZE: DEFAULT_TIMER_FONT_SIZE - 10,
+			DEFAULT_CHARSET,
+			timerTextColor,
+			antialias,
+			true,
+			true
+		);
+		
+		pTimerWnd->SetTimerPos(fullscreen? DEFAULT_TIMER_X: DEFAULT_TIMER_X_WINDOWED, 
+			fullscreen? DEFAULT_TIMER_Y: DEFAULT_TIMER_Y_WINDOWED);
+		pTimerWnd->SetTimer(breakDurationSec);
+	}
+	else
+		pTimerWnd->SetShowTimer(false);
 
 	pTimerWnd->CenterWindowOnWorkArea();
 	pTimerWnd->ShowWindow(SW_SHOW);
 
-	if (primary)
-		pTimerWnd->GrabUserInput();
+	pTimerWnd->GrabUserInput();
 
 	// we should call this after window has been shown to reduce blinking
 	pTimerWnd->ApplyLayeredWindowAttributes();
 
-	//pTimerWnd->DoEvents();
-
 	return pTimerWnd;
 }
 
-BOOL CALLBACK LockWindowAdapter::monitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData) {
+BOOL CALLBACK LockWindowAdapter::monitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, 
+		LPRECT lprcMonitor, LPARAM dwData) {
+
 	LockWindowAdapter* adapter = (LockWindowAdapter *)dwData;
 
 	MONITORINFO info;

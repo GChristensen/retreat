@@ -19,6 +19,6 @@ public:
 
 DbgStream dbgStream;
 
-void initdbgcout() {
+void initdebug() {
     tcout.rdbuf(&dbgStream);
 }

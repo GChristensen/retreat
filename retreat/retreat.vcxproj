@@ -221,7 +221,7 @@
     <ClCompile Include="Controller.cppm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="misc\config.cpp" />
+    <ClCompile Include="config.cpp" />
     <ClCompile Include="misc\dbgcout.cpp" />
     <ClCompile Include="scheduler\CronScheduler.cppm" />
     <ClCompile Include="scheduler\PeriodicScheduler.cppm" />
@@ -239,6 +239,7 @@
     <ClCompile Include="statemachine\StateMachineImpl.cppm" />
     <ClCompile Include="statemachine\StateSuspended.cppm" />
     <ClCompile Include="statemachine\StateWindowAdapter.cppm" />
+    <ClCompile Include="statemachine\StateWindowFactory.cppm" />
     <ClCompile Include="system.ixx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -257,12 +258,16 @@
     <ClCompile Include="windows\TimerWindow.cppm" />
     <ClCompile Include="windows\TranslucentWindow.cppm" />
     <ClCompile Include="windows\TrayIconImpl.ixx" />
+    <ClCompile Include="windows\InputLock.cppm" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="misc\config.h" />
+    <ClCompile Include="config.h">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsHeaderUnit</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsHeaderUnit</CompileAs>
+    </ClCompile>
     <ClInclude Include="misc\dbgcout.h" />
     <ClInclude Include="misc\debug.h">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsHeaderUnit</CompileAs>

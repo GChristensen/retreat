@@ -76,7 +76,8 @@ export auto generateStar(long x, long y, int r, int ang) {
 }
 
 // a variation of fast scan-conversion fill algorithm
-export void fillPolygon(const std::vector<POINT2> &points, std::function<void (long, long, long, long)> drawLine) {
+export void fillPolygon(const std::vector<POINT2> &points, 
+		std::function<void (long, long, long, long)> drawLine) {
 	using namespace std;
 
 	int npoints = points.size() - 1;
@@ -176,14 +177,14 @@ export void fillPolygon(const std::vector<POINT2> &points, std::function<void (l
 		} while (next != active_edge_table.end());
 
 		// increment the current x value for each edge
-		for (EDGE& edge : active_edge_table)
+		for (EDGE &edge : active_edge_table)
 			edge.Xl += edge.w;
 	}
 }
 
 constexpr int SLICE_SIDE = 120;
 
-export auto randomlyPlaceObjectsOnArea(int width, int height) {
+export auto randomlyPlacePointsOnArea(int width, int height) {
 	using namespace std;
 
 	int slices_x = width / SLICE_SIDE;
@@ -191,8 +192,8 @@ export auto randomlyPlaceObjectsOnArea(int width, int height) {
 	int slice_cx = width / slices_x;
 	int slice_cy = height / slices_y;
 
-	unique_ptr<vector<POINT2>> ppoints = make_unique<vector<POINT2>>(slices_x * slices_y);
-	vector<POINT2>& points = *ppoints;
+	auto ppoints = make_unique<vector<POINT2>>(slices_x * slices_y);
+	auto& points = *ppoints;
 
 	int k = 0;
 	for (int i = 0; i < slices_x; ++i)

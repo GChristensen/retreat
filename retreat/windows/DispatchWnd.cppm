@@ -12,6 +12,8 @@ import <memory>;
 import Controller;
 import TrayIconImpl;
 
+#include "debug.h"
+
 #define WM_USER_TIMER (WM_USER + 1)
 
 typedef CWinTraits<WS_BORDER | WS_SYSMENU> DispatchTraits;
@@ -84,7 +86,7 @@ const TCHAR* CONFIG_FILE_DIR = _T("Enso Retreat");
 const TCHAR* CONFIG_FILE_NAME = _T("retreat.conf");
 
 
-CDispatchWnd::CDispatchWnd(HINSTANCE hInstance)
+CDispatchWnd::CDispatchWnd(HINSTANCE hInstance): controller(hInstance)
 {
 	this->hInstance = hInstance;
 }

@@ -36,7 +36,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="windows\DispatchWnd.cppm" />
-    <ClCompile Include="misc\config.cpp">
+    <ClCompile Include="config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="scheduler\PeriodicScheduler.cppm" />
@@ -60,6 +60,11 @@
     <ClCompile Include="windows\LockWindowAdapter.cppm" />
     <ClCompile Include="algorithms.cppm" />
     <ClCompile Include="windows\gdi\Shapes.cppm" />
+    <ClCompile Include="config.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\InputLock.cppm" />
+    <ClCompile Include="statemachine\StateWindowFactory.cppm" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -78,9 +83,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="misc\dbgcout.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="misc\config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="misc\debug.h">
