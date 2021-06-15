@@ -29,7 +29,7 @@ public:
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnTaskBarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	//LRESULT OnPowerBroadcast(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnPowerBroadcast(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	//LRESULT OnQueryEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -43,7 +43,7 @@ public:
 		MESSAGE_HANDLER(WM_COMMAND, OnCommand)
 		MESSAGE_HANDLER(WM_USER_TIMER, OnTimer)
 		MESSAGE_HANDLER(msgTaskbarCreated, OnTaskBarCreated)
-		//MESSAGE_HANDLER(WM_POWERBROADCAST, OnPowerBroadcast)
+		MESSAGE_HANDLER(WM_POWERBROADCAST, OnPowerBroadcast)
 		//MESSAGE_HANDLER(WM_QUERYENDSESSION, OnQueryEndSession)
 		CHAIN_MSG_MAP(CTrayIconImpl<CDispatchWnd>)
 	END_MSG_MAP()
@@ -55,6 +55,7 @@ public:
 protected:
 
 	Controller controller;
+	void startController();
 
 	HINSTANCE hInstance;
 
@@ -82,19 +83,19 @@ import AboutDlg;
 
 const int TIMER_PERIOD = 1000;
 
-const TCHAR* CONFIG_FILE_DIR = _T("Enso Retreat");
-const TCHAR* CONFIG_FILE_NAME = _T("retreat.conf");
-
-
 CDispatchWnd::CDispatchWnd(HINSTANCE hInstance): controller(hInstance)
 {
 	this->hInstance = hInstance;
 }
 
+void CDispatchWnd::startController() {
+	SettingsPtr settings = std::make_shared<Settings>();
+	controller.reset(settings);
+}
+
 LRESULT CDispatchWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	std::shared_ptr<Settings> settings(new Settings(getConfigFilePath(CONFIG_FILE_DIR, CONFIG_FILE_NAME)));
-	controller.updateSettings(settings);
+	startController();
 
 	// show icon on Explorer restart by receiving TaskbarCreated message
 	msgTaskbarCreated = RegisterWindowMessage(_T("TaskbarCreated"));
@@ -148,6 +149,27 @@ LRESULT CDispatchWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 	return 0;
 }
+
+LRESULT CDispatchWnd::OnPowerBroadcast(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
+{
+	switch (wParam)
+	{
+	case PBT_APMSUSPEND:
+		controller.stop();
+		break;
+	case PBT_APMRESUMEAUTOMATIC:
+		startController();
+		break;
+	}
+
+	return 0;
+}
+
+//LRESULT CDispatchWnd::OnQueryEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
+//{
+//	
+//	return TRUE;
+//}
 
 LRESULT CDispatchWnd::OnTaskBarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
 {

@@ -40,7 +40,7 @@ private:
 module :private;
 
 LockWindowAdapter::LockWindowAdapter(StateMachine& stateMachine): 
-	settings(*stateMachine.getSettings()),
+	settings(stateMachine.getSettings()),
 	inputLock(stateMachine) {
 
 	fullscreen = settings.getBoolean(Settings::APPEARANCE_FULLSCREEN, 

@@ -10,8 +10,7 @@ import State;
 
 export class StateMachine {
 public:
-    StateMachine();
-    StateMachine(SettingsPtr settings, void* appInstance);
+    StateMachine(Settings &settings, void *appInstance);
 
     void setIdle(bool skip = false);
     void setAlert();
@@ -33,13 +32,13 @@ public:
     int getDelayDuration() { return delayDurationSec; }
     int getDelayAmount() { return delayAmount; }
 
-    SettingsPtr &getSettings() { return settings; }
+    Settings &getSettings() { return settings; }
     void *getAppInstance() { return appInstance; }
 
 private:
     std::shared_ptr<State> state;
 
-    SettingsPtr settings;
+    Settings &settings;
     void *appInstance;
 
     int suspendedDurationSec;

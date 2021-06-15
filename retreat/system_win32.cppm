@@ -16,7 +16,9 @@ import <chrono>;
 #include "debug.h"
 #include "tstring.h"
 
-export tstring getConfigFilePath(const tstring& appDir, const tstring& configFile) {
+const TCHAR* SETTINGS_DIR = _T("Enso Retreat");
+
+export tstring getConfigFilePath(const tstring& configFile) {
 	TCHAR appDataDirPath[MAX_PATH];
 
 	::SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, appDataDirPath);
@@ -26,7 +28,7 @@ export tstring getConfigFilePath(const tstring& appDir, const tstring& configFil
 	if (!configFilePath.ends_with(_T("\\")))
 		configFilePath.append(_T("\\"));
 
-	configFilePath.append(appDir);
+	configFilePath.append(SETTINGS_DIR);
 	configFilePath.append(_T("\\"));
 
 	// check whether application directory exists

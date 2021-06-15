@@ -56,7 +56,7 @@ std::function<void()> InputLock::onNumpadMinus;
 
 InputLock::InputLock(StateMachine& stateMachine) {
 	pStateMachine = &stateMachine;
-	Settings &settings = *stateMachine.getSettings();
+	Settings &settings = stateMachine.getSettings();
 
 	unlockPhrase = settings.getString(_T("unlock.phrase"), _T(""));
 
@@ -82,6 +82,9 @@ InputLock::~InputLock() {
 
 	hMouseHook = 0;
 	hKeyboardHook = 0;
+
+	onNumpadPlus = nullptr;
+	onNumpadMinus = nullptr;
 }
 
 void InputLock::setFullScreenMode(bool fullscreen) {

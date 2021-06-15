@@ -26,4 +26,6 @@ StateWindowPtr StateWindowFactory::createStateWindow(StateWindowType type, State
     case STATE_WINDOW_LOCK:
         return std::make_shared<LockWindowAdapter>(stateMachine);
     }
+
+    return nullptr;
 }

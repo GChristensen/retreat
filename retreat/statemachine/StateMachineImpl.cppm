@@ -12,28 +12,24 @@ import StateDelay;
 import StateLocked;
 import StateSuspended;
 
-StateMachine::StateMachine() {
+StateMachine::StateMachine(Settings &settings, void* appInstance): settings(settings), appInstance(appInstance) {
 
-}
-
-StateMachine::StateMachine(SettingsPtr settings, void* appInstance): appInstance(appInstance) {
-    this->settings = settings;
     state = std::make_shared<StateIdle>();
 
-    suspendedDurationSec = settings->getMinutesInSec(Settings::SUSPENDED_DURATION, Settings::DEFAULT_SUSPENDED_DURATION);
-    breakDurationSec = settings->getMinutesInSec(Settings::BREAK_DURATION, Settings::DEFAULT_BREAK_DURATION);
-    alertDurationSec = settings->getMinutesInSec(Settings::ALERT_DURATION, Settings::DEFAULT_ALERT_DURATION);
-    delayDurationSec = settings->getMinutesInSec(Settings::DELAY_DURATION, Settings::DEFAULT_DELAY_DURATION);
-    delayAmount = settings->getInt(Settings::DELAY_AMOUNT, Settings::DEFAULT_DELAY_AMOUNT);
+    suspendedDurationSec = settings.getMinutesInSec(Settings::SUSPENDED_DURATION, Settings::DEFAULT_SUSPENDED_DURATION);
+    breakDurationSec = settings.getMinutesInSec(Settings::BREAK_DURATION, Settings::DEFAULT_BREAK_DURATION);
+    alertDurationSec = settings.getMinutesInSec(Settings::ALERT_DURATION, Settings::DEFAULT_ALERT_DURATION);
+    delayDurationSec = settings.getMinutesInSec(Settings::DELAY_DURATION, Settings::DEFAULT_DELAY_DURATION);
+    delayAmount = settings.getInt(Settings::DELAY_AMOUNT, Settings::DEFAULT_DELAY_AMOUNT);
 
-    int skipDate = settings->getInt(Settings::SKIP_DATE, 0);
-    int skipExpended = settings->getBoolean(Settings::SKIP_EXPENDED, false);
+    int skipDate = settings.getInt(Settings::SKIP_DATE, 0);
+    int skipExpended = settings.getBoolean(Settings::SKIP_EXPENDED, false);
 
     bool skippable = StateAlert::setSkippable(skipDate, skipExpended);
 
     if (skippable && skipExpended) {
-        this->settings->setString(Settings::SKIP_EXPENDED, _T("false"));
-        this->settings->save();
+        this->settings.setString(Settings::SKIP_EXPENDED, _T("false"));
+        this->settings.save();
     }
 }
 
@@ -41,10 +37,10 @@ void StateMachine::setIdle(bool skip) {
     if (skip) {
         int currentDay = StateAlert::setSkipExpended();
 
-        this->settings->setString(Settings::SKIP_DATE, to_tstring(currentDay));
-        this->settings->setString(Settings::SKIP_EXPENDED, _T("true"));
+        settings.setString(Settings::SKIP_DATE, to_tstring(currentDay));
+        settings.setString(Settings::SKIP_EXPENDED, _T("true"));
 
-        this->settings->save();
+        settings.save();
     }
     state = std::make_shared<StateIdle>();
 }

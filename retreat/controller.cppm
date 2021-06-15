@@ -18,8 +18,6 @@ public:
 
     Controller(void *appInstance);
 
-    void updateSettings(std::shared_ptr<Settings> settings);
-
     void onTimer();
 
     bool canDisable() { return stateMachine->canDisable(); }
@@ -27,6 +25,9 @@ public:
     bool canDelay() { return stateMachine->canDelay(); }
     bool canExit() { return stateMachine->canExit(); }
     bool canSkip() { return stateMachine->canSkip(); }
+
+    void reset(std::shared_ptr<Settings> settings);
+    void stop();
 
     void enable(bool enable);
     void delay() { stateMachine->setDelay(); }
@@ -48,18 +49,24 @@ Controller::Controller(void *appInstance): appInstance(appInstance) {
     srand((unsigned)time(nullptr));
 }
 
-void Controller::updateSettings(std::shared_ptr<Settings> settings) {
+void Controller::reset(std::shared_ptr<Settings> settings) {
     this->settings = settings;
 
     scheduler = SchedulerFactory::createScheduler(*settings);
-    stateMachine = std::make_shared<StateMachine>(settings, appInstance);
+    stateMachine = std::make_shared<StateMachine>(*settings, appInstance);
+}
+
+void Controller::stop() {
+    scheduler = nullptr;
+    stateMachine = nullptr;
 }
 
 void Controller::onTimer() {
     if (scheduler != nullptr)
         scheduler->schedule(*stateMachine);
 
-    stateMachine->onTimer();
+    if (stateMachine != nullptr)
+        stateMachine->onTimer();
 }
 
 void Controller::enable(bool enable) {

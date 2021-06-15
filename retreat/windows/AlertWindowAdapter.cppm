@@ -35,7 +35,7 @@ private:
 
 module :private;
 
-AlertWindowAdapter::AlertWindowAdapter(StateMachine &stateMachine): settings(*stateMachine.getSettings()) {
+AlertWindowAdapter::AlertWindowAdapter(StateMachine &stateMachine): settings(stateMachine.getSettings()) {
 	alertDurationSec = settings.getMinutesInSec(Settings::ALERT_DURATION, 
 		Settings::DEFAULT_ALERT_DURATION);
 

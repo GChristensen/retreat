@@ -10,13 +10,14 @@ import "config.h";
 #include "tstring.h"
 #include "debug.h"
 
+const TCHAR* CONFIG_FILE_NAME = _T("retreat.conf");
+
 export const TCHAR* DEFAULT_TIMER_FONT_FACE = _T("Arial");
 export const int DEFAULT_TIMER_FONT_SIZE = 32;
 export const int DEFAULT_TIMER_X_WINDOWED = 25;
 export const int DEFAULT_TIMER_Y_WINDOWED = 25;
 export const int DEFAULT_TIMER_X = 160;
 export const int DEFAULT_TIMER_Y = 140;
-
 
 export class Settings {
 public:
@@ -68,7 +69,6 @@ public:
 
 
     Settings();
-    Settings(const tstring& file);
 
     void load(const tstring& file);
     void save(const tstring& file);
@@ -91,11 +91,10 @@ export using SettingsPtr = std::shared_ptr<Settings>;
 
 module :private;
 
-Settings::Settings() {
-    
-}
+import system;
 
-Settings::Settings(const tstring &file): file(file) {
+Settings::Settings() {
+    file = getConfigFilePath(CONFIG_FILE_NAME);
     load(file);
 }
 
