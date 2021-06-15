@@ -39,14 +39,11 @@
     <ClCompile Include="config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="scheduler\PeriodicScheduler.cppm" />
     <ClCompile Include="scheduler\Scheduler.cppm" />
     <ClCompile Include="statemachine\State.cppm" />
     <ClCompile Include="statemachine\StateAlert.cppm" />
     <ClCompile Include="statemachine\StateIdle.cppm" />
     <ClCompile Include="statemachine\StateLocked.cppm" />
-    <ClCompile Include="scheduler\SchedulerFactory.cppm" />
-    <ClCompile Include="scheduler\CronScheduler.cppm" />
     <ClCompile Include="statemachine\StateDelay.cppm" />
     <ClCompile Include="statemachine\StateSuspended.cppm" />
     <ClCompile Include="statemachine\StateMachine.cppm" />
@@ -65,6 +62,13 @@
     </ClCompile>
     <ClCompile Include="windows\InputLock.cppm" />
     <ClCompile Include="statemachine\StateWindowFactory.cppm" />
+    <ClCompile Include="statemachine\StateHalted.cppm" />
+    <ClCompile Include="scheduler\Event.cppm" />
+    <ClCompile Include="scheduler\PeriodicEvent.cppm" />
+    <ClCompile Include="statemachine\StateMonitoring.cppm" />
+    <ClCompile Include="statemachine\Monitor.cppm" />
+    <ClCompile Include="windows\InputMonitor.cppm" />
+    <ClCompile Include="statemachine\MonitorFactory.cppm" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

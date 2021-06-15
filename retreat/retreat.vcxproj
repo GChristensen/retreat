@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -223,13 +223,14 @@
     </ClCompile>
     <ClCompile Include="config.cpp" />
     <ClCompile Include="misc\dbgcout.cpp" />
-    <ClCompile Include="scheduler\CronScheduler.cppm" />
-    <ClCompile Include="scheduler\PeriodicScheduler.cppm" />
+    <ClCompile Include="scheduler\Event.cppm" />
+    <ClCompile Include="scheduler\PeriodicEvent.cppm" />
     <ClCompile Include="scheduler\Scheduler.cppm" />
-    <ClCompile Include="scheduler\SchedulerFactory.cppm" />
     <ClCompile Include="Settings.cppm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="statemachine\Monitor.cppm" />
+    <ClCompile Include="statemachine\MonitorFactory.cppm" />
     <ClCompile Include="statemachine\State.cppm" />
     <ClCompile Include="statemachine\StateAlert.cppm" />
     <ClCompile Include="statemachine\StateDelay.cppm" />
@@ -237,6 +238,8 @@
     <ClCompile Include="statemachine\StateLocked.cppm" />
     <ClCompile Include="statemachine\StateMachine.cppm" />
     <ClCompile Include="statemachine\StateMachineImpl.cppm" />
+    <ClCompile Include="statemachine\StateMonitoring.cppm" />
+    <ClCompile Include="statemachine\StateHalted.cppm" />
     <ClCompile Include="statemachine\StateSuspended.cppm" />
     <ClCompile Include="statemachine\StateWindowAdapter.cppm" />
     <ClCompile Include="statemachine\StateWindowFactory.cppm" />
@@ -254,6 +257,7 @@
     <ClCompile Include="windows\gdi\BitmapBuffer.cppm" />
     <ClCompile Include="windows\gdi\Shapes.cppm" />
     <ClCompile Include="windows\gdi\TextBuffer.cppm" />
+    <ClCompile Include="windows\InputMonitor.cppm" />
     <ClCompile Include="windows\LockWindowAdapter.cppm" />
     <ClCompile Include="windows\TimerWindow.cppm" />
     <ClCompile Include="windows\TranslucentWindow.cppm" />

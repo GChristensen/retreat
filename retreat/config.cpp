@@ -7,10 +7,13 @@
 
 #include "tstring.h"
 
+#include <ranges>
+#include <vector>
+
 using namespace boost::property_tree;
 
 // Since the current (2021) MSVC compiler can not digest boost in modules
-// setting file handling is placed in a regular cpp file
+// settings file handling is placed in a regular cpp file
 
 void readConfig(const tstring &file, std::map<tstring, tstring> &values) {
     wptree ptree;

@@ -1,6 +1,9 @@
 module; 
 
 #include "stdafx.h"
+#include <tlhelp32.h>
+#include <pathcch.h>
+#pragma comment(lib,"Pathcch")
 #include <shlobj.h>
 #include <dshow.h>
 #pragma comment(lib,"Strmiids")
@@ -108,4 +111,48 @@ export void playAudioFile(tstring &filePath) {
 	using namespace std::chrono_literals;
 	std::thread playThread(playProc);
 	playThread.detach();
+}
+
+export bool isProcessRunning(std::vector<tstring> &processes) {
+	PROCESSENTRY32 entry;
+	entry.dwSize = sizeof(PROCESSENTRY32);
+
+	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+
+	auto checkProcess = [&processes](PROCESSENTRY32 &entry) { 
+		bool matches = false;
+	
+		HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, entry.th32ProcessID);
+		if (hProcess != NULL) {
+			TCHAR processPath[MAX_PATH], canonizedPath[MAX_PATH] = { 0, };
+			DWORD pathSize = MAX_PATH;
+			if (QueryFullProcessImageName(hProcess, NULL, processPath, &pathSize)) {
+				if (S_OK == PathCchCanonicalize(canonizedPath, MAX_PATH, processPath)) {
+					for (auto& process : processes)
+						if (!_tcsicmp(process.c_str(), canonizedPath)) {
+							matches = true;
+							break;
+						}
+				}
+			}
+			CloseHandle(hProcess);
+		}
+	
+		return matches;
+	};
+
+	bool running = false;
+	if (Process32First(snapshot, &entry) && !checkProcess(entry))
+		while (Process32Next(snapshot, &entry)) {
+			running = checkProcess(entry);
+
+			if (running)
+				break;
+		}
+	else {
+		running = true;
+	}
+
+	CloseHandle(snapshot);
+	return running;
 }

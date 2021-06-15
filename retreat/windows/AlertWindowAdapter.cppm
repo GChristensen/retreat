@@ -6,6 +6,7 @@ export module AlertWindowAdapter;
 
 import <memory>;
 import <vector>;
+import <map>;
 
 #include "debug.h"
 
@@ -28,6 +29,8 @@ private:
 
 	std::vector<WindowPtr> windows;
 
+	bool isThereForbiddenProcesses();
+
 	auto createTimerWindow(CRect* rect);
 	static BOOL CALLBACK monitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, 
 		LPRECT lprcMonitor, LPARAM dwData);
@@ -35,7 +38,17 @@ private:
 
 module :private;
 
-AlertWindowAdapter::AlertWindowAdapter(StateMachine &stateMachine): settings(stateMachine.getSettings()) {
+import system;
+
+AlertWindowAdapter::AlertWindowAdapter(StateMachine &stateMachine): 
+	settings(stateMachine.getSettings()) {
+
+	bool checkForProcesses = settings.getBoolean(Settings::MONITORING_PROCESSES,
+		Settings::DEFAULT_MONITORING_PROCESSES);
+
+	if (checkForProcesses && isThereForbiddenProcesses())
+		throw StateForbiddenException();
+
 	alertDurationSec = settings.getMinutesInSec(Settings::ALERT_DURATION, 
 		Settings::DEFAULT_ALERT_DURATION);
 
@@ -45,6 +58,13 @@ AlertWindowAdapter::AlertWindowAdapter(StateMachine &stateMachine): settings(sta
 AlertWindowAdapter::~AlertWindowAdapter() {
 	for (const WindowPtr &window : windows)
 		window->SendMessage(WM_CLOSE);
+}
+
+bool AlertWindowAdapter::isThereForbiddenProcesses() {
+	std::vector<tstring> forbiddenProcesses;
+	settings.getSectionValues(Settings::PROCESSES, forbiddenProcesses);
+
+	return isProcessRunning(forbiddenProcesses);
 }
 
 void AlertWindowAdapter::onTimer() {

@@ -10,6 +10,7 @@ import BitmapBuffer;
 
 using WindowTraits = CWinTraits<0, WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TOOLWINDOW>;
 
+// some infernal code from 2007
 export class CTranslucentWindow: public CWindowImpl<CTranslucentWindow, CWindow, WindowTraits>
 {
 public:

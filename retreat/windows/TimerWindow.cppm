@@ -14,6 +14,7 @@ import algorithms;
 
 #include "debug.h"
 
+// some infernal code from 2007
 export class CTimerWindow: public CTranslucentWindow
 {
 	static const int TIMER_TEXT_ITEM = 0;

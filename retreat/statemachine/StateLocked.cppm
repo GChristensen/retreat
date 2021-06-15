@@ -13,6 +13,8 @@ export class StateLocked: public State {
 public:
     StateLocked(StateMachine &stateMachine);
 
+    virtual bool canAlert() { return false; };
+
     virtual void onTimer() override;
     
 private:

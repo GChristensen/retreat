@@ -55,7 +55,6 @@ public:
 protected:
 
 	Controller controller;
-	void startController();
 
 	HINSTANCE hInstance;
 
@@ -88,14 +87,10 @@ CDispatchWnd::CDispatchWnd(HINSTANCE hInstance): controller(hInstance)
 	this->hInstance = hInstance;
 }
 
-void CDispatchWnd::startController() {
-	SettingsPtr settings = std::make_shared<Settings>();
-	controller.reset(settings);
-}
-
 LRESULT CDispatchWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	startController();
+	SettingsPtr settings = std::make_shared<Settings>();
+	controller.reset(settings);
 
 	// show icon on Explorer restart by receiving TaskbarCreated message
 	msgTaskbarCreated = RegisterWindowMessage(_T("TaskbarCreated"));
@@ -158,7 +153,7 @@ LRESULT CDispatchWnd::OnPowerBroadcast(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 		controller.stop();
 		break;
 	case PBT_APMRESUMEAUTOMATIC:
-		startController();
+		controller.resume();
 		break;
 	}
 

@@ -24,7 +24,7 @@ module :private;
 StateSuspended::StateSuspended(StateMachine& stateMachine): stateMachine(stateMachine) {
     counter = stateMachine.getSuspendedDuration();
 
-    DBGLOG(_T("SUSPENDED"));
+    DBGLOG(_T("suspended"));
 }
 
 void StateSuspended::onTimer() {

@@ -5,6 +5,7 @@ module;
 
 export module BitmapBuffer;
 
+// some infernal code from 2007
 // keeps a bitmap that can be drawn on and could be drawn on a window DC
 export class CBitmapBuffer: public CBitmap
 {

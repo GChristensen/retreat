@@ -9,9 +9,9 @@ import <memory>;
 
 import Settings;
 import Scheduler;
-import SchedulerFactory;
 import StateMachine;
 import StateMachineImpl;
+import PeriodicEvent;
 
 export class Controller {
 public: 
@@ -28,6 +28,7 @@ public:
 
     void reset(std::shared_ptr<Settings> settings);
     void stop();
+    void resume();
 
     void enable(bool enable);
     void delay() { stateMachine->setDelay(); }
@@ -52,13 +53,19 @@ Controller::Controller(void *appInstance): appInstance(appInstance) {
 void Controller::reset(std::shared_ptr<Settings> settings) {
     this->settings = settings;
 
-    scheduler = SchedulerFactory::createScheduler(*settings);
     stateMachine = std::make_shared<StateMachine>(*settings, appInstance);
+    scheduler = std::make_shared<Scheduler>(*settings);
+    
+    scheduler->addEvent(std::make_shared<PeriodicEvent>(*settings));
 }
 
 void Controller::stop() {
-    scheduler = nullptr;
-    stateMachine = nullptr;
+    stateMachine->setHalted();
+}
+
+void Controller::resume() {
+    PeriodicEvent::reset(*settings);
+    stateMachine->setIdle();
 }
 
 void Controller::onTimer() {

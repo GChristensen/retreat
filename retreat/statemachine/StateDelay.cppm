@@ -1,7 +1,6 @@
 export module StateDelay;
 
 import State;
-
 import StateMachine;
 
 import "debug.h";

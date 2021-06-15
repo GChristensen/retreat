@@ -3,6 +3,7 @@
 export module StateMachine;
 
 import <memory>;
+import <exception>;
 
 import Settings;
 
@@ -16,11 +17,14 @@ public:
     void setAlert();
     void setDelay();
     void setLocked();
+    void setHalted();
     void setSuspended();
+    void setMonitoring();
 
     void onTimer();
 
     bool isSuspended();
+    bool isHalted();
     bool canDisable();
     bool canDelay();
     bool canExit();
@@ -49,3 +53,8 @@ private:
 };
 
 export using StateMachinePtr = std::shared_ptr<StateMachine>;
+
+export class StateForbiddenException: public std::exception {
+public:
+    virtual char const* what() const { return "State forbidden."; }
+};

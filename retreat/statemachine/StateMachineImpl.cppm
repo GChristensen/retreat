@@ -4,13 +4,17 @@ import <string>;
 
 #include "tstring.h"
 
+#include "debug.h"
+
 import StateMachine;
 
 import StateIdle;
 import StateAlert;
 import StateDelay;
 import StateLocked;
+import StateHalted;
 import StateSuspended;
+import StateMonitoring;
 
 StateMachine::StateMachine(Settings &settings, void* appInstance): settings(settings), appInstance(appInstance) {
 
@@ -45,9 +49,22 @@ void StateMachine::setIdle(bool skip) {
     state = std::make_shared<StateIdle>();
 }
 
+void StateMachine::setHalted() {
+    state = std::make_shared<StateHalted>();
+}
+
+
 void StateMachine::setAlert() {
-    if (!state->isSuspended())
-        state = std::make_shared<StateAlert>(*this);
+    if (!state->isSuspended() && !state->isHalted() && state->canAlert()) {
+        try { 
+            state = std::make_shared<StateAlert>(*this); 
+        }
+        catch (StateForbiddenException &e) {
+        }
+    }
+
+    if (state->isMonitoring()) // cancel monitoring states
+        setIdle();
 }
 
 void StateMachine::setDelay() {
@@ -63,12 +80,21 @@ void StateMachine::setSuspended() {
     state = std::make_shared<StateSuspended>(*this);
 }
 
+void StateMachine::setMonitoring() {
+    if (state->isIdle())
+        state = std::make_shared<StateMonitoring>(*this);
+}
+
 void StateMachine::onTimer() {
     state->onTimer();
 }
 
 bool StateMachine::isSuspended() {
     return state->isSuspended();
+}
+
+bool StateMachine::isHalted() {
+    return state->isHalted();
 }
 
 bool StateMachine::canDisable() { 
