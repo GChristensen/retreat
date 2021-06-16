@@ -3,7 +3,8 @@ export module StateDelay;
 import State;
 import StateMachine;
 
-import "debug.h";
+#include "debug.h"
+#include "tstring.h"
 
 export class StateDelay : public State {
 public:
@@ -17,9 +18,7 @@ public:
         return delaysRequested < maxAmount;
     }
 
-    static void resetDelays() {
-        delaysRequested = 0;
-    }
+    static void reset() { delaysRequested = 0; }
 
 private:
     int counter;

@@ -5,7 +5,8 @@ import StateMachine;
 import Monitor;
 import MonitorFactory;
 
-import "debug.h";
+#include "debug.h"
+#include "tstring.h"
 
 export class StateMonitoring: public State {
 public:

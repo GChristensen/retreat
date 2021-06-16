@@ -6,12 +6,16 @@ module;
 export module Controller;
 
 import <memory>;
+import <exception>;
 
 import Settings;
 import Scheduler;
 import StateMachine;
 import StateMachineImpl;
 import PeriodicEvent;
+import CronEvent;
+
+#include "tstring.h"
 
 export class Controller {
 public: 
@@ -56,7 +60,22 @@ void Controller::reset(std::shared_ptr<Settings> settings) {
     stateMachine = std::make_shared<StateMachine>(*settings, appInstance);
     scheduler = std::make_shared<Scheduler>(*settings);
     
-    scheduler->addEvent(std::make_shared<PeriodicEvent>(*settings));
+    if (settings->getBoolean(Settings::PERIOD_ENABLE, Settings::DEFAULT_PERIOD_ENABLE))
+        scheduler->addEvent(std::make_shared<PeriodicEvent>(*settings));
+
+    auto cronStrings = settings->getSectionValues(Settings::CRON);
+
+    for (auto &cronString : cronStrings) {
+        std::shared_ptr<CronEvent> cronEvent;
+        try {
+            cronEvent = std::make_shared<CronEvent>(*settings, cronString);
+        }
+        catch (std::exception &) {
+        }
+
+        if (cronEvent != nullptr && !cronEvent->isMalformed())
+            scheduler->addEvent(cronEvent);
+    }
 }
 
 void Controller::stop() {

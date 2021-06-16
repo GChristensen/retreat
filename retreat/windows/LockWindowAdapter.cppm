@@ -4,10 +4,12 @@ module;
 
 export module LockWindowAdapter;
 
+import <string>;
 import <memory>;
 import <vector>;
 
 #include "debug.h"
+#include "tstring.h"
 
 import system;
 import Settings;
@@ -30,6 +32,8 @@ private:
 	InputLock inputLock;
 	bool settingsChanged = false;
 
+	int breakDurationSec;
+
 	std::vector<WindowPtr> windows;
 
 	auto createTimerWindow(CRect* rect, bool primary);
@@ -42,6 +46,11 @@ module :private;
 LockWindowAdapter::LockWindowAdapter(StateMachine& stateMachine): 
 	settings(stateMachine.getSettings()),
 	inputLock(stateMachine) {
+
+	breakDurationSec = stateMachine.getBreakDuration();
+
+	if (stateMachine.getBreakDurationOverride())
+		breakDurationSec = stateMachine.getBreakDurationOverride();
 
 	fullscreen = settings.getBoolean(Settings::APPEARANCE_FULLSCREEN, 
 		Settings::DEFAULT_APPEARANCE_FULLSCREEN);
@@ -156,9 +165,6 @@ auto LockWindowAdapter::createTimerWindow(CRect* pRect, bool primary) {
 
 		COLORREF timerTextColor = settings.getInt(Settings::APPEARANCE_TIMER_TEXT_COLOR, 
 			Settings::DEFAULT_APPEARANCE_TIMER_TEXT_COLOR);
-
-		int breakDurationSec = settings.getMinutesInSec(Settings::BREAK_DURATION, 
-			Settings::DEFAULT_BREAK_DURATION);
 		
 		pTimerWnd->SetTimerProperties(
 			DEFAULT_TIMER_FONT_FACE,

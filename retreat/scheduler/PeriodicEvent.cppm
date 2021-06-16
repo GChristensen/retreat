@@ -56,17 +56,17 @@ PeriodicEvent::PeriodicEvent(Settings &settings) {
     if ((monitoringEnabled? monitoringBoundarySec: alertBoundarySec) > periodDurationSec)
         periodDurationSec += monitoringEnabled? monitoringBoundarySec: alertBoundarySec;
 
-    reset(settings);
+    if (!startTime)
+        reset(settings);
 }
 
 void PeriodicEvent::reset(Settings &settings) {
     bool fromLaunchTime = settings.getBoolean(Settings::PERIOD_FROM_LAUNCH, Settings::DEFAULT_PERIOD_FROM_LAUNCH);
-
-    if (!startTime) {
-        startTime = time(nullptr);
-        if (!fromLaunchTime)
-            startTime -= startTime % 3600;
-    }
+ 
+    startTime = time(nullptr);
+    if (!fromLaunchTime)
+        startTime -= startTime % 3600;
+   
 }
 
 bool PeriodicEvent::isMonitoring(time_t time) {

@@ -28,7 +28,6 @@ private:
 
 module :private;
 
-
 Scheduler::Scheduler(Settings& settings) {
 
 }

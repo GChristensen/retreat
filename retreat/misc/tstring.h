@@ -15,6 +15,8 @@
 #   define tifstream std::wifstream
 #   define tofstream std::wofstream
 #   define tcout std::wcout
+#   define tregex std::wregex
+#   define tregex_token_iterator std::wsregex_token_iterator
 #else
 #   ifndef _T
 #       define _T(x) x
@@ -29,6 +31,8 @@
 #   define tifstream std::ifstream
 #   define tofstream std::ofstream
 #   define tcout std::cout
+#   define tregex std::regex
+#   define tregex_token_iterator std::sregex_token_iterator
 #endif
 
 #endif // __TSTRING_H__

@@ -9,6 +9,8 @@ public:
     StateHalted();
 
     virtual bool isHalted() { return true; };
+
+    virtual bool canAlert() { return false; };
 };
 
 module :private;

@@ -6,6 +6,7 @@ module;
 
 export module InputLock;
 
+import <string>;
 import <algorithm>;
 import <functional>;
 
@@ -13,6 +14,7 @@ import Settings;
 import StateMachine;
 
 #include "debug.h"
+#include "tstring.h"
 
 export class InputLock {
 public:

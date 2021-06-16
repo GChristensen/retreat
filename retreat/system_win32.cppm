@@ -85,7 +85,7 @@ export void playAudioFile(tstring &filePath) {
 			IID_IGraphBuilder, (void**)&pGraph);
 
 		if (FAILED(hr)) {
-			DBGLOG("ERROR - Could not create the Filter Graph Manager.");
+			DBGLOG(_T("ERROR - Could not create the Filter Graph Manager."));
 			return;
 		}
 
@@ -108,10 +108,21 @@ export void playAudioFile(tstring &filePath) {
 		::CoUninitialize();
 	};
 
-	using namespace std::chrono_literals;
 	std::thread playThread(playProc);
 	playThread.detach();
 }
+
+export void displayMessage(tstring& text) {
+	auto pText = std::make_shared<tstring>(text);
+
+	auto displayProc = [pText]() {
+		MessageBox(0, pText->c_str(), _T("Enso Retreat"), MB_OK);
+	};
+
+	std::thread displayThread(displayProc);
+	displayThread.detach();
+}
+
 
 export bool isProcessRunning(std::vector<tstring> &processes) {
 	PROCESSENTRY32 entry;

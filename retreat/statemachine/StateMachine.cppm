@@ -31,6 +31,8 @@ public:
     bool canSkip();
 
     int getSuspendedDuration() { return suspendedDurationSec; }
+    void setBreakDurationOverride(int duration) { breakDurationOverrideSec = duration; }
+    int getBreakDurationOverride() { return breakDurationOverrideSec; }
     int getBreakDuration() { return breakDurationSec; }
     int getAlertDuration() { return alertDurationSec; }
     int getDelayDuration() { return delayDurationSec; }
@@ -46,6 +48,7 @@ private:
     void *appInstance;
 
     int suspendedDurationSec;
+    int breakDurationOverrideSec;
     int breakDurationSec;
     int alertDurationSec;
     int delayDurationSec;

@@ -69,6 +69,7 @@
     <ClCompile Include="statemachine\Monitor.cppm" />
     <ClCompile Include="windows\InputMonitor.cppm" />
     <ClCompile Include="statemachine\MonitorFactory.cppm" />
+    <ClCompile Include="scheduler\CronEvent.cppm" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

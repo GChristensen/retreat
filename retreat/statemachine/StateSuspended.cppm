@@ -11,6 +11,8 @@ public:
 
     virtual bool isSuspended() { return true; };
 
+    virtual bool canAlert() { return false; };
+
     virtual void onTimer() override;
 
 private:

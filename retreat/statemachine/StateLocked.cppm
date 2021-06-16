@@ -8,6 +8,7 @@ import StateWindowAdapter;
 import StateWindowFactory;
 
 #include "debug.h"
+#include "tstring.h"
 
 export class StateLocked: public State {
 public:
@@ -16,9 +17,16 @@ public:
     virtual bool canAlert() { return false; };
 
     virtual void onTimer() override;
+
+    // used to set break length from cron events
+    static void setLockDurationOverride(int duration);
+    static void setMessageText(tstring text);
+    static void reset();
     
 private:
     int counter;
+    static int lockDurationOverride;
+    static tstring messageText;
 
     StateMachine &stateMachine;
 
@@ -27,13 +35,22 @@ private:
 
 module :private;
 
+import system;
+
+int StateLocked::lockDurationOverride = 0;
+tstring StateLocked::messageText;
+
 StateLocked::StateLocked(StateMachine& stateMachine): 
-    stateMachine(stateMachine),
-    lockWindow(StateWindowFactory::createStateWindow(
-        StateWindowFactory::STATE_WINDOW_LOCK, stateMachine)) {
+    stateMachine(stateMachine) {
     
-    counter = stateMachine.getBreakDuration();
-    StateDelay::resetDelays();
+    stateMachine.setBreakDurationOverride(lockDurationOverride);
+
+    if (lockDurationOverride)
+        counter = lockDurationOverride;
+    else
+        counter = stateMachine.getBreakDuration();
+
+    lockWindow = StateWindowFactory::createStateWindow(StateWindowFactory::STATE_WINDOW_LOCK, stateMachine);
 
     DBGLOG(_T("locked"));
 }
@@ -43,6 +60,23 @@ void StateLocked::onTimer() {
 
     lockWindow->onTimer();
 
-    if (counter < 0)
+    if (counter < 0) {
+        if (!messageText.empty())
+            displayMessage(messageText);
+
         stateMachine.setIdle();
+    }
+}
+
+void StateLocked::setLockDurationOverride(int duration) {
+    lockDurationOverride = duration;
+}
+
+void StateLocked::setMessageText(tstring text) {
+    messageText = text;
+}
+
+void StateLocked::reset() {
+    lockDurationOverride = 0;
+    messageText = _T("");
 }

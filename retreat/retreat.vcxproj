@@ -223,6 +223,7 @@
     </ClCompile>
     <ClCompile Include="config.cpp" />
     <ClCompile Include="misc\dbgcout.cpp" />
+    <ClCompile Include="scheduler\CronEvent.cppm" />
     <ClCompile Include="scheduler\Event.cppm" />
     <ClCompile Include="scheduler\PeriodicEvent.cppm" />
     <ClCompile Include="scheduler\Scheduler.cppm" />

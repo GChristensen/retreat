@@ -1,6 +1,7 @@
 ﻿export module Settings;
 
 import <map>;
+import <vector>;
 import <memory>;
 import <string>;
 import <utility>;
@@ -21,7 +22,7 @@ export const int DEFAULT_TIMER_Y = 140;
 
 export class Settings {
 public:
-    static constexpr const TCHAR *ERIOD_ENABLE = _T("periods.enable");
+    static constexpr const TCHAR *PERIOD_ENABLE = _T("periods.enable");
     static constexpr const TCHAR *PERIOD_DURATION = _T("periods.duration");
     static constexpr const TCHAR *PERIOD_FROM_LAUNCH = _T("periods.from_launch_time");
 
@@ -51,6 +52,7 @@ public:
     static constexpr const TCHAR *MONITORING_INACTIVITY = _T("monitoring.inactivity");
 
     static constexpr const TCHAR* PROCESSES = _T("processes.");
+    static constexpr const TCHAR* CRON = _T("cron.");
 
 
     static constexpr const bool DEFAULT_PERIOD_ENABLE = true;
@@ -92,8 +94,8 @@ public:
     int getMinutesInSec(const tstring path, int defaultValue);
     int getHoursInSec(const tstring path, int defaultValue);
 
-    void getSection(tstring name, std::vector<std::pair<tstring, tstring>> &contents);
-    void getSectionValues(tstring name, std::vector<tstring> &values);
+    auto getSection(tstring name);
+    auto getSectionValues(tstring name);
 
     void setString(const tstring path, const tstring value);
 
@@ -167,20 +169,24 @@ int Settings::getHoursInSec(const tstring path, int defaultValue) {
     return result  *DBG_SECONDS  *60;
 }
 
-void Settings::getSection(tstring name, std::vector<std::pair<tstring, tstring>> &contents) {
-    contents.clear();
+auto Settings::getSection(tstring name) {
+    std::vector<std::pair<tstring, tstring>> contents;
 
     for (auto &vpair : values)
         if (vpair.first.starts_with(name))
             contents.emplace_back(vpair);
+
+    return contents;
 }
 
-void Settings::getSectionValues(tstring name, std::vector<tstring> &contents) {
-    contents.clear();
+auto Settings::getSectionValues(tstring name) {
+    std::vector<tstring> contents;
 
     for (auto &vpair : values)
         if (vpair.first.starts_with(name))
             contents.emplace_back(vpair.second);
+
+    return contents;
 }
 
 void Settings::setString(const tstring path, const tstring value) {

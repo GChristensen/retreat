@@ -16,7 +16,7 @@ import <iostream>;
 #define DBGTIME
 #define DBGTIMEEND
 
-#defin DBG_SECONDS 60
+#define DBG_SECONDS 60
 
 #endif
     

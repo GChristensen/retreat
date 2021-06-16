@@ -61,8 +61,7 @@ AlertWindowAdapter::~AlertWindowAdapter() {
 }
 
 bool AlertWindowAdapter::isThereForbiddenProcesses() {
-	std::vector<tstring> forbiddenProcesses;
-	settings.getSectionValues(Settings::PROCESSES, forbiddenProcesses);
+	auto forbiddenProcesses = settings.getSectionValues(Settings::PROCESSES);
 
 	return isProcessRunning(forbiddenProcesses);
 }

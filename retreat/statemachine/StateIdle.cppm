@@ -1,6 +1,8 @@
 export module StateIdle;
 
 import State;
+import StateDelay;
+import StateLocked;
 
 #include "debug.h"
 
@@ -15,5 +17,8 @@ public:
 module :private;
 
 StateIdle::StateIdle() {
+    StateLocked::reset();
+    StateDelay::reset();
+    
     DBGLOG(_T("idle"));
 }

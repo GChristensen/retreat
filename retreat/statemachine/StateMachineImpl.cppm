@@ -55,15 +55,15 @@ void StateMachine::setHalted() {
 
 
 void StateMachine::setAlert() {
-    if (!state->isSuspended() && !state->isHalted() && state->canAlert()) {
+    if (state->canAlert()) {
         try { 
             state = std::make_shared<StateAlert>(*this); 
         }
-        catch (StateForbiddenException &e) {
+        catch (StateForbiddenException &) {
         }
     }
 
-    if (state->isMonitoring()) // cancel monitoring states
+    if (state->isMonitoring())
         setIdle();
 }
 
