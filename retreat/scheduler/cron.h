@@ -1,3 +1,5 @@
+// derived from: https://github.com/mariusbancila/croncpp
+
 #pragma once
 
 #include <vector>
@@ -66,8 +68,8 @@ namespace cron
       static const cron_int CRON_MIN_HOURS = 0;
       static const cron_int CRON_MAX_HOURS = 23;
 
-      static const cron_int CRON_MIN_DAYS_OF_WEEK = 0;
-      static const cron_int CRON_MAX_DAYS_OF_WEEK = 6;
+      static const cron_int CRON_MIN_DAYS_OF_WEEK = 1;
+      static const cron_int CRON_MAX_DAYS_OF_WEEK = 7;
 
       static const cron_int CRON_MIN_DAYS_OF_MONTH = 1;
       static const cron_int CRON_MAX_DAYS_OF_MONTH = 31;
@@ -77,7 +79,7 @@ namespace cron
 
       static const cron_int CRON_MAX_YEARS_DIFF = 4;
 
-      static const inline std::vector<tstring> DAYS = { _T("SUN"), _T("MON"), _T("TUE"), _T("WED"), _T("THU"), _T("FRI"), _T("SAT"), _T("SUN") };
+      static const inline std::vector<tstring> DAYS = { _T("NIL"), _T("SUN"), _T("MON"), _T("TUE"), _T("WED"), _T("THU"), _T("FRI"), _T("SAT") };
       static const inline std::vector<tstring> MONTHS = { _T("NIL"), _T("JAN"), _T("FEB"), _T("MAR"), _T("APR"), _T("MAY"), _T("JUN"), _T("JUL"), _T("AUG"), _T("SEP"), _T("OCT"), _T("NOV"), _T("DEC") };
    };
 
@@ -109,7 +111,7 @@ namespace cron
 
       template <typename Traits>
       friend cronexpr make_cron(STRING_VIEW expr);
-      friend std::tm cron_has(cronexpr const& cex, std::tm const& date);
+      friend bool cron_has(cronexpr const& cex, std::tm const &date);
    };
 
    inline bool operator==(cronexpr const & e1, cronexpr const & e2)
@@ -763,7 +765,8 @@ namespace cron
       return utils::tm_to_time(*dt);
    }   
 
-   static std::tm cron_has(cronexpr const &cex, std::tm const &date) {
-
+   static bool cron_has(cronexpr const &cex, std::tm const &date) {
+       return cex.minutes[date.tm_min] && cex.hours[date.tm_hour] && cex.days_of_month[date.tm_mday - 1]
+           && cex.months[date.tm_mon] && cex.days_of_week[date.tm_wday];
    }
 }

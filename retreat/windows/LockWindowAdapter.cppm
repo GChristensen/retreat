@@ -7,6 +7,7 @@ export module LockWindowAdapter;
 import <string>;
 import <memory>;
 import <vector>;
+import <algorithm>;
 
 #include "debug.h"
 #include "tstring.h"
@@ -87,6 +88,8 @@ LockWindowAdapter::LockWindowAdapter(StateMachine& stateMachine):
 LockWindowAdapter::~LockWindowAdapter() {
 	if (settingsChanged)
 		settings.save();
+
+	std::reverse(windows.begin(), windows.end());
 
 	for (const WindowPtr &window : windows)
 		window->SendMessage(WM_CLOSE);

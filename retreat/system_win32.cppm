@@ -8,6 +8,8 @@ module;
 #include <dshow.h>
 #pragma comment(lib,"Strmiids")
 
+#include "resource.h"
+
 export module system:win32;
 
 import <memory>;
@@ -120,13 +122,13 @@ export void displayMessage(tstring& text) {
 	auto pText = std::make_shared<tstring>(text);
 
 	auto displayProc = [pText]() {
-		MessageBox(0, pText->c_str(), _T("Enso Retreat"), MB_OK);
+		MessageBox(0, pText->c_str(), CString(MAKEINTRESOURCE(IDS_APP_NAME)), 
+			MB_OK | MB_ICONASTERISK | MB_TOPMOST);
 	};
 
 	std::thread displayThread(displayProc);
 	displayThread.detach();
 }
-
 
 export bool isProcessRunning(std::vector<tstring> &processes) {
 	PROCESSENTRY32 entry;

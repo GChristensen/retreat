@@ -289,10 +289,10 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsHeaderUnit</CompileAs>
     </ClInclude>
     <ClInclude Include="misc\LimitSingleInstance.h" />
-    <ClInclude Include="misc\tstring.h" />
+    <ClInclude Include="tstring.h" />
     <ClInclude Include="res\resource.h" />
     <ClInclude Include="pch\stdafx.h" />
-    <ClInclude Include="scheduler\croncpp.h" />
+    <ClInclude Include="scheduler\cron.h" />
     <ClInclude Include="windows\options\ColorButton.h" />
     <ClInclude Include="windows\options\WTLTabViewCtrl.h" />
   </ItemGroup>
