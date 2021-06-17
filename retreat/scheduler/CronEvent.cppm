@@ -1,10 +1,10 @@
 module;
 
 #include <ctime>
+#include "croncpp.h"
 
 export module CronEvent;
 
-import <tuple>;
 import <regex>;
 import <string>;
 import <algorithm>;
@@ -144,6 +144,8 @@ bool CronEvent::isAlert(time_t time) {
 }
 
 void CronEvent::parseCron(tstring& cron) {
+	//auto crn = cron::make_cron(cron);
+
 	auto cronItemStrings = split(cron, _T(" "));
 
 	for (std::size_t i = 0; i < cronItemStrings.size() && i < 5; ++i) {

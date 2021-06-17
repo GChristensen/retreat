@@ -1,6 +1,7 @@
 ﻿export module Settings;
 
 import <map>;
+import <regex>;
 import <vector>;
 import <memory>;
 import <string>;
@@ -27,9 +28,12 @@ public:
     static constexpr const TCHAR *PERIOD_FROM_LAUNCH = _T("periods.from_launch_time");
 
     static constexpr const TCHAR *BREAK_DURATION = _T("breaks.duration");
+
+    static constexpr const TCHAR* ALERT_DURATION = _T("alerts.duration");
+
     static constexpr const TCHAR *DELAY_AMOUNT = _T("delays.amount");
     static constexpr const TCHAR *DELAY_DURATION = _T("delays.duration");
-    static constexpr const TCHAR *ALERT_DURATION = _T("alerts.duration");
+
     static constexpr const TCHAR *SUSPENDED_DURATION = _T("suspended.duration");
 
     static constexpr const TCHAR *SKIP_DATE = _T("skip.date");
@@ -60,10 +64,13 @@ public:
     static constexpr const bool DEFAULT_PERIOD_FROM_LAUNCH = false;
 
     static constexpr const int DEFAULT_BREAK_DURATION = 10;
+
+    static constexpr const int DEFAULT_ALERT_DURATION = 1;
+
     static constexpr const int DEFAULT_DELAY_AMOUNT = 2;
     static constexpr const int DEFAULT_DELAY_DURATION = 3;
-    static constexpr const int DEFAULT_ALERT_DURATION = 1;
-    static constexpr const int DEFAULT_SUSPENDED_DURATION = 120;
+    
+    static constexpr const int DEFAULT_SUSPENDED_DURATION = 2;
 
     static constexpr const bool DEFAULT_BEHAVIOR_BEEP = false;
 
@@ -96,8 +103,14 @@ public:
 
     auto getSection(tstring name);
     auto getSectionValues(tstring name);
+    void clearSection(tstring name);
 
     void setString(const tstring path, const tstring value);
+    void setBoolean(const tstring path, bool value);
+    void setInt(const tstring path, int value);
+
+    auto split(tstring &value);
+    tstring join(const std::vector<tstring> &list);
 
 private:
     tstring file;
@@ -160,13 +173,13 @@ int Settings::getInt(const tstring path, int defaultValue) {
 int Settings::getMinutesInSec(const tstring path, int defaultValue) {
     int result = getInt(std::move(path), defaultValue);
 
-    return result  *DBG_SECONDS;
+    return result * DBG_SECONDS;
 }
 
 int Settings::getHoursInSec(const tstring path, int defaultValue) {
     int result = getInt(std::move(path), defaultValue);
 
-    return result  *DBG_SECONDS  *60;
+    return result * DBG_SECONDS * 60;
 }
 
 auto Settings::getSection(tstring name) {
@@ -189,6 +202,38 @@ auto Settings::getSectionValues(tstring name) {
     return contents;
 }
 
+void Settings::clearSection(tstring name) {
+    std::erase_if(values, [&name](const auto& item) { return item.first.starts_with(name); });
+}
+
 void Settings::setString(const tstring path, const tstring value) {
     values[path] = value;
+}
+
+void Settings::setBoolean(const tstring path, bool value) {
+    values[path] = value ? _T("true") : _T("false");
+}
+
+void Settings::setInt(const tstring path, int value) {
+    values[path] = to_tstring(value);
+}
+
+auto Settings::split(tstring &value) {
+    tregex reg(_T("\\|"));
+    tregex_token_iterator iter(value.begin(), value.end(), reg, -1);
+
+    return std::vector<tstring>(iter, tregex_token_iterator());
+}
+
+tstring Settings::join(const std::vector<tstring>& list) {
+    tstring result;
+    
+    int n = list.size() - 1;
+    for (auto &elem : list) {
+        result.append(elem);
+        if (n-- > 0)
+            result.append(_T("|"));
+    }
+
+    return result;
 }

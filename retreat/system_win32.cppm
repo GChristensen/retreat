@@ -112,6 +112,10 @@ export void playAudioFile(tstring &filePath) {
 	playThread.detach();
 }
 
+export void playSystemSound() {
+	MessageBeep(MB_ICONASTERISK);
+}
+
 export void displayMessage(tstring& text) {
 	auto pText = std::make_shared<tstring>(text);
 

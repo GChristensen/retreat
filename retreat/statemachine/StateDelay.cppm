@@ -25,7 +25,7 @@ private:
 
     static int delaysRequested;
 
-    StateMachine& stateMachine;
+    StateMachine &stateMachine;
 };
 
 module :private;

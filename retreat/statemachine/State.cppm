@@ -7,6 +7,7 @@ public:
     virtual bool isMonitoring() { return false; };
     virtual bool isSuspended() { return false; };
     virtual bool isHalted() { return false; };
+    virtual bool isAlert() { return false; };
     virtual bool isIdle() { return false; };
 
     virtual bool canDisable() { return false; };

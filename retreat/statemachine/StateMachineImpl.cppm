@@ -18,9 +18,12 @@ import StateMonitoring;
 
 StateMachine::StateMachine(Settings &settings, void* appInstance): settings(settings), appInstance(appInstance) {
 
+    reset(settings);
     state = std::make_shared<StateIdle>();
+}
 
-    suspendedDurationSec = settings.getMinutesInSec(Settings::SUSPENDED_DURATION, Settings::DEFAULT_SUSPENDED_DURATION);
+void StateMachine::reset(Settings &settings) {
+    suspendedDurationSec = settings.getHoursInSec(Settings::SUSPENDED_DURATION, Settings::DEFAULT_SUSPENDED_DURATION);
     breakDurationSec = settings.getMinutesInSec(Settings::BREAK_DURATION, Settings::DEFAULT_BREAK_DURATION);
     alertDurationSec = settings.getMinutesInSec(Settings::ALERT_DURATION, Settings::DEFAULT_ALERT_DURATION);
     delayDurationSec = settings.getMinutesInSec(Settings::DELAY_DURATION, Settings::DEFAULT_DELAY_DURATION);
@@ -41,7 +44,7 @@ void StateMachine::setIdle(bool skip) {
     if (skip) {
         int currentDay = StateAlert::setSkipExpended();
 
-        settings.setString(Settings::SKIP_DATE, to_tstring(currentDay));
+        settings.setInt(Settings::SKIP_DATE, currentDay);
         settings.setString(Settings::SKIP_EXPENDED, _T("true"));
 
         settings.save();
@@ -95,6 +98,10 @@ bool StateMachine::isSuspended() {
 
 bool StateMachine::isHalted() {
     return state->isHalted();
+}
+
+bool StateMachine::isAlert() {
+    return state->isAlert();
 }
 
 bool StateMachine::canDisable() { 

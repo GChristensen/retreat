@@ -19,7 +19,7 @@ public:
 private:
     MonitorPtr inputMonitor;
 
-    StateMachine& stateMachine;
+    StateMachine &stateMachine;
 };
 
 module :private;

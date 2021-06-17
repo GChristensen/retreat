@@ -16,7 +16,7 @@ public:
     virtual bool isMonitoring(time_t time) override;
     virtual bool isAlert(time_t time) override;
 
-    static void reset(Settings &settings);
+    static void resetStartTime(Settings &settings);
 
 private:
     static std::time_t startTime;
@@ -57,10 +57,10 @@ PeriodicEvent::PeriodicEvent(Settings &settings) {
         periodDurationSec += monitoringEnabled? monitoringBoundarySec: alertBoundarySec;
 
     if (!startTime)
-        reset(settings);
+        resetStartTime(settings);
 }
 
-void PeriodicEvent::reset(Settings &settings) {
+void PeriodicEvent::resetStartTime(Settings &settings) {
     bool fromLaunchTime = settings.getBoolean(Settings::PERIOD_FROM_LAUNCH, Settings::DEFAULT_PERIOD_FROM_LAUNCH);
  
     startTime = time(nullptr);
@@ -72,7 +72,8 @@ void PeriodicEvent::reset(Settings &settings) {
 bool PeriodicEvent::isMonitoring(time_t time) {
     int elapsed = time - startTime;
 
-    if (monitoringEnabled && elapsed % periodDurationSec == timeToMonitoringSec)
+    int timePoint = elapsed % periodDurationSec;
+    if (monitoringEnabled && timePoint >= timeToMonitoringSec && timePoint < timeToMonitoringSec + 3)
         return true;
 
     return false;
@@ -83,7 +84,9 @@ bool PeriodicEvent::isAlert(time_t time) {
 
     DBGLOG(elapsed << _T(" (") << elapsed % periodDurationSec << _T(") | " << timeToAlertSec));
 
-    if (elapsed % periodDurationSec == timeToAlertSec)
+    int timePoint = elapsed % periodDurationSec;
+    // 3 second tolerance gap to compensate running in a GUI thread which may supend and load libraries
+    if (timePoint >= timeToAlertSec && timePoint < timeToAlertSec + 3) 
         return true;
 
     return false;

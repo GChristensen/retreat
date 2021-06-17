@@ -18,7 +18,7 @@ public:
 private:
     int counter;
 
-    StateMachine& stateMachine;
+    StateMachine &stateMachine;
 };
 
 module :private;

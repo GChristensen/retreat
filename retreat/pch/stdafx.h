@@ -23,6 +23,8 @@
 #include <atlctrls.h>
 #include <atlctrlx.h>
 #include <atldlgs.h>
+#include <atlddx.h>
+#include <atlcrack.h>
 
 extern CAppModule _Module;
 

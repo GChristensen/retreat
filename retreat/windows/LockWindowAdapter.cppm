@@ -62,8 +62,8 @@ LockWindowAdapter::LockWindowAdapter(StateMachine& stateMachine):
 			window->AlterAlpha(10);
 
 		if (!this->windows.empty())
-			this->settings.setString(Settings::APPEARANCE_OPACITY_LEVEL, 
-				to_tstring(this->windows[0]->GetAlpha()));
+			this->settings.setInt(Settings::APPEARANCE_OPACITY_LEVEL, 
+				this->windows[0]->GetAlpha());
 
 		this->settingsChanged = true;
 	};
@@ -73,8 +73,8 @@ LockWindowAdapter::LockWindowAdapter(StateMachine& stateMachine):
 			window->AlterAlpha(-10);
 
 		if (!this->windows.empty())
-			this->settings.setString(Settings::APPEARANCE_OPACITY_LEVEL,
-				to_tstring(this->windows[0]->GetAlpha()));
+			this->settings.setInt(Settings::APPEARANCE_OPACITY_LEVEL,
+				this->windows[0]->GetAlpha());
 
 		this->settingsChanged = true;
 	};
@@ -100,7 +100,11 @@ LockWindowAdapter::~LockWindowAdapter() {
 
 			if (!audioFilePath.empty())
 				playAudioFile(audioFilePath);
+			else
+				playSystemSound();
 		}
+		else
+			playSystemSound();
 	}
 }
 

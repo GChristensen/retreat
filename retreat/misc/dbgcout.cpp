@@ -12,7 +12,7 @@ public:
     int sync()
     {
         ::OutputDebugString(str().c_str());
-        str(tstring()); // Clear the string buffer
+        str(tstring()); // clear the string buffer
         return 0;
     }
 };

@@ -5,17 +5,21 @@ module;
 
 export module Scheduler;
 
+import <memory>;
 import <vector>;
 
 import Event;
 import Settings;
 import StateMachine;
+import PeriodicEvent;
+import CronEvent;
 
 #include "debug.h"
 
 export class Scheduler {
 public:
     Scheduler(Settings& settings);
+    void reset(Settings& settings);
 
     void addEvent(EventPtr);
 
@@ -28,8 +32,29 @@ private:
 
 module :private;
 
-Scheduler::Scheduler(Settings& settings) {
+Scheduler::Scheduler(Settings &settings) {
+    reset(settings);
+}
 
+void Scheduler::reset(Settings &settings) {
+    events.clear();
+
+    if (settings.getBoolean(Settings::PERIOD_ENABLE, Settings::DEFAULT_PERIOD_ENABLE))
+        addEvent(std::make_shared<PeriodicEvent>(settings));
+
+    auto cronStrings = settings.getSectionValues(Settings::CRON);
+
+    for (auto& cronString : cronStrings) {
+        std::shared_ptr<CronEvent> cronEvent;
+        try {
+            cronEvent = std::make_shared<CronEvent>(settings, cronString);
+        }
+        catch (std::exception&) {
+        }
+
+        if (cronEvent != nullptr && !cronEvent->isMalformed())
+            addEvent(cronEvent);
+    }
 }
 
 void Scheduler::addEvent(EventPtr event) {

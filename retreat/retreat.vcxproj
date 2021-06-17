@@ -90,7 +90,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)/misc;$(ProjectDir)/res;$(ProjectDir)/pch</AdditionalIncludeDirectories>
       <EnableModules>false</EnableModules>
-      <DisableSpecificWarnings>5050;5105;4005</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4005;5105;5106;5050</DisableSpecificWarnings>
       <AdditionalBMIDirectories>
       </AdditionalBMIDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -159,7 +159,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)/misc;$(ProjectDir)/res;$(ProjectDir)/pch</AdditionalIncludeDirectories>
       <EnableModules>false</EnableModules>
-      <DisableSpecificWarnings>5050;5105;4005</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4005;5105;5106;5050</DisableSpecificWarnings>
       <AdditionalBMIDirectories>
       </AdditionalBMIDirectories>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -214,7 +214,11 @@
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Image Include="res\about.bmp" />
+    <Image Include="res\main.ico" />
     <Image Include="res\retreat.ico" />
+    <Image Include="res\tray.ico" />
+    <Image Include="res\tray_amethyst.ico" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="algorithms.cppm" />
@@ -260,9 +264,15 @@
     <ClCompile Include="windows\gdi\TextBuffer.cppm" />
     <ClCompile Include="windows\InputMonitor.cppm" />
     <ClCompile Include="windows\LockWindowAdapter.cppm" />
+    <ClCompile Include="windows\options\ColorButton.cpp" />
+    <ClCompile Include="windows\options\GeneralOptionsSection.cppm" />
+    <ClCompile Include="windows\options\MainOptionsDlg.cppm" />
+    <ClCompile Include="windows\options\RestrictionOptionsSection.cppm" />
+    <ClCompile Include="windows\options\ScheduleOptionsSection.cppm" />
+    <ClCompile Include="windows\options\SectionDlg.cppm" />
     <ClCompile Include="windows\TimerWindow.cppm" />
     <ClCompile Include="windows\TranslucentWindow.cppm" />
-    <ClCompile Include="windows\TrayIconImpl.ixx" />
+    <ClCompile Include="windows\TrayIconImpl.cppm" />
     <ClCompile Include="windows\InputLock.cppm" />
   </ItemGroup>
   <ItemGroup>
@@ -282,6 +292,9 @@
     <ClInclude Include="misc\tstring.h" />
     <ClInclude Include="res\resource.h" />
     <ClInclude Include="pch\stdafx.h" />
+    <ClInclude Include="scheduler\croncpp.h" />
+    <ClInclude Include="windows\options\ColorButton.h" />
+    <ClInclude Include="windows\options\WTLTabViewCtrl.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\retreat.rc" />

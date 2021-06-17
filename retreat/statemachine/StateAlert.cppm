@@ -24,7 +24,9 @@ public:
         return StateDelay::delaysAvailable(stateMachine.getDelayAmount());
     }
 
-    virtual bool canAlert() { return false; };
+    virtual bool isAlert() override { return true; };
+
+    virtual bool canAlert() override { return false; };
     virtual bool canExit() override { return false; }
     virtual bool canSkip() override { return skippable; }
 

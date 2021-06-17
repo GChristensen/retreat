@@ -18,6 +18,18 @@
     <Image Include="res\retreat.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\main.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\tray.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\tray_amethyst.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\about.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller.cppm" />
@@ -28,7 +40,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="windows\AboutDlg.cppm" />
-    <ClCompile Include="windows\TrayIconImpl.ixx" />
+    <ClCompile Include="windows\TrayIconImpl.cppm" />
     <ClCompile Include="system.ixx" />
     <ClCompile Include="system_win32.cppm" />
     <ClCompile Include="Settings.cppm" />
@@ -70,6 +82,14 @@
     <ClCompile Include="windows\InputMonitor.cppm" />
     <ClCompile Include="statemachine\MonitorFactory.cppm" />
     <ClCompile Include="scheduler\CronEvent.cppm" />
+    <ClCompile Include="windows\options\ColorButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\options\MainOptionsDlg.cppm" />
+    <ClCompile Include="windows\options\SectionDlg.cppm" />
+    <ClCompile Include="windows\options\GeneralOptionsSection.cppm" />
+    <ClCompile Include="windows\options\RestrictionOptionsSection.cppm" />
+    <ClCompile Include="windows\options\ScheduleOptionsSection.cppm" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -91,6 +111,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="misc\debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="windows\options\ColorButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="windows\options\WTLTabViewCtrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scheduler\croncpp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

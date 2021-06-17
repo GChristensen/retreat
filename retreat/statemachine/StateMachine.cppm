@@ -12,6 +12,7 @@ import State;
 export class StateMachine {
 public:
     StateMachine(Settings &settings, void *appInstance);
+    void reset(Settings& settings);
 
     void setIdle(bool skip = false);
     void setAlert();
@@ -25,6 +26,8 @@ public:
 
     bool isSuspended();
     bool isHalted();
+    bool isAlert();
+
     bool canDisable();
     bool canDelay();
     bool canExit();

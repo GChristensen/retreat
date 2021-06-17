@@ -77,8 +77,8 @@ protected:
 module :private;
 
 import system;
-import Settings;
 import AboutDlg;
+import MainOptionsDlg;
 
 const int TIMER_PERIOD = 1000;
 
@@ -89,8 +89,7 @@ CDispatchWnd::CDispatchWnd(HINSTANCE hInstance): controller(hInstance)
 
 LRESULT CDispatchWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	SettingsPtr settings = std::make_shared<Settings>();
-	controller.reset(settings);
+	controller.reset();
 
 	// show icon on Explorer restart by receiving TaskbarCreated message
 	msgTaskbarCreated = RegisterWindowMessage(_T("TaskbarCreated"));
@@ -122,7 +121,16 @@ LRESULT CDispatchWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 		controller.lock();
 		break;
 	case ID_MENU_OPTIONS:
-		//showOptions();
+		if (!menuDisabled)
+		{
+			disableMenu();
+
+			CMainOptionsDlg optionsDlg(controller.getSettings());
+			if (optionsDlg.DoModal(m_hWnd) == IDOK || optionsDlg.IsApplied())
+				controller.reset();
+
+			enableMenu();
+		}
 		break;
 	case ID_MENU_ABOUT:
 		if (!menuDisabled)
@@ -235,8 +243,10 @@ void CDispatchWnd::PrepareContextMenu(HMENU hMenu)
 	if (!controller.canDelay()) 
 		EnableMenuItem(hMenu, ID_MENU_DELAY, MF_DISABLED | MF_GRAYED);
 
-	if (!controller.canExit())
+	if (!controller.canExit()) {
+		EnableMenuItem(hMenu, ID_MENU_OPTIONS, MF_DISABLED | MF_GRAYED);
 		EnableMenuItem(hMenu, ID_MENU_EXIT, MF_DISABLED | MF_GRAYED);
+	}
 
 	if (!controller.canSkip())
 		EnableMenuItem(hMenu, ID_MENU_SKIP, MF_DISABLED | MF_GRAYED);
