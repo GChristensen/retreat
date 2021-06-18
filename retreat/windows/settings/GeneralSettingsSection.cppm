@@ -6,7 +6,7 @@ module;
 #include "ColorButton.h"
 #include "WTLTabViewCtrl.h"
 
-export module GeneralOptionsSection;
+export module GeneralSettingsSection;
 
 import <string>;
 
@@ -16,17 +16,17 @@ import SectionDlg;
 #include "debug.h"
 #include "tstring.h"
 
-//// CBehaviorOptionsDlg //////////////////////////////////////////////////////
+//// CBehaviorSettingsDlg //////////////////////////////////////////////////////
 
-class CBehaviorOptionsDlg :
-	public CDialogImpl<CBehaviorOptionsDlg>,
-	public CWinDataExchange<CBehaviorOptionsDlg>
+class CBehaviorSettingsDlg :
+	public CDialogImpl<CBehaviorSettingsDlg>,
+	public CWinDataExchange<CBehaviorSettingsDlg>
 {
 public:
 
 	static const int IDD = IDD_BEHAVIOUR_OPTIONS;
 
-	CBehaviorOptionsDlg(HWND hBase);
+	CBehaviorSettingsDlg(HWND hBase);
 
 	void read(Settings &settings);
 	void write(Settings &settings);
@@ -36,12 +36,12 @@ public:
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&);
 	LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&);
 
-	BEGIN_MSG_MAP_EX(CBehaviorOptionsDlg)
+	BEGIN_MSG_MAP_EX(CBehaviorSettingsDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 	END_MSG_MAP()
 
-	BEGIN_DDX_MAP(CBehaviorOptionsDlg)
+	BEGIN_DDX_MAP(CBehaviorSettingsDlg)
 		DDX_UINT(IDC_PERIOD, m_periodLengthMin)
 		DDX_UINT(IDC_BREAK, m_breakLengthMin)
 		DDX_UINT(IDC_ALERT, m_alertBeforeMin)
@@ -73,12 +73,12 @@ private:
 };
 
 
-CBehaviorOptionsDlg::CBehaviorOptionsDlg(HWND hBase) :
+CBehaviorSettingsDlg::CBehaviorSettingsDlg(HWND hBase) :
 	m_hBase(hBase)
 {
 }
 
-void CBehaviorOptionsDlg::read(Settings &settings)
+void CBehaviorSettingsDlg::read(Settings &settings)
 {
 	m_periodLengthMin = settings.getInt(Settings::PERIOD_DURATION, Settings::DEFAULT_PERIOD_DURATION);
 	m_breakLengthMin = settings.getInt(Settings::BREAK_DURATION, Settings::DEFAULT_BREAK_DURATION);
@@ -100,7 +100,7 @@ void CBehaviorOptionsDlg::read(Settings &settings)
 	initSpin(GetDlgItem(IDC_DISABLE_FOR), m_suspendForHrs, 1, 24);
 }
 
-void CBehaviorOptionsDlg::write(Settings &settings)
+void CBehaviorSettingsDlg::write(Settings &settings)
 {
 	DoDataExchange(TRUE);
 
@@ -115,17 +115,17 @@ void CBehaviorOptionsDlg::write(Settings &settings)
 	settings.setBoolean(Settings::PERIOD_ENABLE, !m_disablePeriodicBreaks);
 }
 
-LRESULT CBehaviorOptionsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
+LRESULT CBehaviorSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
 {
 	return 0;
 }
 
-LRESULT CBehaviorOptionsDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
+LRESULT CBehaviorSettingsDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
 {
 	return 0;
 }
 
-void CBehaviorOptionsDlg::initSpin(HWND wnd, int pos, int min /*= 0*/, int max /*= UD_MAXVAL*/)
+void CBehaviorSettingsDlg::initSpin(HWND wnd, int pos, int min /*= 0*/, int max /*= UD_MAXVAL*/)
 {
 	::SendMessage(wnd, UDM_SETRANGE, 0, MAKELPARAM(max, min));
 	::SendMessage(wnd, UDM_SETPOS, 0, MAKELPARAM(pos, 0));
@@ -310,13 +310,13 @@ LRESULT CAppearanceOptionsDlg::OnBrowseSoundFolder(UINT uNotifyCode, int nID, CW
 	return 0;
 }
 
-//// CGeneralOptionsSection ///////////////////////////////////////////////////
+//// CGeneralSettingsSection ///////////////////////////////////////////////////
 
-export class CGeneralOptionsSection: public CSectionDlg
+export class CGeneralSettingsSection: public CSectionDlg
 {
 public:
 
-	CGeneralOptionsSection();
+	CGeneralSettingsSection();
 
 	virtual void read(Settings &settings) override;
 	virtual void write(Settings &settings) override;
@@ -324,7 +324,7 @@ public:
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&);
 	LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&);
 
-	BEGIN_MSG_MAP_EX(CGeneralOptionsSection)
+	BEGIN_MSG_MAP_EX(CGeneralSettingsSection)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		REFLECT_NOTIFICATIONS()
@@ -333,12 +333,12 @@ public:
 private:
 
 	CWTLTabViewCtrl m_tabView;
-	CBehaviorOptionsDlg m_behaviourOptionsDlg;
+	CBehaviorSettingsDlg m_behaviourOptionsDlg;
 	CAppearanceOptionsDlg m_appearanceOptionsDlg;
 };
 
 
-CGeneralOptionsSection::CGeneralOptionsSection():
+CGeneralSettingsSection::CGeneralSettingsSection():
 	CSectionDlg(IDD_GENERAL_OPTIONS),
 	m_behaviourOptionsDlg(NULL),
 	m_appearanceOptionsDlg(NULL)
@@ -346,19 +346,19 @@ CGeneralOptionsSection::CGeneralOptionsSection():
 	SetOptionsCategoryName(CString(MAKEINTRESOURCE(IDS_GENERAL_OPTIONS_SECTION_NAME)));
 }
 
-void CGeneralOptionsSection::read(Settings &settings)
+void CGeneralSettingsSection::read(Settings &settings)
 {
 	m_behaviourOptionsDlg.read(settings);
 	m_appearanceOptionsDlg.read(settings);
 }
 
-void CGeneralOptionsSection::write(Settings &settings)
+void CGeneralSettingsSection::write(Settings &settings)
 {
 	m_behaviourOptionsDlg.write(settings);
 	m_appearanceOptionsDlg.write(settings);
 }
 
-LRESULT CGeneralOptionsSection::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
+LRESULT CGeneralSettingsSection::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
 {
 	CRect rect;
 	GetClientRect(&rect);
@@ -378,7 +378,7 @@ LRESULT CGeneralOptionsSection::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 	return 0;
 }
 
-LRESULT CGeneralOptionsSection::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
+LRESULT CGeneralSettingsSection::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
 {
 	m_tabView.RemoveAllTabs();
 	m_behaviourOptionsDlg.DestroyWindow();

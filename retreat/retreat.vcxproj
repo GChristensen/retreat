@@ -371,12 +371,12 @@
     <ClCompile Include="windows\gdi\TextBuffer.cppm" />
     <ClCompile Include="windows\InputMonitor.cppm" />
     <ClCompile Include="windows\LockWindowAdapter.cppm" />
-    <ClCompile Include="windows\options\ColorButton.cpp" />
-    <ClCompile Include="windows\options\GeneralOptionsSection.cppm" />
-    <ClCompile Include="windows\options\MainOptionsDlg.cppm" />
-    <ClCompile Include="windows\options\RestrictionOptionsSection.cppm" />
-    <ClCompile Include="windows\options\ScheduleOptionsSection.cppm" />
-    <ClCompile Include="windows\options\SectionDlg.cppm" />
+    <ClCompile Include="windows\settings\ColorButton.cpp" />
+    <ClCompile Include="windows\settings\GeneralSettingsSection.cppm" />
+    <ClCompile Include="windows\settings\MainSettingsDlg.cppm" />
+    <ClCompile Include="windows\settings\RestrictionSettingsSection.cppm" />
+    <ClCompile Include="windows\settings\ScheduleSettingsSection.cppm" />
+    <ClCompile Include="windows\settings\SectionDlg.cppm" />
     <ClCompile Include="windows\TimerWindow.cppm" />
     <ClCompile Include="windows\TranslucentWindow.cppm" />
     <ClCompile Include="windows\TrayIconImpl.cppm" />
@@ -403,8 +403,8 @@
     <ClInclude Include="res\resource.h" />
     <ClInclude Include="pch\stdafx.h" />
     <ClInclude Include="scheduler\cron.h" />
-    <ClInclude Include="windows\options\ColorButton.h" />
-    <ClInclude Include="windows\options\WTLTabViewCtrl.h" />
+    <ClInclude Include="windows\settings\ColorButton.h" />
+    <ClInclude Include="windows\settings\WTLTabViewCtrl.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\retreat.rc" />

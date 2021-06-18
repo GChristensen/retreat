@@ -290,10 +290,21 @@ void CDispatchWnd::startTimer(int period)
 {
 	timer = CreateWaitableTimer(NULL, FALSE, NULL);
 
+	SYSTEMTIME time;
+	
+	for (int i = 0; i < 200; ++i) {
+		GetSystemTime(&time);
+
+		if (time.wMilliseconds < 20)
+			break;
+
+		Sleep(20);
+	}
+	
 	LARGE_INTEGER timerExpires;
 	timerExpires.QuadPart = Int32x32To64(-10000, period);
 	SetWaitableTimer(timer, &timerExpires, period, NULL, NULL, FALSE);
-
+	
 	timerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 	timerThread = (HANDLE)_beginthreadex(NULL, 0, timerThreadProc, (void*)this, 0, NULL);
 }

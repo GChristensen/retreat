@@ -12,9 +12,9 @@ import <vector>;
 import system;
 import Settings;
 import SectionDlg;
-import GeneralOptionsSection;
-import ScheduleOptionsSection;
-import RestrictionOptionsSection;
+import GeneralSettingsSection;
+import ScheduleSettingsSection;
+import RestrictionSettingsSection;
 
 export class CMainOptionsDlg :
 	public CDialogImpl<CMainOptionsDlg>,
@@ -116,9 +116,9 @@ LRESULT CMainOptionsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	int y = rc_origin.top - rc_parent.top;
 
 
-	m_optionSections.push_back(std::make_shared<CGeneralOptionsSection>());
-	m_optionSections.push_back(std::make_shared<CScheduleOptionsSection>());
-	m_optionSections.push_back(std::make_shared<CRestrictionOptionsSection>());
+	m_optionSections.push_back(std::make_shared<CGeneralSettingsSection>());
+	m_optionSections.push_back(std::make_shared<CScheduleSettingsSection>());
+	m_optionSections.push_back(std::make_shared<CRestrictionSettingsSection>());
 
 
 	for (auto &section : m_optionSections) {

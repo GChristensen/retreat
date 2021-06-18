@@ -271,7 +271,7 @@ BEGIN
         MENUITEM "Skip",                        ID_MENU_SKIP
         MENUITEM SEPARATOR
         MENUITEM "Take break now",              ID_MENU_TAKEBREAK
-        MENUITEM "Options",                     ID_MENU_OPTIONS
+        MENUITEM "Settings",                    ID_MENU_OPTIONS
         MENUITEM SEPARATOR
         MENUITEM "About",                       ID_MENU_ABOUT
         MENUITEM "Exit",                        ID_MENU_EXIT

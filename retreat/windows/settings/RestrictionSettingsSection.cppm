@@ -3,19 +3,19 @@ module;
 #include "stdafx.h"
 #include "resource.h"
 
-export module RestrictionOptionsSection;
+export module RestrictionSettingsSection;
 
 import <format>;
 
 import Settings;
 import SectionDlg;
 
-export class CRestrictionOptionsSection :
+export class CRestrictionSettingsSection :
 	public CSectionDlg,
-	public CWinDataExchange<CRestrictionOptionsSection>
+	public CWinDataExchange<CRestrictionSettingsSection>
 {
 public:
-	CRestrictionOptionsSection();
+	CRestrictionSettingsSection();
 
 	virtual void read(Settings &settings) override;
 	virtual void write(Settings &settings) override;
@@ -26,7 +26,7 @@ public:
 	LRESULT OnAddProcess(UINT uNotifyCode, int nID, CWindow wndCtl);
 	LRESULT OnDeleteProcess(WPARAM wParam, LPARAM lParam, HWND wnd);
 
-	BEGIN_MSG_MAP_EX(CRestrictionOptionsSection)
+	BEGIN_MSG_MAP_EX(CRestrictionSettingsSection)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		COMMAND_ID_HANDLER_EX(IDC_ADD_PROCESS, OnAddProcess)
@@ -34,7 +34,7 @@ public:
 		ALT_MSG_MAP(1)
 	END_MSG_MAP()
 
-	BEGIN_DDX_MAP(CRestrictionOptionsSection)
+	BEGIN_DDX_MAP(CRestrictionSettingsSection)
 		DDX_UINT(IDC_ACTIVITY_CHECK_MIN, m_checkForUserActivityBeforeMin)
 		DDX_CHECK(IDC_USE_RESTRICTIONS, m_useRestrictionList)
 	END_DDX_MAP()
@@ -54,14 +54,14 @@ private:
 module :private;
 
 
-CRestrictionOptionsSection::CRestrictionOptionsSection() :
+CRestrictionSettingsSection::CRestrictionSettingsSection() :
 	CSectionDlg(IDD_RESTRICTIONS),
 	m_restrictionList(this, 1)
 {
 	SetOptionsCategoryName(CString(MAKEINTRESOURCE(IDS_RESTRICTION_OPTIONS_SECTION_NAME)));
 }
 
-void CRestrictionOptionsSection::read(Settings &settings)
+void CRestrictionSettingsSection::read(Settings &settings)
 {
 	auto processes = settings.getSectionValues(Settings::PROCESSES);
 
@@ -78,7 +78,7 @@ void CRestrictionOptionsSection::read(Settings &settings)
 	DoDataExchange(FALSE);
 }
 
-void CRestrictionOptionsSection::write(Settings &settings)
+void CRestrictionSettingsSection::write(Settings &settings)
 {
 	DoDataExchange(TRUE);
 
@@ -97,7 +97,7 @@ void CRestrictionOptionsSection::write(Settings &settings)
 	}
 }
 
-LRESULT CRestrictionOptionsSection::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
+LRESULT CRestrictionSettingsSection::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
 {
 	m_wndAddBtn.Attach(GetDlgItem(IDC_ADD_PROCESS));
 	m_wndDeleteBtn.Attach(GetDlgItem(IDC_DELETE_PROCESS));
@@ -109,12 +109,12 @@ LRESULT CRestrictionOptionsSection::OnInitDialog(UINT uMsg, WPARAM wParam, LPARA
 	return 0;
 }
 
-LRESULT CRestrictionOptionsSection::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
+LRESULT CRestrictionSettingsSection::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
 {
 	return 0;
 }
 
-LRESULT CRestrictionOptionsSection::OnAddProcess(UINT uNotifyCode, int nID, CWindow wndCtl)
+LRESULT CRestrictionSettingsSection::OnAddProcess(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	CFileDialog fileDlg(TRUE);
 
@@ -142,7 +142,7 @@ LRESULT CRestrictionOptionsSection::OnAddProcess(UINT uNotifyCode, int nID, CWin
 	return 0;
 }
 
-LRESULT CRestrictionOptionsSection::OnDeleteProcess(WPARAM wParam, LPARAM lParam, HWND wnd)
+LRESULT CRestrictionSettingsSection::OnDeleteProcess(WPARAM wParam, LPARAM lParam, HWND wnd)
 {
 	int sel = m_restrictionList.GetCurSel();
 

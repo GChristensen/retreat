@@ -82,20 +82,20 @@
     <ClCompile Include="windows\InputMonitor.cppm" />
     <ClCompile Include="statemachine\MonitorFactory.cppm" />
     <ClCompile Include="scheduler\CronEvent.cppm" />
-    <ClCompile Include="windows\options\ColorButton.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="windows\options\MainOptionsDlg.cppm" />
-    <ClCompile Include="windows\options\SectionDlg.cppm" />
-    <ClCompile Include="windows\options\GeneralOptionsSection.cppm" />
-    <ClCompile Include="windows\options\RestrictionOptionsSection.cppm" />
-    <ClCompile Include="windows\options\ScheduleOptionsSection.cppm" />
     <ClCompile Include="retreat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="retreat_pymodule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="windows\settings\ColorButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\settings\GeneralSettingsSection.cppm" />
+    <ClCompile Include="windows\settings\MainSettingsDlg.cppm" />
+    <ClCompile Include="windows\settings\RestrictionSettingsSection.cppm" />
+    <ClCompile Include="windows\settings\ScheduleSettingsSection.cppm" />
+    <ClCompile Include="windows\settings\SectionDlg.cppm" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -119,16 +119,16 @@
     <ClInclude Include="misc\debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="windows\options\ColorButton.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="windows\options\WTLTabViewCtrl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="scheduler\cron.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="retreat_pymodule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="windows\settings\ColorButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="windows\settings\WTLTabViewCtrl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

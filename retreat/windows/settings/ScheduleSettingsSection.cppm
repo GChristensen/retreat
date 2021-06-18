@@ -5,7 +5,7 @@ module;
 #include "stdafx.h"
 #include "resource.h"
 
-export module ScheduleOptionsSection;
+export module ScheduleSettingsSection;
 
 import <string>;
 import <format>;
@@ -158,14 +158,14 @@ LRESULT CCronInputDlg::OnCancel(WPARAM wParam, LPARAM lParam, HWND wnd)
 	return 0;
 }
 
-//// CScheduleOptionsSection //////////////////////////////////////////////////
+//// CScheduleSettingsSection //////////////////////////////////////////////////
 
-export class CScheduleOptionsSection :
+export class CScheduleSettingsSection :
 	public CSectionDlg,
-	public CWinDataExchange<CScheduleOptionsSection>
+	public CWinDataExchange<CScheduleSettingsSection>
 {
 public:
-	CScheduleOptionsSection();
+	CScheduleSettingsSection();
 
 	virtual void read(Settings &settings) override;
 	virtual void write(Settings &settings) override;
@@ -197,14 +197,14 @@ private:
 module :private;
 
 
-CScheduleOptionsSection::CScheduleOptionsSection() :
+CScheduleSettingsSection::CScheduleSettingsSection() :
 	CSectionDlg(IDD_SCHEDULE)
 {
 	SetOptionsCategoryName(CString(MAKEINTRESOURCE(IDS_SCHEDULE_OPTIONS_SECTION_NAME)));
 }
 
 
-void CScheduleOptionsSection::read(Settings &settings)
+void CScheduleSettingsSection::read(Settings &settings)
 {
 	auto schedules = settings.getSectionValues(Settings::CRON);
 
@@ -221,7 +221,7 @@ void CScheduleOptionsSection::read(Settings &settings)
 	}
 }
 
-void CScheduleOptionsSection::write(Settings &settings)
+void CScheduleSettingsSection::write(Settings &settings)
 {
 	settings.clearSection(Settings::CRON);
 
@@ -239,7 +239,7 @@ void CScheduleOptionsSection::write(Settings &settings)
 	}
 }
 
-LRESULT CScheduleOptionsSection::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
+LRESULT CScheduleSettingsSection::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
 {
 	m_wndAddBtn.Attach(GetDlgItem(IDC_ADD_CRON));
 	m_wndDeleteBtn.Attach(GetDlgItem(IDC_DELETE_CRON));
@@ -285,12 +285,12 @@ LRESULT CScheduleOptionsSection::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 	return 0;
 }
 
-LRESULT CScheduleOptionsSection::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
+LRESULT CScheduleSettingsSection::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
 {
 	return 0;
 }
 
-LRESULT CScheduleOptionsSection::OnAddScheduledBreak(UINT uNotifyCode, int nID, CWindow wndCtl)
+LRESULT CScheduleSettingsSection::OnAddScheduledBreak(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
 	CCronInputDlg dlg;
 
@@ -311,7 +311,7 @@ LRESULT CScheduleOptionsSection::OnAddScheduledBreak(UINT uNotifyCode, int nID, 
 	return 0;
 }
 
-LRESULT CScheduleOptionsSection::OnDeleteScheduledBreak(WPARAM wParam, LPARAM lParam, HWND wnd)
+LRESULT CScheduleSettingsSection::OnDeleteScheduledBreak(WPARAM wParam, LPARAM lParam, HWND wnd)
 {
 	int sel = m_scheduledBreaksList.GetSelectedIndex();
 
@@ -333,7 +333,7 @@ LRESULT CScheduleOptionsSection::OnDeleteScheduledBreak(WPARAM wParam, LPARAM lP
 	return 0;
 }
 
-LRESULT CScheduleOptionsSection::OnLvDblClick(LPNMHDR hdr)
+LRESULT CScheduleSettingsSection::OnLvDblClick(LPNMHDR hdr)
 {
 	LPNMITEMACTIVATE lpnmitem = (LPNMITEMACTIVATE)hdr;
 
@@ -363,7 +363,7 @@ LRESULT CScheduleOptionsSection::OnLvDblClick(LPNMHDR hdr)
 	return 0;
 }
 
-void CScheduleOptionsSection::insertScheduledBreak(int n, const tstring &crontab, const tstring &duration, const tstring &message)
+void CScheduleSettingsSection::insertScheduledBreak(int n, const tstring &crontab, const tstring &duration, const tstring &message)
 {
 	m_scheduledBreaksList.InsertItem(n, to_tstring(n + 1).c_str());
 
