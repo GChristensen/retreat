@@ -57,9 +57,7 @@
 #define IDC_ALERT_SPIN                  1022
 #define IDC_DELAY_SPIN                  1023
 #define IDC_OPACITY_LEVEL               1024
-#define IDC_DISABLE_FOR                 1048
 #define IDC_OPACITY_SPIN                1025
-#define IDC_DISABLE_FOR_SPIN            1049
 #define IDC_CRON_LIST                   1027
 #define IDC_WINDOW_MODE_LIST            1028
 #define IDC_BROWSE_IMAGE_FOLDER         1029
@@ -82,8 +80,11 @@
 #define IDC_GITHUB_LINK                 1045
 #define IDC_SCHEDULED_BREAK_MESSAGE     1046
 #define IDC_BUTTON_CLEAR                1047
+#define IDC_DISABLE_FOR                 1048
+#define IDC_DISABLE_FOR_SPIN            1049
 #define IDC_TRANSPARENT_REGIONS         2000
 #define IDC_LIST1                       2001
+#define IDC_HELP_LINK                   2002
 #define IDR_SHELL_MENU                  20300
 #define ID_MENU_DISABLE                 32771
 #define ID_MENU_SKIP                    32772
@@ -99,9 +100,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        303
+#define _APS_NEXT_RESOURCE_VALUE        304
 #define _APS_NEXT_COMMAND_VALUE         32800
-#define _APS_NEXT_CONTROL_VALUE         2002
+#define _APS_NEXT_CONTROL_VALUE         2003
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

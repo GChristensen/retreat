@@ -1,4 +1,8 @@
-﻿export module Settings;
+﻿module;
+
+#include "retreat_pymodule.h"
+
+export module Settings;
 
 import <map>;
 import <regex>;
@@ -124,7 +128,12 @@ module :private;
 import system;
 
 Settings::Settings() {
+#ifdef PYTHON_MODULE
+    file = getPythonConfigFilePath(CONFIG_FILE_NAME);
+#else
     file = getConfigFilePath(CONFIG_FILE_NAME);
+#endif
+
     load(file);
 }
 

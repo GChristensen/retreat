@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: "en-US" }}">
+<head>
+    <meta charset="UTF-8">
+    <title>Enso Retreat Help</title>
+    <style>
+        body {
+            display: flex;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+
+        .placeholder {
+            flex-grow: 1;
+        }
+
+        .content {
+            flex-grow: 0;
+            width: 800px;
+        }
+
+        td {
+            padding: 5px;
+            padding-right: 10px
+        }
+
+        thead td {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="placeholder"></div>
+    <div class="content">
+        <h1 id="add-torrent">Enso Retreat Help</h1>
+
+        <h3>The Context Menu</h3>
+        <blockquote>
+            <img src="images/context_menu.png">
+
+            <ul>
+                <li><b>Disable</b> - temporarily disable Enso Retreat for the time specified in settings.</li>
+                <li><b>Delay</b> - delay a break for the specified time.</li>
+                <li><b>Skip</b> - skip a break (available once per day).</li>
+                <li><b>Take Break Now</b> - lock the system immediately.</li>
+                <li><b>Options</b> - show the options dialog.</li>
+                <li><b>About</b> - show copyright and versioning information.</li>
+                <li><b>Exit</b> - close Enso Retreat.</li>
+            </ul>
+        </blockquote>
+
+        <h3>Behaviour Settings</h3>
+        <blockquote>
+            <img src="images/behaviour_settings.png">
+
+            <h4>Periodic Breaks</h4>
+            <p>A periodic break occurs once in a specified period of time (near to the end of it).</p>
+            <ul>
+                <li><b>Period Duration</b> - period duration in minutes.</li>
+                <li><b>Break Duration</b> - break duration in minutes.</li>
+                <li><b>Disable for</b> - the amount of time used to disable Enso retreat from the context menu.</li>
+                <li><b>Turn Off Periodic Breaks</b> - use only scheduled breaks.</li>
+                <li><b>Synchronize With System Time</b> - if checked, the start of a period is attached to the beginning of an hour. 
+                    Otherwise, periods are measured from the program start time.</li>
+            </ul>
+
+            <h4>Delays</h4>
+            <ul>
+                <li><b>Alert Time</b> - show an alert by the specified time before the start of a break.</li>
+                <li><b>Delay Time</b> - it is possible to delay a break several times for the time specified in this setting.</li>
+                <li><b>Number of Delays</b> - specifies the maximum number of available delays.</li>
+                <li><b>Play Sound at the Break End</b> - play a system or custom sound after the break ends.</li>
+            </ul>
+
+        </blockquote>
+
+        <h3>Appearance Settings</h3>
+        <blockquote>
+
+            <img src="images/appearance_settings.png">
+
+            <h4>Window</h4>
+            <ul>
+                <li><b>Mode</b> - select how Enso Retreat will look when locking the system:</li>
+                <ul>
+                    <li><b>Fullscreen</b> - show a fullscreen image.</li>
+                    <li><b>Windowed</b> - show image in a window matching the image dimensions.</li>
+                </ul>
+                <li><b>Opacity Level</b> - an opacity level of the Enso Retreat window (0-255). It is also adjustable with +/- numpad keys during the break.</li>
+                <li><b>Background Color</b> - the background color of the Enso Retreat window areas not covered by the displayed image.</li>
+                <li><b>Allow Transparent Regions</b> - allow completely transparent areas. The transparent color is selected from the upper-left pixel of the displayed image.</li>
+            </ul>
+
+            <h4>Timer</h4>
+
+            <ul>
+                <li><b>Show Timer</b> - the timer will not be displayed when unchecked.</li>
+                <li><b>Timer Font Color</b> - the color of timer text.</li>
+            </ul>
+
+            <h4>Media</h4>
+            <ul>
+                <li><b>Image Folder</b> - if specified, a random image will be selected from this folder to show during a break. 
+                To show only one specific image, store a single image in this folder. JPEG, PNG, GIF, and BMP image formats are supported.</li>
+                <li><b>Stretch Images</b> - stretch images if they are too small to fit the screen.</li>
+                <li><b>Sound Folder</b> - the folder for sounds to be played at the end of a break randomly. Supported audio formats are: WAV, MP3, WMA, and FLAC. 
+                    If not specified, Enso Retreat will play the standard system sound.</li>
+            </ul>
+        </blockquote>
+
+
+        <h3>Scheduled Breaks</h4>
+        <blockquote>
+            <p>A scheduled break occurs exactly at the time specified by a <a href="http://en.wikipedia.org/wiki/Crontab" target="_blank">crontab</a> record.
+                For example, you can use the crontab record, shown on screenshots below, to make 15 min. breaks at 13:15 on each working day.
+                Leave the "Display Message" field blank, if you don't want any messages to be displayed after the end of a break.</p>
+
+            <p>Use "Add..." and "Remove" buttons to add and remove schedules, double click to edit the break.
+
+            <div>
+                <img src="images/scheduled_breaks.png">
+                <img src="images/crontab.png">
+            </div>
+
+            <table class="ArticleTable">
+
+            <br>
+
+   <thead>
+      <tr>
+         <td>Field</td>
+         <td>Allowed value</td>
+         <td>Allowed special characters</td>
+      </tr>
+   </thead>
+   <tbody>
+      <tr>
+         <td>Minute</td>
+         <td>0-59</td>
+         <td><code>*</code> <code>,</code> <code>-</code></td>
+      </tr>
+      <tr>
+         <td>Hour</td>
+         <td>0-23</td>
+         <td><code>*</code> <code>,</code> <code>-</code></td>
+      </tr>
+      <tr>
+         <td>Day</td>
+         <td>1-31</td>
+         <td><code>*</code> <code>,</code> <code>-</code> <code>L</code></td>
+      </tr>
+      <tr>
+         <td>Month</td>
+         <td>1-12</td>
+         <td><code>*</code> <code>,</code> <code>-</code></td>
+      </tr>
+      <tr>
+         <td>Days of week</td>
+         <td>1-7</td>
+         <td><code>*</code> <code>,</code> <code>-</code> <code>L</code></td>
+      </tr>
+   </tbody>
+</table>
+
+        </blockquote>
+
+        <h3>Restrictions</h3>
+        <blockquote>
+            <p>Enso Retreat allows to automatically skip breaks when the specified conditions are met.</p>
+
+            <img src="images/restriction_settings.png">
+            <ul>
+                <li><b>Do not lock the system if no activity has been detected for</b> - do not lock the system if there have been no keyboard or mouse actions during the specified time before the start of a break.</li>
+                <li><b>Do not lock the system if one of the listed programs is running</b> - Enso Retreat will not lock the system if at least one of the programs specified in this list is running.</li>
+            </ul>
+        </blockquote>
+
+        </blockquote>
+    </div>
+    <div class="placeholder"></div>
+</body>
+</html>

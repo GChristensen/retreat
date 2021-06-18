@@ -64,9 +64,16 @@ void PeriodicEvent::resetStartTime(Settings &settings) {
     bool fromLaunchTime = settings.getBoolean(Settings::PERIOD_FROM_LAUNCH, Settings::DEFAULT_PERIOD_FROM_LAUNCH);
  
     startTime = time(nullptr);
-    if (!fromLaunchTime)
-        startTime -= startTime % 3600;
-   
+
+    if (!fromLaunchTime) {
+        tm localTime;
+        localtime_s(&localTime, &startTime);
+        
+        localTime.tm_sec = 0;
+        localTime.tm_min = 0;
+
+        startTime = mktime(&localTime);
+    }
 }
 
 bool PeriodicEvent::isMonitoring(time_t time) {

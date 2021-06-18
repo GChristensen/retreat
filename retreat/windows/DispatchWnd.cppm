@@ -5,6 +5,8 @@ module;
 
 #include "tstring.h"
 
+#include "retreat_pymodule.h"
+
 export module DispatchWnd;
 
 import <memory>;
@@ -15,6 +17,7 @@ import TrayIconImpl;
 #include "debug.h"
 
 #define WM_USER_TIMER (WM_USER + 1)
+#define WM_GET_LOCK_STATE (WM_USER + 10)
 
 typedef CWinTraits<WS_BORDER | WS_SYSMENU> DispatchTraits;
 
@@ -28,6 +31,7 @@ public:
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnGetLockState(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnTaskBarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPowerBroadcast(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	//LRESULT OnQueryEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -42,6 +46,7 @@ public:
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		MESSAGE_HANDLER(WM_COMMAND, OnCommand)
 		MESSAGE_HANDLER(WM_USER_TIMER, OnTimer)
+		MESSAGE_HANDLER(WM_GET_LOCK_STATE, OnGetLockState)
 		MESSAGE_HANDLER(msgTaskbarCreated, OnTaskBarCreated)
 		MESSAGE_HANDLER(WM_POWERBROADCAST, OnPowerBroadcast)
 		//MESSAGE_HANDLER(WM_QUERYENDSESSION, OnQueryEndSession)
@@ -153,6 +158,11 @@ LRESULT CDispatchWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	return 0;
 }
 
+LRESULT CDispatchWnd::OnGetLockState(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
+{
+	return !controller.canExit();
+}
+
 LRESULT CDispatchWnd::OnPowerBroadcast(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
 {
 	switch (wParam)
@@ -201,6 +211,17 @@ LRESULT CDispatchWnd::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 void CDispatchWnd::showTrayIcon()
 {
 	int icon_id = IDI_TRAY;
+
+#ifdef PYTHON_MODULE
+	switch (getPythonShowIcon()) {
+	case ICON_HIDE:
+		return;
+	case ICON_SHOW:
+		break;
+	case ICON_SHOW_AMETHYST:
+		icon_id = IDI_TRAY_AMETHYST;
+	}
+#endif
 
 	// set tray icon
 	HICON hIcon = (HICON)LoadImage(

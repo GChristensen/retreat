@@ -9,6 +9,7 @@ export module MainOptionsDlg;
 import <memory>;
 import <vector>;
 
+import system;
 import Settings;
 import SectionDlg;
 import GeneralOptionsSection;
@@ -63,6 +64,8 @@ private:
 
 	bool m_applied;
 
+	CHyperLink m_helpLink;
+
 	void saveSettings();
 };
 
@@ -79,9 +82,28 @@ LRESULT CMainOptionsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 {
 	CenterWindow();
 
+#ifdef PYTHON_MODULE
+	// bring window to front; useful if options were opened from an enso command
+	HWND hCurWnd = ::GetForegroundWindow();
+	DWORD dwMyID = ::GetCurrentThreadId();
+	DWORD dwCurID = ::GetWindowThreadProcessId(hCurWnd, NULL);
+	::AttachThreadInput(dwCurID, dwMyID, TRUE);
+	::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+	::SetWindowPos(m_hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOMOVE);
+	::SetForegroundWindow(m_hWnd);
+	::SetFocus(m_hWnd);
+	::SetActiveWindow(m_hWnd);
+	::AttachThreadInput(dwCurID, dwMyID, FALSE);
+#endif
+
 	m_wndOKBtn.Attach(GetDlgItem(IDOK));
 	m_wndCancelBtn.Attach(GetDlgItem(IDCANCEL));
 	m_wndSectionList.SubclassWindow(GetDlgItem(IDC_SETTING_GROUPS));
+
+	m_helpLink.SubclassWindow(GetDlgItem(IDC_HELP_LINK));
+	m_helpLink.ModifyStyle(WS_TABSTOP, 0);
+	m_helpLink.SetHyperLink((_T("file:///") + getBundledFilePath(_T("help.html"))).c_str());
+	m_helpLink.SetHyperLinkExtendedStyle(HLINK_UNDERLINEHOVER);
 
 	CRect rc_origin, rc_parent;
 

@@ -23,6 +23,23 @@ import <chrono>;
 
 const TCHAR* SETTINGS_DIR = _T("Enso Retreat");
 
+export tstring getBundledFilePath(const tstring& fileName)
+{
+	TCHAR moduleDir[MAX_PATH];
+
+	GetModuleFileName(_Module.GetModuleInstance(), moduleDir, MAX_PATH);
+
+	TCHAR* p = _tcsrchr(moduleDir, _T('\\'));
+
+	*(p + 1) = 0;
+
+	tstring result = moduleDir;
+	result.append(fileName);
+
+	return result;
+}
+
+
 export tstring getConfigFilePath(const tstring& configFile) {
 	TCHAR appDataDirPath[MAX_PATH];
 

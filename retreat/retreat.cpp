@@ -1,4 +1,4 @@
-﻿// retreat.cpp : main source file for retreat.exe
+// retreat.cpp : main source file for retreat.exe
 //
 
 #include "stdafx.h"
@@ -11,6 +11,8 @@ import DispatchWnd;
 
 CAppModule _Module;
 
+HWND hDispatchWnd;
+
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
 	CMessageLoop theLoop;
@@ -18,11 +20,13 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 	CDispatchWnd wndMain(_Module.GetModuleInstance());
 
-	if(wndMain.Create(NULL) == NULL)
+	if (wndMain.Create(NULL) == NULL)
 	{
 		ATLTRACE(_T("Main window creation failed!\n"));
 		return 0;
 	}
+
+	hDispatchWnd = wndMain.m_hWnd;
 
 	int nRet = theLoop.Run();
 
@@ -30,14 +34,18 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	return nRet;
 }
 
-int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
+int entry_win32(HINSTANCE hInstance, LPTSTR lpstrCmdLine, int nCmdShow)
 {
-	LimitSingleInstance singleInstance(_T("%EnsoRetreat%"));
+#ifdef _DEBUG
+#	define GLOBAL_MUTEX_NAME _T("EnsoRetreatGlobalMutex_Debug")
+#else
+#	define GLOBAL_MUTEX_NAME _T("EnsoRetreatGlobalMutex")
+#endif
+
+	LimitSingleInstance singleInstance(GLOBAL_MUTEX_NAME);
 
 	if (singleInstance.IsAnotherInstanceRunning())
-	{
 		return 0;
-	}
 
 	HRESULT hRes = ::CoInitialize(NULL);
 	ATLASSERT(SUCCEEDED(hRes));
@@ -53,7 +61,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 #endif
 
 	hRes = _Module.Init(NULL, hInstance);
-	ATLASSERT(SUCCEEDED(hRes));
+
+	_Module.SetResourceInstance(hInstance);
 
 	int nRet = Run(lpstrCmdLine, nCmdShow);
 
@@ -63,4 +72,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	::CoUninitialize();
 
 	return nRet;
+}
+
+int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
+{
+	return entry_win32(hInstance, lpstrCmdLine, nCmdShow);
 }

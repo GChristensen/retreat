@@ -3,8 +3,10 @@
 /packages
 /Debug
 /Release
+/Python
 /retreat/Debug
 /retreat/Release
+/retreat/Python
 /retreat/x64
 /x64
 *.aps

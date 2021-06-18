@@ -63,7 +63,7 @@ CronEvent::CronEvent(Settings& settings, tstring &eventString) {
 	try {
 		cronExpr = cron::make_cron(eventTokens[0]);
 	}
-	catch (cron::bad_cronexpr&) {
+	catch (std::exception &) {
 		malformed = true;
 		return;
 	}

@@ -19,6 +19,7 @@
 #   define tcout std::wcout
 #   define tregex std::wregex
 #   define tregex_token_iterator std::wsregex_token_iterator
+#   define tptree boost::property_tree::wptree
 #else
 #   ifndef _T
 #       define _T(x) x
@@ -37,6 +38,7 @@
 #   define tcout std::cout
 #   define tregex std::regex
 #   define tregex_token_iterator std::sregex_token_iterator
+#   define tptree boost::property_tree::ptree
 #endif
 
 #endif // __TSTRING_H__

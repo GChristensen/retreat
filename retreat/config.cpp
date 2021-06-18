@@ -13,7 +13,7 @@ using namespace boost::property_tree;
  // settings file handling is placed in a regular cpp file
 
 void readConfig(const tstring &file, std::map<tstring, tstring> &values) {
-    wptree ptree;
+    tptree ptree;
     tifstream iconfig(file);
     read_ini(iconfig, ptree);
 
@@ -27,7 +27,7 @@ void readConfig(const tstring &file, std::map<tstring, tstring> &values) {
 }
 
 void writeConfig(const tstring& file, const std::map<tstring, tstring> &values) {
-    wptree ptree;
+    tptree ptree;
 
     for (auto& [path, value] : values)
         ptree.put(path, value);
