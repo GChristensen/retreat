@@ -102,7 +102,7 @@ LRESULT CMainOptionsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 
 	m_helpLink.SubclassWindow(GetDlgItem(IDC_HELP_LINK));
 	m_helpLink.ModifyStyle(WS_TABSTOP, 0);
-	m_helpLink.SetHyperLink((_T("file:///") + getBundledFilePath(_T("help.html"))).c_str());
+	m_helpLink.SetHyperLink((_T("file:///") + getBundledFilePath(_T("retreat.html"))).c_str());
 	m_helpLink.SetHyperLinkExtendedStyle(HLINK_UNDERLINEHOVER);
 
 	CRect rc_origin, rc_parent;

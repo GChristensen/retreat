@@ -34,6 +34,7 @@
 #define IDB_ABOUT                       223
 #define IDI_TRAY                        226
 #define IDI_TRAY_AMETHYST               227
+#define IDB_PATREON                     228
 #define IDC_SETTING_GROUPS              1000
 #define IDC_CUSTOM_PARENT               1002
 #define IDC_RESTRICT_PROCESSES          1004
@@ -85,6 +86,7 @@
 #define IDC_TRANSPARENT_REGIONS         2000
 #define IDC_LIST1                       2001
 #define IDC_HELP_LINK                   2002
+#define IDC_DONATE                      2003
 #define IDR_SHELL_MENU                  20300
 #define ID_MENU_DISABLE                 32771
 #define ID_MENU_SKIP                    32772
@@ -102,7 +104,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        304
 #define _APS_NEXT_COMMAND_VALUE         32800
-#define _APS_NEXT_CONTROL_VALUE         2003
+#define _APS_NEXT_CONTROL_VALUE         2004
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

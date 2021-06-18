@@ -22,6 +22,7 @@ public:
 private:
 
 	CHyperLink linkGitHub;
+	CHyperLink linkPatreon;
 };
 
 module :private;
@@ -32,8 +33,13 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 	linkGitHub.SubclassWindow(GetDlgItem(IDC_GITHUB_LINK));
 	linkGitHub.ModifyStyle(WS_TABSTOP, 0);
-	linkGitHub.SetHyperLink(_T("http://gchristensen.github.io/retreat"));
+	linkGitHub.SetHyperLink(_T("https://gchristensen.github.io/retreat"));
 	linkGitHub.SetHyperLinkExtendedStyle(HLINK_UNDERLINEHOVER);
+
+	linkPatreon.SubclassWindow(GetDlgItem(IDC_DONATE));
+	linkPatreon.ModifyStyle(WS_TABSTOP, 0);
+	linkPatreon.SetHyperLink(_T("https://patreon.com/gchristnsn"));
+	linkPatreon.SetHyperLinkExtendedStyle(HLINK_UNDERLINEHOVER);
 
 	return TRUE;
 }

@@ -321,6 +321,7 @@
   <ItemGroup>
     <Image Include="res\about.bmp" />
     <Image Include="res\main.ico" />
+    <Image Include="res\patreon.bmp" />
     <Image Include="res\retreat.ico" />
     <Image Include="res\tray.ico" />
     <Image Include="res\tray_amethyst.ico" />

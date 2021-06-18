@@ -65,6 +65,8 @@ IDI_TRAY_AMETHYST       ICON                    "tray_amethyst.ico"
 
 IDB_ABOUT               BITMAP                  "about.bmp"
 
+IDB_PATREON             BITMAP                  "patreon.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -77,11 +79,13 @@ CAPTION "About Enso Retreat"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,156,99,50,14
-    LTEXT           "Enso Retreat v0.6",IDC_STATIC,120,14,60,8
-    LTEXT           "(C) 2007-2021 g/christensen",IDC_STATIC,104,30,92,8
-    LTEXT           "gchristensen.github.io/retreat",IDC_GITHUB_LINK,103,75,99,8
+    LTEXT           "Enso Retreat v0.6",IDC_STATIC,121,19,60,8
+    LTEXT           "(C) 2007-2021 g/christensen",IDC_STATIC,105,35,92,8
+    LTEXT           "gchristensen.github.io/retreat",IDC_GITHUB_LINK,103,53,99,8
     GROUPBOX        "",IDC_STATIC,5,2,201,92
     CONTROL         IDB_ABOUT,IDC_STATIC,"Static",SS_BITMAP,10,11,85,79
+    CONTROL         IDB_PATREON,IDC_STATIC,"Static",SS_BITMAP,125,69,11,10
+    LTEXT           "Donate",IDC_DONATE,141,70,24,8
 END
 
 IDD_MAIN_OPTIONS DIALOGEX 0, 0, 359, 228
