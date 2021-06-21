@@ -16,7 +16,7 @@ import "config.h";
 #include "tstring.h"
 #include "debug.h"
 
-const TCHAR *CONFIG_FILE_NAME = _T("retreat.conf");
+const TCHAR *CONFIG_FILE_NAME = _T("retreat.cfg");
 
 export const TCHAR *DEFAULT_TIMER_FONT_FACE = _T("Arial");
 export const int DEFAULT_TIMER_FONT_SIZE = 32;
@@ -119,6 +119,8 @@ public:
 private:
     tstring file;
     std::map<tstring, tstring> values;
+
+    void handlePreviousVersions();
 };
 
 export using SettingsPtr = std::shared_ptr<Settings>;
@@ -135,6 +137,7 @@ Settings::Settings() {
 #endif
 
     load(file);
+    handlePreviousVersions();
 }
 
 void Settings::load(const tstring& file) {
@@ -245,4 +248,27 @@ tstring Settings::join(const std::vector<tstring>& list) {
     }
 
     return result;
+}
+
+void Settings::handlePreviousVersions() {
+    std::map<tstring, tstring>::iterator iter;
+
+    if (iter = values.find(_T("General.Behaviour:PeriodLengthMin")); iter != values.end()) {
+        setString(PERIOD_DURATION, (*iter).second);
+
+        if (iter = values.find(_T("General.Behaviour:BreakLengthMin")); iter != values.end())
+            setString(BREAK_DURATION, (*iter).second);
+
+        if (iter = values.find(_T("AngelicMachine.Appearance:Windowed:ImageFolder")); iter != values.end())
+            setString(APPEARANCE_IMAGE_DIRECTORY, (*iter).second);
+
+        if (iter = values.find(_T("AngelicMachine.Appearance:TransparencyLevel")); iter != values.end())
+            setString(APPEARANCE_OPACITY_LEVEL, (*iter).second);
+
+        std::erase_if(values, [](const auto& item) {
+            return any_of(item.first.begin(), item.first.end(), [](TCHAR c) { return c >= 65 && c <= 90; });
+        });
+
+        save();
+    }
 }

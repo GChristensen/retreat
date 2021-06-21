@@ -74,9 +74,12 @@ protected:
 	HANDLE timer = NULL;
 	HANDLE timerEvent = NULL;
 	HANDLE timerThread = NULL;
-	static unsigned WINAPI timerThreadProc(void *param);
-	void startTimer(int period);
-	void stopTimer();
+	static DWORD WINAPI timerThreadProc(LPVOID param);
+	void createTimer();
+	void destroyTimer();
+	void createTimerThread();
+	void terminateTimerThread();
+
 };
 
 module :private;
@@ -102,7 +105,7 @@ LRESULT CDispatchWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 	showTrayIcon();
 	SetDefaultItem(-1);
 
-	startTimer(TIMER_PERIOD);
+	createTimer();
 
 	return 0;
 }
@@ -125,7 +128,7 @@ LRESULT CDispatchWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	case ID_MENU_TAKEBREAK:
 		controller.lock();
 		break;
-	case ID_MENU_OPTIONS:
+	case ID_MENU_SETTINGS:
 		if (!menuDisabled)
 		{
 			disableMenu();
@@ -169,9 +172,11 @@ LRESULT CDispatchWnd::OnPowerBroadcast(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	{
 	case PBT_APMSUSPEND:
 		controller.stop();
+		terminateTimerThread();		
 		break;
 	case PBT_APMRESUMEAUTOMATIC:
 		controller.resume();
+		createTimerThread();
 		break;
 	}
 
@@ -193,7 +198,7 @@ LRESULT CDispatchWnd::OnTaskBarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 LRESULT CDispatchWnd::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	stopTimer();
+	destroyTimer();
 
 	RemoveIcon();
 	DestroyWindow();
@@ -255,17 +260,16 @@ bool CDispatchWnd::IsMenuDisabled()
 // this function is used by the tray icon helper class
 void CDispatchWnd::PrepareContextMenu(HMENU hMenu)
 {
-	if (!controller.canDisable())
+	if (!controller.isSuspended() && !controller.canDisable())
 		EnableMenuItem(hMenu, ID_MENU_DISABLE, MF_DISABLED | MF_GRAYED);
 
 	if (controller.canEnable())
 		setMenuItemText(hMenu, ID_MENU_DISABLE, IDS_ENABLE_MENU_ITEM_NAME);
-
 	if (!controller.canDelay()) 
 		EnableMenuItem(hMenu, ID_MENU_DELAY, MF_DISABLED | MF_GRAYED);
 
 	if (!controller.canExit()) {
-		EnableMenuItem(hMenu, ID_MENU_OPTIONS, MF_DISABLED | MF_GRAYED);
+		EnableMenuItem(hMenu, ID_MENU_SETTINGS, MF_DISABLED | MF_GRAYED);
 		EnableMenuItem(hMenu, ID_MENU_EXIT, MF_DISABLED | MF_GRAYED);
 	}
 
@@ -286,12 +290,40 @@ void CDispatchWnd::setMenuItemText(HMENU hMenu, int id, int resource)
 
 // timer thread ///////////////////////////////////////////////////////////////
 
-void CDispatchWnd::startTimer(int period) 
+void CDispatchWnd::createTimer()
 {
 	timer = CreateWaitableTimer(NULL, FALSE, NULL);
+	timerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	createTimerThread();
+}
+
+void CDispatchWnd::destroyTimer()
+{
+	terminateTimerThread();
+	CloseHandle(timer);
+	CloseHandle(timerEvent);
+}
+
+void CDispatchWnd::createTimerThread()
+{
+	timerThread = CreateThread(NULL, 0, timerThreadProc, (void*)this, 0, NULL);
+}
+
+void CDispatchWnd::terminateTimerThread()
+{
+	SetEvent(timerEvent);
+	CancelWaitableTimer(timer);
+	WaitForSingleObject(timerThread, TIMER_PERIOD);
+	CloseHandle(timerThread);
+}
+
+DWORD WINAPI CDispatchWnd::timerThreadProc(LPVOID param) 
+{
+	CDispatchWnd* pThis = static_cast<CDispatchWnd*>(param);
+	HANDLE handles[2] = { pThis->timer, pThis->timerEvent };
 
 	SYSTEMTIME time;
-	
+
 	for (int i = 0; i < 200; ++i) {
 		GetSystemTime(&time);
 
@@ -300,31 +332,10 @@ void CDispatchWnd::startTimer(int period)
 
 		Sleep(20);
 	}
-	
+
 	LARGE_INTEGER timerExpires;
-	timerExpires.QuadPart = Int32x32To64(-10000, period);
-	SetWaitableTimer(timer, &timerExpires, period, NULL, NULL, FALSE);
-	
-	timerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	timerThread = (HANDLE)_beginthreadex(NULL, 0, timerThreadProc, (void*)this, 0, NULL);
-}
-
-void CDispatchWnd::stopTimer() 
-{
-	SetEvent(timerEvent);
-	CancelWaitableTimer(timer);
-	WaitForSingleObject(timerThread, TIMER_PERIOD + 1000);
-
-	CloseHandle(timer);
-	CloseHandle(timerEvent);
-	CloseHandle(timerThread);
-}
-
-
-unsigned WINAPI CDispatchWnd::timerThreadProc(void* param) 
-{
-	CDispatchWnd* pThis = static_cast<CDispatchWnd*>(param);
-	HANDLE handles[2] = { pThis->timer, pThis->timerEvent };
+	timerExpires.QuadPart = Int32x32To64(-10000, TIMER_PERIOD);
+	SetWaitableTimer(pThis->timer, &timerExpires, TIMER_PERIOD, NULL, NULL, FALSE);
 
 	while (true) 
 	{

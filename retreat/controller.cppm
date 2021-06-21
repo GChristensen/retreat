@@ -24,6 +24,7 @@ public:
     void onTimer();
 
     bool isAlert() { return stateMachine.isAlert(); }
+    bool isSuspended() { return stateMachine.isSuspended(); }
 
     bool canDisable() { return stateMachine.canDisable(); }
     bool canEnable() { return stateMachine.isSuspended(); }
@@ -76,8 +77,8 @@ void Controller::resume() {
 }
 
 void Controller::onTimer() {
-    scheduler.schedule(stateMachine);
-    stateMachine.onTimer();
+    if (!scheduler.schedule(stateMachine))
+        stateMachine.onTimer();
 }
 
 void Controller::enable(bool enable) {

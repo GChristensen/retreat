@@ -41,7 +41,7 @@ void StateMachine::reset(Settings &settings) {
 }
 
 void StateMachine::setIdle(bool skip) {
-    if (skip) {
+    if (skip && state->canSkip()) {
         int currentDay = StateAlert::setSkipExpended();
 
         settings.setInt(Settings::SKIP_DATE, currentDay);
@@ -49,6 +49,9 @@ void StateMachine::setIdle(bool skip) {
 
         settings.save();
     }
+    else if (skip && !state->canSkip())
+        return;
+
     state = std::make_shared<StateIdle>();
 }
 
@@ -90,6 +93,10 @@ void StateMachine::setMonitoring() {
 
 void StateMachine::onTimer() {
     state->onTimer();
+}
+
+bool StateMachine::isMonitoring() {
+    return state->isMonitoring();
 }
 
 bool StateMachine::isSuspended() {

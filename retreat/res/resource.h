@@ -95,7 +95,7 @@
 #define ID_MENU_EXIT                    32775
 #define ID_MENU_PAUSE                   32776
 #define ID_MENU_DELAY                   32777
-#define ID_MENU_OPTIONS                 32778
+#define ID_MENU_SETTINGS                32778
 #define ID_MENU_TAKEBREAK               32785
 
 // Next default values for new objects

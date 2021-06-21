@@ -71,10 +71,7 @@ bool StateAlert::setSkippable(int date, bool expended) {
     return skippable;
 }
 
-StateAlert::StateAlert(StateMachine &stateMachine):
-    stateMachine(stateMachine),
-    alertWindow(StateWindowFactory::createStateWindow(
-        StateWindowFactory::STATE_WINDOW_ALERT, stateMachine)) {
+StateAlert::StateAlert(StateMachine &stateMachine): stateMachine(stateMachine) {
 
     counter = stateMachine.getAlertDuration();
 
@@ -85,6 +82,8 @@ StateAlert::StateAlert(StateMachine &stateMachine):
         skippable = true;
     }
 
+    alertWindow = StateWindowFactory::createStateWindow(StateWindowFactory::STATE_WINDOW_ALERT, stateMachine);
+
     DBGLOG(_T("alert"));
 }
 
@@ -93,6 +92,6 @@ void StateAlert::onTimer() {
 
     alertWindow->onTimer();
 
-    if (counter < 0)     
+    if (!counter)     
         stateMachine.setLocked();
 }

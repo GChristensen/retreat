@@ -23,7 +23,7 @@ public:
 
     void addEvent(EventPtr);
 
-    void schedule(StateMachine& machine);
+    bool schedule(StateMachine& machine);
 
 private:
     std::vector<EventPtr> events;
@@ -61,18 +61,19 @@ void Scheduler::addEvent(EventPtr event) {
     events.emplace_back(event);
 }
 
-void Scheduler::schedule(StateMachine& machine) {
+bool Scheduler::schedule(StateMachine& machine) {
     time_t currentTime = time(nullptr);
 
     for (auto &event: events) {
-        if (event->isAlert(currentTime)) {
+        if (event->isAlert(currentTime) && !machine.isAlert()) {
             machine.setAlert();
-            return;
+            return true;
         }
-        else if (event->isMonitoring(currentTime)) {
+        else if (event->isMonitoring(currentTime) && !machine.isMonitoring()) {
             machine.setMonitoring();
-            return;
+            return true;
         }
     }
 
+    return false;
 }

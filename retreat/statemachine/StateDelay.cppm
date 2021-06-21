@@ -43,10 +43,7 @@ StateDelay::StateDelay(StateMachine& stateMachine) : stateMachine(stateMachine) 
 void StateDelay::onTimer() {
     counter -= 1;
 
-    if (!counter) {
-        if (delaysAvailable(stateMachine.getDelayAmount()))
-            stateMachine.setAlert(); 
-        else
-            stateMachine.setLocked();
-    }
+    if (!counter)
+        stateMachine.setAlert(); 
+        
 }

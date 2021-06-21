@@ -97,7 +97,7 @@ void CBehaviorSettingsDlg::read(Settings &settings)
 	initSpin(GetDlgItem(IDC_ALERT_SPIN), m_alertBeforeMin, 1);
 	initSpin(GetDlgItem(IDC_DELAY_SPIN), m_delayTimeMin, 1);
 	initSpin(GetDlgItem(IDC_DELAY_LIMIT_SPIN), m_delayLimit, 0, 5);
-	initSpin(GetDlgItem(IDC_DISABLE_FOR), m_suspendForHrs, 1, 24);
+	initSpin(GetDlgItem(IDC_DISABLE_FOR_SPIN), m_suspendForHrs, 1, 24);
 }
 
 void CBehaviorSettingsDlg::write(Settings &settings)

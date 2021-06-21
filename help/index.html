@@ -111,7 +111,7 @@
         <h3>Scheduled Breaks</h4>
         <blockquote>
             <p>A scheduled break occurs exactly at the time specified by a <a href="http://en.wikipedia.org/wiki/Crontab" target="_blank">Crontab</a> record.
-                For example, you can use the crontab record, shown on screenshots below, to make 15 min. breaks at 13:<b>00</b> on each working day.
+                For example, you can use the crontab record, shown on screenshots below, to make 15 min. breaks starting at 13:15 on each working day.
                 Leave the "Display Message" field blank, if you don't want any messages to be displayed after the end of a break.</p>
 
             <p>Use "Add..." and "Remove" buttons to add and remove schedules, double click to edit the break.
@@ -169,7 +169,8 @@
 
             <img src="images/restriction_settings.png">
             <ul>
-                <li><b>Do not lock the system if no activity has been detected for</b> - do not lock the system if there have been no keyboard or mouse actions during the specified time before the start of a break.</li>
+                <li><b>Do not lock the system if no activity has been detected for</b> - do not lock the system if there have been no keyboard or mouse actions during the specified time before the start of a break.
+                Set this value to 0 to selectively disable the feature.</li>
                 <li><b>Do not lock the system if one of the listed programs is running</b> - Enso Retreat will not lock the system if at least one of the programs specified in this list is running.</li>
             </ul>
         </blockquote>

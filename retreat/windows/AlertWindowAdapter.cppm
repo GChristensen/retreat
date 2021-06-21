@@ -87,7 +87,7 @@ auto AlertWindowAdapter::createTimerWindow(CRect* pRect) {
 		true
 	);
 
-	pTimerWnd->SetTimer(alertDurationSec, true);
+	pTimerWnd->SetTimer(alertDurationSec - 1, true);
 	pTimerWnd->PlaceWindowOnWorkArea(DEFAULT_TIMER_X, DEFAULT_TIMER_Y);
 	pTimerWnd->SetAlpha(settings.getInt(Settings::APPEARANCE_OPACITY_LEVEL, 
 		Settings::DEFAULT_APPEARANCE_OPACITY_LEVEL));

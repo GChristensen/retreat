@@ -26,7 +26,6 @@ public:
 
 private:
 
-	int periodDurationSec;
 	int breakDurationSec;
 	int alertDurationSec;
 
@@ -68,7 +67,6 @@ CronEvent::CronEvent(Settings& settings, tstring &eventString) {
 		return;
 	}
 
-	periodDurationSec = settings.getMinutesInSec(Settings::PERIOD_DURATION, Settings::DEFAULT_PERIOD_DURATION);
 	alertDurationSec = settings.getMinutesInSec(Settings::ALERT_DURATION, Settings::DEFAULT_ALERT_DURATION);
 
 	breakDurationSec = -1;
@@ -90,11 +88,14 @@ CronEvent::CronEvent(Settings& settings, tstring &eventString) {
     monitoringEnabled = settings.getBoolean(Settings::MONITORING_INPUT, Settings::DEFAULT_MONITORING_INPUT);
     userInactivitySec = settings.getMinutesInSec(Settings::MONITORING_INACTIVITY, Settings::DEFAULT_MONITORING_INACTIVITY);
 
-	alertBoundarySec = breakDurationSec + alertDurationSec;
+	alertBoundarySec = alertDurationSec;
 	monitoringBoundarySec = monitoringEnabled ? alertBoundarySec + userInactivitySec : 0;
 }
 
 bool CronEvent::isMonitoring(time_t time) {
+	if (!monitoringEnabled || monitoringBoundarySec == alertBoundarySec)
+		return false;
+
 	tm localTime;
 	time_t withBoundary = time + monitoringBoundarySec;
 	localtime_s(&localTime, &withBoundary);

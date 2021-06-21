@@ -24,6 +24,7 @@ public:
 
     void onTimer();
 
+    bool isMonitoring();
     bool isSuspended();
     bool isHalted();
     bool isAlert();

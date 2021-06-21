@@ -63,7 +63,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Python|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -112,6 +112,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Python|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)\..\..\python\enso\enso\python\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\..\..\python\enso\enso\python\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -289,17 +291,25 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Python|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <ExceptionHandling>
-      </ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <DebugInformationFormat>
       </DebugInformationFormat>
-      <PreprocessorDefinitions>_WINDOWS;STRICT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;PYTHON_MODULE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)/misc;$(ProjectDir)/res;$(ProjectDir)/pch</AdditionalIncludeDirectories>
+      <EnableModules>false</EnableModules>
+      <DisableSpecificWarnings>4005;5105;5106;5050</DisableSpecificWarnings>
+      <AdditionalBMIDirectories>
+      </AdditionalBMIDirectories>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
+      <OutputFile>$(SolutionDir)../../python/enso/enso/enso/contrib/_retreat.pyd</OutputFile>
     </Link>
     <ResourceCompile>
       <Culture>0x0409</Culture>
@@ -308,6 +318,7 @@
     </ResourceCompile>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <HeaderFileName>retreat.h</HeaderFileName>
       <InterfaceIdentifierFileName>retreat_i.c</InterfaceIdentifierFileName>

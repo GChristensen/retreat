@@ -23,9 +23,11 @@ private:
 
     int timeToAlertSec;
     int alertBoundarySec;
+    bool alertEventSet = false;
 
     int timeToMonitoringSec;
     int monitoringBoundarySec;
+    bool monitoringEventSet = false;
 
     bool monitoringEnabled;
     int userInactivitySec;
@@ -77,11 +79,18 @@ void PeriodicEvent::resetStartTime(Settings &settings) {
 }
 
 bool PeriodicEvent::isMonitoring(time_t time) {
+    if (!monitoringEnabled || monitoringBoundarySec == alertBoundarySec)
+        return false;
+
     int elapsed = time - startTime;
 
     int timePoint = elapsed % periodDurationSec;
-    if (monitoringEnabled && timePoint >= timeToMonitoringSec && timePoint < timeToMonitoringSec + 3)
+    if (!monitoringEventSet && timePoint >= timeToMonitoringSec && timePoint < timeToMonitoringSec + 3) {
+        monitoringEventSet = true;
         return true;
+    }
+    else if (timePoint >= 0 && timePoint < 3)
+        monitoringEventSet = false;
 
     return false;
 }
@@ -93,8 +102,12 @@ bool PeriodicEvent::isAlert(time_t time) {
 
     int timePoint = elapsed % periodDurationSec;
     // 3 second tolerance gap to compensate running in a GUI thread which may supend and load libraries
-    if (timePoint >= timeToAlertSec && timePoint < timeToAlertSec + 3) 
+    if (!alertEventSet && timePoint >= timeToAlertSec && timePoint < timeToAlertSec + 3) {
+        alertEventSet = true;
         return true;
+    }
+    else if (timePoint >= 0 && timePoint < 3)
+        alertEventSet = false;
 
     return false;
 }

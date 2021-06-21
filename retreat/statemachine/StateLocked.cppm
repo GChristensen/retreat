@@ -60,7 +60,7 @@ void StateLocked::onTimer() {
 
     lockWindow->onTimer();
 
-    if (counter < 0) {
+    if (!counter) {
         if (!messageText.empty())
             displayMessage(messageText);
 

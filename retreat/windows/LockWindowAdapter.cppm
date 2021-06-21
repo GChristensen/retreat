@@ -185,7 +185,7 @@ auto LockWindowAdapter::createTimerWindow(CRect* pRect, bool primary) {
 		
 		pTimerWnd->SetTimerPos(fullscreen? DEFAULT_TIMER_X: DEFAULT_TIMER_X_WINDOWED, 
 			fullscreen? DEFAULT_TIMER_Y: DEFAULT_TIMER_Y_WINDOWED);
-		pTimerWnd->SetTimer(breakDurationSec);
+		pTimerWnd->SetTimer(breakDurationSec - 1);
 	}
 	else
 		pTimerWnd->SetShowTimer(false);

@@ -67,8 +67,8 @@ pyenso_retreat_skip(PyObject* self) {
 }
 
 static PyObject*
-pyenso_retreat_options(PyObject* self) {
-	PostMessage(hDispatchWnd, WM_COMMAND, ID_MENU_OPTIONS, 0);
+pyenso_retreat_settings(PyObject* self) {
+	PostMessage(hDispatchWnd, WM_COMMAND, ID_MENU_SETTINGS, 0);
 
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -94,7 +94,7 @@ static PyMethodDef enso_functions[] = {
 	{"take_break", (PyCFunction)pyenso_retreat_take_break, METH_NOARGS},
 	{"delay", (PyCFunction)pyenso_retreat_delay, METH_NOARGS},
 	{"skip", (PyCFunction)pyenso_retreat_skip, METH_NOARGS},
-	{"options", (PyCFunction)pyenso_retreat_options, METH_NOARGS},
+	{"settings", (PyCFunction)pyenso_retreat_settings, METH_NOARGS},
 	{"about", (PyCFunction)pyenso_retreat_about, METH_NOARGS},
 	//	{"version", (PyCFunction)pyenso_retreat_version, METH_NOARGS},
 	{"is_locked", (PyCFunction)pyenso_retreat_is_locked, METH_NOARGS},
