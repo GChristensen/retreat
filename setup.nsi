@@ -80,17 +80,12 @@ Section Uninstall
 	DeleteRegKey HKLM "SOFTWARE\${APPNAME}"
 	DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run\" "${APPNAME}"
 
-	Delete "$INSTDIR\uninstall.exe"
-
 	Delete "$SMPROGRAMS\Enso Retreat\Enso Retreat.lnk"
 	Delete "$SMPROGRAMS\Enso Retreat\Uninstall.lnk"
 
-	Delete "$INSTDIR\retreat.exe"
+    Delete "$INSTDIR\uninstall.exe"
 
-	RMDir "$SMPROGRAMS\Enso Retreat"
-	RMDir "$INSTDIR\language\"
-	RMDir "$INSTDIR\"
-
+	RMDir /r "$INSTDIR"
 SectionEnd
 
 ; On initialization
