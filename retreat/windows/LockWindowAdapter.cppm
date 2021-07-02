@@ -94,6 +94,14 @@ LockWindowAdapter::~LockWindowAdapter() {
 	for (const WindowPtr &window : windows)
 		window->SendMessage(WM_CLOSE);
 
+	if (settings.getBoolean(_T("midnight.wake"), false)) {
+		SYSTEMTIME time;
+		GetLocalTime(&time);
+
+		if (time.wHour == 23 && time.wMinute == 59 || time.wHour == 0 && time.wMinute == 0)
+			SetThreadExecutionState(ES_DISPLAY_REQUIRED);
+	}
+
 	if (settings.getBoolean(Settings::SOUNDS_ENABLE, Settings::DEFAULT_SOUNDS_ENABLE)) {
 		tstring audioDir = settings.getString(Settings::SOUNDS_AUDIO_DIRECTORY, _T(""));
 

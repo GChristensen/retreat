@@ -62,7 +62,6 @@ public:
     static constexpr const TCHAR* PROCESSES = _T("processes.");
     static constexpr const TCHAR* CRON = _T("cron.");
 
-
     static constexpr const bool DEFAULT_PERIOD_ENABLE = true;
     static constexpr const int DEFAULT_PERIOD_DURATION = 60;
     static constexpr const bool DEFAULT_PERIOD_FROM_LAUNCH = false;
@@ -91,7 +90,6 @@ public:
     static constexpr const bool DEFAULT_MONITORING_INPUT = false;
     static constexpr const bool DEFAULT_MONITORING_PROCESSES = false;
     static constexpr const int DEFAULT_MONITORING_INACTIVITY = 10;
-
 
     Settings();
 
