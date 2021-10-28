@@ -2,20 +2,7 @@ module;
 
 #include <ctime>
 
-// !!! dependency on windows in generic code
-#include <windows.h>
-#include <tchar.h>
-// !!!
-
 export module PeriodicEvent;
-
-// >>> for debug
-#include "tstring.h"
-
-import <format>;
-import <thread>;
-// <<< for debug
-
 
 import Event;
 import Settings;
@@ -28,8 +15,6 @@ public:
 
     virtual bool isMonitoring(time_t time) override;
     virtual bool isAlert(time_t time) override;
-
-    virtual void debug() override;
 
     static void resetStartTime(Settings &settings);
 
@@ -52,8 +37,6 @@ private:
     int breakDurationSec;
     int alertDurationSec;
 
-    int alertCount = 0;
-    int roughAlertCount = 0;
 };
 
 module :private;
@@ -122,35 +105,12 @@ bool PeriodicEvent::isAlert(time_t time) {
 
     int timePoint = elapsed % periodDurationSec;
 
-    if (timePoint == timeToAlertSec)
-        roughAlertCount += 1;
-
-    // 3 second tolerance gap to compensate running in a GUI thread which may supend and load libraries
     if (!alertEventSet && timePoint >= timeToAlertSec && timePoint < (timeToAlertSec + TRANSITION_TOLERANCE_SEC)) {
         alertEventSet = true;
-
-        alertCount += 1;
-
-        if (roughAlertCount != alertCount)
-            MessageBox(0, _T("Incorrect alert behavior!"), _T("Enso Retreat"), MB_ICONERROR);
-
         return true;
-    }
-    else if (alertEventSet && timePoint == timeToAlertSec) {
-        MessageBox(0, _T("Incorrect alertEvent behavior!"), _T("Enso Retreat"), MB_ICONERROR);
     }
     else if (alertEventSet && timePoint >= (timeToAlertSec + TRANSITION_TOLERANCE_SEC))
         alertEventSet = false;
 
     return false;
-}
-
-void PeriodicEvent::debug() {
-    auto debugProc = [this]() {
-        tstring dbg = std::format(_T("timeToAlertSec: {:d}\nalertEventSet: {:d}\nalertCount: {:d}"), this->timeToAlertSec, this->alertEventSet, this->alertCount);
-        ::MessageBox(0, dbg.c_str(), _T(""), 0);
-    };
-
-    std::thread debugThread(debugProc);
-    debugThread.detach();
 }
