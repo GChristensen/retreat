@@ -83,6 +83,14 @@ pyenso_retreat_about(PyObject* self) {
 }
 
 static PyObject*
+pyenso_retreat_debug(PyObject* self) {
+	PostMessage(hDispatchWnd, WM_COMMAND, ID_MENU_DEBUG, 0);
+
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+
+static PyObject*
 pyenso_retreat_is_locked(PyObject* self) {
 	return PyBool_FromLong((long)SendMessage(hDispatchWnd, WM_GET_LOCK_STATE, 0, 0));
 }
@@ -96,6 +104,7 @@ static PyMethodDef enso_functions[] = {
 	{"skip", (PyCFunction)pyenso_retreat_skip, METH_NOARGS},
 	{"settings", (PyCFunction)pyenso_retreat_settings, METH_NOARGS},
 	{"about", (PyCFunction)pyenso_retreat_about, METH_NOARGS},
+	{"debug", (PyCFunction)pyenso_retreat_debug, METH_NOARGS},
 	//	{"version", (PyCFunction)pyenso_retreat_version, METH_NOARGS},
 	{"is_locked", (PyCFunction)pyenso_retreat_is_locked, METH_NOARGS},
 	{NULL, NULL, 0, NULL},

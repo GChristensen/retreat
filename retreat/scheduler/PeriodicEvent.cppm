@@ -2,7 +2,20 @@ module;
 
 #include <ctime>
 
+// !!! dependency on windows in generic code
+#include <windows.h>
+#include <tchar.h>
+// !!!
+
 export module PeriodicEvent;
+
+// >>> for debug
+#include "tstring.h"
+
+import <format>;
+import <thread>;
+// <<< for debug
+
 
 import Event;
 import Settings;
@@ -15,6 +28,8 @@ public:
 
     virtual bool isMonitoring(time_t time) override;
     virtual bool isAlert(time_t time) override;
+
+    virtual void debug() override;
 
     static void resetStartTime(Settings &settings);
 
@@ -36,9 +51,14 @@ private:
     int periodDurationSec;
     int breakDurationSec;
     int alertDurationSec;
+
+    int alertCount = 0;
+    int roughAlertCount = 0;
 };
 
 module :private;
+
+const int TRANSITION_TOLERANCE_SEC = 3;
 
 time_t PeriodicEvent::startTime = 0;
 
@@ -85,11 +105,11 @@ bool PeriodicEvent::isMonitoring(time_t time) {
     int elapsed = time - startTime;
 
     int timePoint = elapsed % periodDurationSec;
-    if (!monitoringEventSet && timePoint >= timeToMonitoringSec && timePoint < timeToMonitoringSec + 3) {
+    if (!monitoringEventSet && timePoint >= timeToMonitoringSec && timePoint < (timeToMonitoringSec + TRANSITION_TOLERANCE_SEC)) {
         monitoringEventSet = true;
         return true;
     }
-    else if (timePoint >= 0 && timePoint < 3)
+    else if (monitoringEventSet && timePoint >= (timeToMonitoringSec + TRANSITION_TOLERANCE_SEC))
         monitoringEventSet = false;
 
     return false;
@@ -101,13 +121,36 @@ bool PeriodicEvent::isAlert(time_t time) {
     DBGLOG(elapsed << _T(" (") << elapsed % periodDurationSec << _T(") | " << timeToAlertSec));
 
     int timePoint = elapsed % periodDurationSec;
+
+    if (timePoint == timeToAlertSec)
+        roughAlertCount += 1;
+
     // 3 second tolerance gap to compensate running in a GUI thread which may supend and load libraries
-    if (!alertEventSet && timePoint >= timeToAlertSec && timePoint < timeToAlertSec + 3) {
+    if (!alertEventSet && timePoint >= timeToAlertSec && timePoint < (timeToAlertSec + TRANSITION_TOLERANCE_SEC)) {
         alertEventSet = true;
+
+        alertCount += 1;
+
+        if (roughAlertCount != alertCount)
+            MessageBox(0, _T("Incorrect alert behavior!"), _T("Enso Retreat"), MB_ICONERROR);
+
         return true;
     }
-    else if (timePoint >= 0 && timePoint < 3)
+    else if (alertEventSet && timePoint == timeToAlertSec) {
+        MessageBox(0, _T("Incorrect alertEvent behavior!"), _T("Enso Retreat"), MB_ICONERROR);
+    }
+    else if (alertEventSet && timePoint >= (timeToAlertSec + TRANSITION_TOLERANCE_SEC))
         alertEventSet = false;
 
     return false;
+}
+
+void PeriodicEvent::debug() {
+    auto debugProc = [this]() {
+        tstring dbg = std::format(_T("timeToAlertSec: {:d}\nalertEventSet: {:d}\nalertCount: {:d}"), this->timeToAlertSec, this->alertEventSet, this->alertCount);
+        ::MessageBox(0, dbg.c_str(), _T(""), 0);
+    };
+
+    std::thread debugThread(debugProc);
+    debugThread.detach();
 }

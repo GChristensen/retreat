@@ -151,6 +151,9 @@ LRESULT CDispatchWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 			enableMenu();
 		}
 		break;
+	case ID_MENU_DEBUG:
+		controller.debug();
+		break;
 	case ID_MENU_EXIT:
 		PostMessage(WM_CLOSE);
 		break;

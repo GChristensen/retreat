@@ -25,6 +25,8 @@ public:
 
     bool schedule(StateMachine& machine);
 
+    void debug();
+
 private:
     std::vector<EventPtr> events;
 
@@ -75,5 +77,11 @@ bool Scheduler::schedule(StateMachine& machine) {
         }
     }
 
+    machine.onTimer();
     return false;
+}
+
+void Scheduler::debug() {
+    for (auto& event : events)
+        event->debug();
 }

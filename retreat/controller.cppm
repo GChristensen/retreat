@@ -36,6 +36,8 @@ public:
     void stop();
     void resume();
 
+    void debug();
+
     void enable(bool enable);
     void delay() { stateMachine.setDelay(); }
     void skip() { stateMachine.setIdle(true); }
@@ -76,9 +78,12 @@ void Controller::resume() {
     stateMachine.setIdle();
 }
 
+void Controller::debug() {
+    scheduler.debug();
+}
+
 void Controller::onTimer() {
-    if (!scheduler.schedule(stateMachine))
-        stateMachine.onTimer();
+    scheduler.schedule(stateMachine);
 }
 
 void Controller::enable(bool enable) {

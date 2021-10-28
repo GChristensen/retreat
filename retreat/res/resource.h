@@ -97,6 +97,7 @@
 #define ID_MENU_DELAY                   32777
 #define ID_MENU_SETTINGS                32778
 #define ID_MENU_TAKEBREAK               32785
+#define ID_MENU_DEBUG                   32800
 
 // Next default values for new objects
 // 
