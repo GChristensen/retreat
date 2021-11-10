@@ -2,6 +2,9 @@
 
 #include "retreat_pymodule.h"
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
+
 export module Settings;
 
 import <map>;
@@ -10,11 +13,11 @@ import <vector>;
 import <memory>;
 import <string>;
 import <utility>;
-
-import "config.h";
+import <iostream>;
 
 #include "tstring.h"
 #include "debug.h"
+
 
 const TCHAR *CONFIG_FILE_NAME = _T("retreat.cfg");
 
@@ -106,7 +109,7 @@ public:
     auto getSection(tstring name);
     auto getSectionValues(tstring name);
     void clearSection(tstring name);
-
+    
     void setString(const tstring path, const tstring value);
     void setBoolean(const tstring path, bool value);
     void setInt(const tstring path, int value);
@@ -117,6 +120,9 @@ public:
 private:
     tstring file;
     std::map<tstring, tstring> values;
+
+    void readConfig(const tstring& file, std::map<tstring, tstring>& values);
+    void writeConfig(const tstring& file, const std::map<tstring, tstring>& values);
 
     void handlePreviousVersions();
 };
@@ -136,6 +142,30 @@ Settings::Settings() {
 
     load(file);
     handlePreviousVersions();
+}
+
+void Settings::readConfig(const tstring& file, std::map<tstring, tstring>& values) {
+    tptree ptree;
+    tifstream iconfig(file);
+    read_ini(iconfig, ptree);
+
+    values.clear();
+
+    for (auto& [section, settings] : ptree) {
+        for (auto& [setting, value] : settings) {
+            values[section + _T(".") + setting] = value.data();
+        }
+    }
+}
+
+void Settings::writeConfig(const tstring& file, const std::map<tstring, tstring>& values) {
+    tptree ptree;
+
+    for (auto& [path, value] : values)
+        ptree.put(path, value);
+
+    tofstream oconfig(file);
+    write_ini(oconfig, ptree);
 }
 
 void Settings::load(const tstring& file) {
@@ -270,3 +300,4 @@ void Settings::handlePreviousVersions() {
         save();
     }
 }
+

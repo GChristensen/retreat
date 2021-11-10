@@ -3,6 +3,9 @@
 #include <string>
 
 #include "stdafx.h"
+
+#define Py_LIMITED_API
+
 #include <Python.h>
 
 #include "resource.h"
@@ -173,14 +176,20 @@ int getPythonShowIcon() {
 		show_icon_i = PyObject_IsTrue(show_icon);
 	}
 
-	const char* theme_s = PyUnicode_AsUTF8(theme);
+	int result = 0;
+
+	if (show_icon_i == -1 || !show_icon_i)
+		result = 2;
+	else {
+		const TCHAR* theme_s = PyUnicode_AsWideCharString(theme, NULL);
+		result = (int)!_tcscmp(theme_s, _T("amethyst"));
+		PyMem_Free((void*)theme_s);
+	}
+
 	Py_DecRef(config);
 	PyGILState_Release(gstate);
 
-	if (show_icon_i == -1 || !show_icon_i)
-		return 2;
-
-	return !strcmp(theme_s, "amethyst");
+	return result;
 }
 
 tstring getPythonConfigFilePath(const tstring &configFile) {
@@ -193,8 +202,11 @@ tstring getPythonConfigFilePath(const tstring &configFile) {
 	PyObject* dict = PyModule_GetDict(config);
 	PyObject* enso_user_dir = PyDict_GetItem(dict, PyUnicode_FromString("ENSO_USER_DIR"));
 
-	USES_CONVERSION;
-	result = A2T(PyUnicode_AsUTF8(enso_user_dir));
+	const TCHAR* path = PyUnicode_AsWideCharString(enso_user_dir, NULL);
+	result = path;
+	
+	PyMem_Free((void*)path);
+
 	result.append(_T("\\"));
 	result.append(configFile);
 

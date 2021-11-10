@@ -48,9 +48,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="windows\DispatchWnd.cppm" />
-    <ClCompile Include="config.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="scheduler\Scheduler.cppm" />
     <ClCompile Include="statemachine\State.cppm" />
     <ClCompile Include="statemachine\StateAlert.cppm" />
@@ -69,9 +66,6 @@
     <ClCompile Include="windows\LockWindowAdapter.cppm" />
     <ClCompile Include="algorithms.cppm" />
     <ClCompile Include="windows\gdi\Shapes.cppm" />
-    <ClCompile Include="config.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="windows\InputLock.cppm" />
     <ClCompile Include="statemachine\StateWindowFactory.cppm" />
     <ClCompile Include="statemachine\StateHalted.cppm" />
