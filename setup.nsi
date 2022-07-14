@@ -1,7 +1,7 @@
 Unicode True
 
 !define APPNAME "Enso Retreat"
-!define VERSION "0.6.1"
+!define VERSION "1.0"
 
 !define APPNAMEANDVERSION "Enso Retreat ${VERSION}"
 
