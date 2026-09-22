@@ -242,14 +242,14 @@ img { max-width: 100%; display: block; }
   overflow: hidden;
   border: 1px solid var(--line-strong);
   box-shadow: 0 40px 80px -48px rgba(34, 38, 43, .35);
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 500 / 281;
   background: #000;
 }
 .demo-figure .poster,
 .demo-figure video { width: 100%; height: 100%; object-fit: cover; display: block; }
-.demo-figure video { object-fit: contain; background: #000; }
+#demo-video:not([hidden]) { height: 100%; }
 
-.poster-container { position: relative; cursor: pointer; }
+.poster-container { position: relative; height: 100%; cursor: pointer; }
 .play-button {
   position: absolute;
   inset: 0;
