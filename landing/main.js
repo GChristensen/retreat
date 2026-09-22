@@ -42,24 +42,22 @@
       .catch(function () { /* keep the releases-page fallback */ });
   }
 
-  // ---- demo poster / video ----
+  // ---- demo video: a muted loop that only runs while it is on screen ----
   function initDemo() {
-    var poster = document.getElementById("demo-poster");
-    var wrap = document.getElementById("demo-video");
-    if (!poster || !wrap) return;
-    var video = wrap.querySelector("video");
+    var video = document.getElementById("demo-video");
+    if (!video) return;
 
-    function play() {
-      poster.hidden = true;
-      wrap.hidden = false;
-      video.currentTime = 0;
-      video.play().catch(function () { /* autoplay may be blocked; controls remain */ });
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
+      video.controls = true;
+      return;
     }
 
-    poster.addEventListener("click", play);
-    poster.addEventListener("keydown", function (e) {
-      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); play(); }
-    });
+    new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting)
+        video.play().catch(function () { video.controls = true; });
+      else
+        video.pause();
+    }, { threshold: 0.25 }).observe(video);
   }
 
   document.addEventListener("DOMContentLoaded", function () {

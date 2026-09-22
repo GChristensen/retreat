@@ -45,6 +45,36 @@
   </figure>
 </section>
 
+<!-- HOW A BREAK WORKS -->
+<section class="section section--alt lock" id="how-it-works">
+  <div class="lock__head">
+    <p class="eyebrow">How a break works</p>
+    <h2 class="section-title">Locked, but never hidden.</h2>
+  </div>
+  <div class="lock__body">
+    <p class="statement">When a break starts, Enso Retreat blocks the keyboard and mouse, so there is
+      nothing left to click or type. <span>A translucent overlay covers the desktop, and everything
+      behind it stays in plain sight.</span></p>
+    <div class="lock__points">
+      <div class="lock__point">
+        <p class="lock__title">A heads-up first</p>
+        <p>An alert appears shortly before the break, and you can delay it if you're in the middle
+          of something.</p>
+      </div>
+      <div class="lock__point">
+        <p class="lock__title">Hands off</p>
+        <p>Keystrokes and clicks don't reach your apps until the break is over. Nothing to do but
+          look away and rest.</p>
+      </div>
+      <div class="lock__point">
+        <p class="lock__title">Still in the loop</p>
+        <p>Watch a download finish or a build run through the overlay. The numpad <kbd class="kbd">+</kbd>
+          and <kbd class="kbd">&minus;</kbd> keys make it more or less see-through.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- FEATURES -->
 <section class="section" id="features">
   <div class="section-head">
@@ -85,15 +115,10 @@
 <section class="section section--alt" id="demo">
   <div class="demo-row">
     <div class="demo-figure">
-      <div class="poster-container" id="demo-poster" tabindex="0" role="button" aria-label="Play the product video">
-        <img class="poster" src="/retreat/media/screen.jpg" alt="Enso Retreat break screen">
-        <div class="play-button"></div>
-      </div>
-      <div id="demo-video" hidden>
-        <video controls>
-          <source src="/retreat/media/retreat.webm" type="video/webm">
-        </video>
-      </div>
+      <video id="demo-video" muted loop playsinline preload="metadata" poster="/retreat/media/screen.jpg"
+             aria-label="Enso Retreat break screen: translucent stars over a photo, with a countdown in the corner">
+        <source src="/retreat/media/retreat.webm" type="video/webm">
+      </video>
     </div>
     <div class="demo__text">
       <p class="eyebrow">See it in action</p>

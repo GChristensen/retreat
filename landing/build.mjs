@@ -48,9 +48,9 @@ if (plain) {
   await writeFile(path.join(outDir, "index.html"), html, "utf8");
   // a custom --out has no landing/ next to it: bring the assets along
   if (path.resolve(outDir, "landing") !== here) {
-    for (const f of ["styles.css", "img"])
+    for (const f of ["styles.css", "main.js", "img"])
       await cp(path.join(here, f), path.join(outDir, "landing", f), { recursive: true });
-    log.push(`  + landing/{styles.css,img/} copied to ${path.join(outDir, "landing")}`);
+    log.push(`  + landing/{styles.css,main.js,img/} copied to ${path.join(outDir, "landing")}`);
   }
 } else {
   // ---------------------------------------------------------------- aggressive
