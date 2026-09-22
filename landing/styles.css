@@ -346,6 +346,6 @@ img { max-width: 100%; display: block; }
   .features { grid-template-columns: minmax(0, 1fr); }
   .lock__points { grid-template-columns: minmax(0, 1fr); margin-top: 32px; }
   .statement { font-size: 21px; }
-  .site-nav a:not(.btn) { display: none; }
+  .site-nav a:not(.site-nav__keep) { display: none; }
   .site-footer { flex-direction: column; align-items: flex-start; }
 }
