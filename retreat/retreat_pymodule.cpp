@@ -138,7 +138,7 @@ static int enso_clear(PyObject* m) {
 
 static struct PyModuleDef moduledef = {
 	PyModuleDef_HEAD_INIT,
-	"enso.contrib._retreat",
+	"enso.contrib.retreatlib",
 	NULL,
 	sizeof(struct module_state),
 	enso_functions,
@@ -151,7 +151,7 @@ static struct PyModuleDef moduledef = {
 #define INITERROR return NULL
 
 PyMODINIT_FUNC
-PyInit__retreat(void)
+PyInit_retreatlib(void)
 {
 	PyObject* m = PyModule_Create(&moduledef);
 

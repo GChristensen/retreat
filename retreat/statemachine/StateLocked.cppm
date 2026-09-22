@@ -7,6 +7,8 @@ import StateMachine;
 import StateWindowAdapter;
 import StateWindowFactory;
 
+import <string>;
+
 #include "debug.h"
 #include "tstring.h"
 
@@ -20,7 +22,9 @@ public:
 
     // used to set break length from cron events
     static void setLockDurationOverride(int duration);
-    static void setMessageText(tstring text);
+    static void setMessageText(tstring text) {
+        messageText = text;
+    }
     static void reset();
     
 private:
@@ -72,9 +76,9 @@ void StateLocked::setLockDurationOverride(int duration) {
     lockDurationOverride = duration;
 }
 
-void StateLocked::setMessageText(tstring text) {
-    messageText = text;
-}
+//void StateLocked::setMessageText(tstring text) {
+//    messageText = text;
+//}
 
 void StateLocked::reset() {
     lockDurationOverride = 0;

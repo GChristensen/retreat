@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enso Retreat — a gentle break reminder for Windows</title>
+<meta name="description" content="Enso Retreat periodically dims your screen and reminds you to rest, stretch and rest your eyes. Configure the timing however you like, skip breaks automatically, and overlay any picture while it's locked.">
+<link rel="icon" type="image/svg+xml" href="img/logo.svg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- NAV -->
+<header class="site-header">
+  <a class="brand" href="#top" aria-label="Enso Retreat home">
+    <img src="img/logo.svg" width="28" height="28" alt="">
+    <span class="brand__name">Enso Retreat</span>
+  </a>
+  <nav class="site-nav">
+    <a href="#features">Features</a>
+    <a href="#demo">Demo</a>
+    <a href="https://gchristensen.github.io/retreat/help/index.html" target="_blank">Help</a>
+    <a class="btn js-download-link" href="https://github.com/GChristensen/retreat/releases/latest"><img class="btn__icon" src="/images/windows.svg" width="24" height="24" alt="">Download</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero__text">
+    <p class="eyebrow">Free · for Windows</p>
+    <h1 class="hero__title">Take the break<br><em>your eyes</em> deserve.</h1>
+    <p class="hero__lede">Enso Retreat is a small app that periodically blocks your screen and gives you
+      a moment to look away, stretch and rest your eyes — then quietly gets out of your way again.</p>
+    <div class="hero__actions">
+      <a class="btn btn--lg js-download-link" href="https://github.com/GChristensen/retreat/releases/latest"><img class="btn__icon" src="/images/windows.svg" width="24" height="24" alt="">Download for Windows</a>
+    </div>
+    <p class="hero__note">Free and open source. Runs quietly until it's time for a break.</p>
+  </div>
+
+  <figure class="hero__figure">
+    <img src="img/hero.svg" width="1200" height="750" alt="A Windows desktop with Excel and Word open, covered edge to edge by small translucent stars in many colours, with a break countdown in the corner: Enso Retreat's break screen.">
+  </figure>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-head">
+    <p class="eyebrow">Why it helps</p>
+    <h2 class="section-title">Small nudges, on your terms.</h2>
+    <p class="lede">A handful of settings, none of them mandatory.</p>
+  </div>
+
+  <div class="features">
+    <div class="feature">
+      <div class="feature__icon"><img src="img/icon-eye.svg" alt=""></div>
+      <p class="feature__title">Rest your eyes</p>
+      <p class="feature__desc">Let yourself rest, look afar and run through a quick eye-gymnastics
+        routine on every break.</p>
+    </div>
+    <div class="feature">
+      <div class="feature__icon"><img src="img/icon-timer.svg" alt=""></div>
+      <p class="feature__title">Set your own rhythm</p>
+      <p class="feature__desc">Configure the timing however you wish — a classic Pomodoro schedule,
+        or anything else, down to a custom Crontab pattern.</p>
+    </div>
+    <div class="feature">
+      <div class="feature__icon"><img src="img/icon-skip.svg" alt=""></div>
+      <p class="feature__title">Stays out of your way</p>
+      <p class="feature__desc">Breaks can be skipped automatically while a chosen app is running, or
+        when there's been no activity to interrupt.</p>
+    </div>
+    <div class="feature">
+      <div class="feature__icon"><img src="img/icon-image.svg" alt=""></div>
+      <p class="feature__title">Make it yours</p>
+      <p class="feature__desc">Any picture can be shown as a gentle, transparent overlay while the
+        screen is locked — your favourite wallpapers included.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO -->
+<section class="section section--alt" id="demo">
+  <div class="demo-row">
+    <div class="demo-figure">
+      <div class="poster-container" id="demo-poster" tabindex="0" role="button" aria-label="Play the product video">
+        <img class="poster" src="/retreat/media/screen.jpg" alt="Enso Retreat break screen">
+        <div class="play-button"></div>
+      </div>
+      <div id="demo-video" hidden>
+        <video controls>
+          <source src="/retreat/media/retreat.webm" type="video/webm">
+        </video>
+      </div>
+    </div>
+    <div class="demo__text">
+      <p class="eyebrow">See it in action</p>
+      <h2 class="section-title">A minute of your day, back.</h2>
+      <p>Enso Retreat is already embedded into <a class="text-link" href="https://gchristensen.github.io/enso-portable/">Enso Launcher</a>
+        as an optional module, but here you can download it as a standalone app.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <h2 class="cta__title">Ready to take a breather?</h2>
+  <p class="cta__lede">Download Enso Retreat, set a schedule that suits you, and let it remind you when
+    it's time to look away.</p>
+  <div class="cta__actions">
+    <a class="btn btn--lg js-download-link" href="https://github.com/GChristensen/retreat/releases/latest"><img class="btn__icon" src="/images/windows.svg" width="24" height="24" alt="">Download for Windows</a>
+    <a class="btn btn--lg btn--ghost" href="https://gchristensen.github.io/retreat/help/index.html" target="_blank">Read the docs</a>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <a class="brand" href="#top" aria-label="Enso Retreat home">
+    <img src="img/logo.svg" width="24" height="24" alt="">
+    <span class="brand__name">Enso Retreat</span>
+  </a>
+  <nav>
+    <a href="#features">Features</a>
+    <a href="https://gchristensen.github.io/retreat/help/index.html" target="_blank">Help</a>
+    <a href="https://github.com/GChristensen/retreat">GitHub</a>
+    <a href="https://github.com/GChristensen/retreat/issues">Report a bug</a>
+    <span>See also: <a class="text-link" href="https://gchristensen.github.io/enso-portable/">Enso Launcher</a></span>
+  </nav>
+  <span>© g/christensen</span>
+</footer>
+<script src="main.js"></script>
+</body>
+</html>

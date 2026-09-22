@@ -103,7 +103,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Python|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>_retreat.pyd</TargetName>
+    <TargetName>retreatlib.pyd</TargetName>
     <IncludePath>$(SolutionDir)\..\..\python\enso\enso\python\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\..\..\python\enso\enso\python\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -309,7 +309,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <OutputFile>$(SolutionDir)../../python/enso/enso/enso/contrib/_retreat.pyd</OutputFile>
+      <OutputFile>$(SolutionDir)../../python/enso/enso/enso/contrib/retreatlib.pyd</OutputFile>
     </Link>
     <ResourceCompile>
       <Culture>0x0409</Culture>

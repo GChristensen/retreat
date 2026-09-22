@@ -38,7 +38,7 @@ public:
 	LRESULT OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
-	DECLARE_WND_CLASS(_T("DispatchWindow"))
+	//DECLARE_WND_CLASS(_T("DispatchWindow"))
 
 	BEGIN_MSG_MAP(CDispatchWnd)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
