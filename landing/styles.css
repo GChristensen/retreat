@@ -349,3 +349,5 @@ img { max-width: 100%; display: block; }
   .site-nav a:not(.site-nav__keep) { display: none; }
   .site-footer { flex-direction: column; align-items: flex-start; }
 }
+
+.gc-credit a { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
