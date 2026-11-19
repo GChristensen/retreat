@@ -21,14 +21,16 @@ import Settings;
 import SectionDlg;
 import BreaksSettingsSection;
 import BreakScreenSettingsSection;
+import QuotesSettingsSection;
 import ScheduleSettingsSection;
 import ExceptionsSettingsSection;
 import BreakWindow;
 import TimerWindow;
+import QuoteWindow;
 
 using namespace Gdiplus;
 
-enum class SectionIcon { Breaks, Screen, Schedule, Exceptions };
+enum class SectionIcon { Breaks, Screen, Quotes, Schedule, Exceptions };
 
 export class CMainOptionsDlg :
 	public CDialogImpl<CMainOptionsDlg>
@@ -178,6 +180,7 @@ LRESULT CMainOptionsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	addSection(std::make_shared<CBreaksSettingsSection>(), SectionIcon::Breaks, x, y);
 	addSection(std::make_shared<CScheduleSettingsSection>(), SectionIcon::Schedule, x, y);
 	addSection(std::make_shared<CBreakScreenSettingsSection>(), SectionIcon::Screen, x, y);
+	addSection(std::make_shared<CQuotesSettingsSection>(), SectionIcon::Quotes, x, y);
 	addSection(std::make_shared<CExceptionsSettingsSection>(), SectionIcon::Exceptions, x, y);
 
 	if (!m_optionSections.empty()) {
@@ -329,6 +332,20 @@ static void drawSectionIcon(Graphics& g, SectionIcon icon, RectF r, const Color&
 		g.DrawLine(&pen, P(8, 21), P(16, 21));
 		g.DrawLine(&pen, P(12, 17), P(12, 21));
 		break;
+	case SectionIcon::Quotes: {
+		// a speech bubble
+		GraphicsPath path;
+		REAL d = s * 6 / 24;
+		path.AddArc(x + s * 3 / 24, y + s * 4 / 24, d, d, 180, 90);
+		path.AddArc(x + s * 21 / 24 - d, y + s * 4 / 24, d, d, 270, 90);
+		path.AddArc(x + s * 21 / 24 - d, y + s * 16 / 24 - d, d, d, 0, 90);
+		path.AddLine(P(12, 16), P(8, 20));
+		path.AddLine(P(8, 20), P(8, 16));
+		path.AddArc(x + s * 3 / 24, y + s * 16 / 24 - d, d, d, 90, 90);
+		path.CloseFigure();
+		g.DrawPath(&pen, &path);
+		break;
+	}
 	case SectionIcon::Schedule:
 		g.DrawRectangle(&pen, x + s * 3 / 24, y + s * 5 / 24, s * 18 / 24, s * 16 / 24);
 		g.DrawLine(&pen, P(3, 10), P(21, 10));
@@ -429,6 +446,7 @@ LRESULT CMainOptionsDlg::OnTryBreakScreen(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 	bool fullscreen = preview.getBoolean(Settings::APPEARANCE_FULLSCREEN, Settings::DEFAULT_APPEARANCE_FULLSCREEN);
 	m_previewWindows = createBreakWindows(preview, PREVIEW_SECONDS, false, fullscreen);
+	showQuoteWindow(preview, false, centerTimerClearancePx(preview, fullscreen));
 	m_previewTicks = 0;
 
 	SetTimer(PREVIEW_TIMER_ID, PREVIEW_TICK_MS);
@@ -463,6 +481,8 @@ void CMainOptionsDlg::stopPreview()
 {
 	if (IsWindow())
 		KillTimer(PREVIEW_TIMER_ID);
+
+	closeQuoteWindow();
 
 	for (auto it = m_previewWindows.rbegin(); it != m_previewWindows.rend(); ++it)
 		if ((*it)->IsWindow())

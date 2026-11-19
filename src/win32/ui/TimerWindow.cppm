@@ -54,6 +54,9 @@ public:
 	bool LoadBackground(const TCHAR* name, bool stretch, COLORREF canvas);
 	void DefaultBackground();
 
+	// A solid color instead of the stars, for quotes on a plain backdrop.
+	void PlainBackground(COLORREF color);
+
 	void GrabUserInput();
 	void ReturnUserInput();
 
@@ -193,6 +196,26 @@ void CTimerWindow::DefaultBackground()
 	bitmapBuffer->SetPlotRect(windowRect);
 
 	SetTransparentColor(TRANSPARENT_BACKGORUND_COLOR);
+
+	isBackgroundLoaded = true;
+}
+
+void CTimerWindow::PlainBackground(COLORREF color)
+{
+	bitmapBuffer->NewBitmap(displayRect.Width(), displayRect.Height(), color);
+
+	CRect windowRect;
+	GetWindowRect(&windowRect);
+
+	int heightDelta = (windowRect.Height() - displayRect.Height()) / 2;
+	int widthDelta = (windowRect.Width() - displayRect.Width()) / 2;
+
+	windowRect.top = heightDelta;
+	windowRect.left = heightDelta;
+	windowRect.bottom = displayRect.Height() + heightDelta;
+	windowRect.right = displayRect.Width() + widthDelta;
+
+	bitmapBuffer->SetPlotRect(windowRect);
 
 	isBackgroundLoaded = true;
 }

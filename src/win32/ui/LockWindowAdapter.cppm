@@ -20,6 +20,7 @@ import TimerWindow;
 import BreakWindow;
 import StateLocked;
 import MessageWindow;
+import QuoteWindow;
 import SettingsModel;
 import StateMachine;
 import StateWindowAdapter;
@@ -42,7 +43,9 @@ private:
 
 	std::vector<WindowPtr> windows;
 
-	void showBreakMessage();
+	// returns the bottom of the quote card, or 0
+	int showBreakQuote();
+	void showBreakMessage(int belowY);
 };
 
 module :private;
@@ -87,11 +90,21 @@ LockWindowAdapter::LockWindowAdapter(StateMachine& stateMachine):
 
 	windows = createBreakWindows(settings, breakDurationSec, true, fullscreen);
 
-	showBreakMessage();
+	showBreakMessage(showBreakQuote());
+}
+
+int LockWindowAdapter::showBreakQuote() {
+	if (!settings.getBoolean(Settings::QUOTES_ENABLE, Settings::DEFAULT_QUOTES_ENABLE))
+		return 0;
+
+	// remembers the quote shown, so the next break shows another one
+	settingsChanged = true;
+
+	return showQuoteWindow(settings, true, centerTimerClearancePx(settings, fullscreen));
 }
 
 // the message of a scheduled break, drawn over the break screen like the timer
-void LockWindowAdapter::showBreakMessage() {
+void LockWindowAdapter::showBreakMessage(int belowY) {
 	const tstring& message = StateLocked::getMessageText();
 
 	if (message.empty())
@@ -106,24 +119,13 @@ void LockWindowAdapter::showBreakMessage() {
 	// `fullscreen` already reflects a fallback from the windowed mode
 	int fontSize = fullscreen ? timerSize : windowedTimerSize(timerSize);
 
-	bool showTimer = settings.getBoolean(Settings::APPEARANCE_SHOW_TIMER,
-		Settings::DEFAULT_APPEARANCE_SHOW_TIMER);
-	TimerPosition timerPosition = toTimerPosition(settings.getInt(Settings::APPEARANCE_TIMER_POSITION,
-		Settings::DEFAULT_APPEARANCE_TIMER_POSITION));
-
-	// keep clear of a timer in the middle of the screen
-	int clearCenterPx = 0;
-
-	if (showTimer && timerPosition == TimerPosition::Center) {
-		CClientDC screenDC(NULL);
-		clearCenterPx = MulDiv(fontSize, screenDC.GetDeviceCaps(LOGPIXELSY), 72) * 6 / 5;
-	}
-
-	showMessageWindow(message, textColor, fontSize, clearCenterPx);
+	// keep clear of a timer in the middle of the screen, and of the quote
+	showMessageWindow(message, textColor, fontSize, centerTimerClearancePx(settings, fullscreen), belowY);
 }
 
 LockWindowAdapter::~LockWindowAdapter() {
 	closeMessageWindow();
+	closeQuoteWindow();
 
 	if (settingsChanged)
 		settings.save();

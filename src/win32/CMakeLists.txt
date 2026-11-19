@@ -15,16 +15,19 @@ set(RETREAT_WIN32_MODULES
     ui/InputMonitor.cppm
     ui/LockWindowAdapter.cppm
     ui/MessageWindow.cppm
+    ui/QuoteWindow.cppm
     ui/TimerWindow.cppm
     ui/TranslucentWindow.cppm
     ui/TrayIconImpl.cppm
     ui/gdi/BitmapBuffer.cppm
+    ui/gdi/QuoteCard.cppm
     ui/gdi/Shapes.cppm
     ui/gdi/TextBuffer.cppm
     ui/settings/BreakScreenSettingsSection.cppm
     ui/settings/BreaksSettingsSection.cppm
     ui/settings/ExceptionsSettingsSection.cppm
     ui/settings/MainOptionsDlg.cppm
+    ui/settings/QuotesSettingsSection.cppm
     ui/settings/ScheduleSettingsSection.cppm
     ui/settings/SectionDlg.cppm
     ui/settings/SettingsControls.cppm)

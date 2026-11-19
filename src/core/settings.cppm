@@ -3,7 +3,11 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 
+#include <cstdint>
+#include <filesystem>
+#include <fstream>
 #include <map>
+#include <optional>
 #include <regex>
 #include <vector>
 #include <memory>
@@ -26,6 +30,8 @@ export const int DEFAULT_TIMER_X_WINDOWED = 25;
 export const int DEFAULT_TIMER_Y_WINDOWED = 25;
 export const int DEFAULT_TIMER_X = 160;
 export const int DEFAULT_TIMER_Y = 140;
+
+export const TCHAR *DEFAULT_QUOTES_FONT_FACE = _T("Georgia");
 
 export class Settings {
 public:
@@ -56,6 +62,22 @@ public:
     static constexpr const TCHAR *APPEARANCE_STRETCH_IMAGES = _T("appearance.stretch_images");
     static constexpr const TCHAR *APPEARANCE_SHOW_TIMER = _T("appearance.show_timer");
     static constexpr const TCHAR *APPEARANCE_TIMER_TEXT_COLOR = _T("appearance.timer_text_color");
+
+    static constexpr const TCHAR *QUOTES_ENABLE = _T("quotes.enable");
+    static constexpr const TCHAR *QUOTES_PLAIN_BACKDROP = _T("quotes.plain_backdrop");
+    static constexpr const TCHAR *QUOTES_FONT_FACE = _T("quotes.font_face");
+    static constexpr const TCHAR *QUOTES_FONT_ITALIC = _T("quotes.font_italic");
+    static constexpr const TCHAR *QUOTES_FONT_SIZE = _T("quotes.font_size");
+    static constexpr const TCHAR *QUOTES_TEXT_COLOR = _T("quotes.text_color");
+    static constexpr const TCHAR *QUOTES_IMAGE = _T("quotes.image");
+    static constexpr const TCHAR *QUOTES_IMAGE_FILE = _T("quotes.image_file");
+    static constexpr const TCHAR *QUOTES_SEQUENTIAL = _T("quotes.sequential");
+    static constexpr const TCHAR *QUOTES_LAST_INDEX = _T("quotes.last_index");
+    // number of entries in QUOTE_LIST; absent until the quotes are first saved,
+    // which means the built-in ones are used
+    static constexpr const TCHAR *QUOTES_COUNT = _T("quotes.count");
+    // not under "quotes.": every value in that section is a quote
+    static constexpr const TCHAR *QUOTE_LIST = _T("quote_list.");
 
     static constexpr const TCHAR *SOUNDS_ENABLE = _T("sounds.enable");
     static constexpr const TCHAR *SOUNDS_AUDIO_DIRECTORY = _T("sounds.audio_directory");
@@ -98,6 +120,14 @@ public:
     static constexpr const int DEFAULT_APPEARANCE_TIMER_POSITION = 0;   // TimerPosition::TopLeft
     static constexpr const int DEFAULT_APPEARANCE_TIMER_SIZE = 32;      // points, full screen
 
+    static constexpr const bool DEFAULT_QUOTES_ENABLE = false;
+    static constexpr const bool DEFAULT_QUOTES_PLAIN_BACKDROP = false;
+    static constexpr const bool DEFAULT_QUOTES_FONT_ITALIC = true;
+    static constexpr const int DEFAULT_QUOTES_FONT_SIZE = 26;           // points, full screen
+    static constexpr const int DEFAULT_QUOTES_TEXT_COLOR = 0xD6E6EF;    // warm white, RGB(EF, E6, D6)
+    static constexpr const int DEFAULT_QUOTES_IMAGE = 0;                // QuoteImage::Thinker
+    static constexpr const bool DEFAULT_QUOTES_SEQUENTIAL = false;
+
     static constexpr const bool DEFAULT_SOUNDS_ENABLE = false;
 
     static constexpr const bool DEFAULT_MONITORING_INPUT = false;
@@ -139,9 +169,103 @@ private:
 
 export using SettingsPtr = std::shared_ptr<Settings>;
 
+// The quotes shown on the break screen, one "text — author" line each; the
+// built-in ones until the user has saved a list.
+export std::vector<tstring> loadQuoteLines(Settings& settings);
+export void saveQuoteLines(Settings& settings, const std::vector<tstring>& lines);
+
 module :private;
 
 import system;
+import SettingsModel;
+
+// The file is UTF-8, so that quotes and break messages may hold any text.
+
+static void appendCodePoint(std::wstring& out, uint32_t cp) {
+    if (sizeof(wchar_t) == 2 && cp > 0xFFFF) {
+        cp -= 0x10000;
+        out += (wchar_t)(0xD800 + (cp >> 10));
+        out += (wchar_t)(0xDC00 + (cp & 0x3FF));
+    }
+    else
+        out += (wchar_t)cp;
+}
+
+// Strict decoding; nothing if the bytes are not UTF-8. A byte order mark is skipped.
+static std::optional<std::wstring> fromUtf8(const std::string& bytes) {
+    std::wstring out;
+    size_t i = 0, n = bytes.size();
+
+    if (n >= 3 && (uint8_t)bytes[0] == 0xEF && (uint8_t)bytes[1] == 0xBB && (uint8_t)bytes[2] == 0xBF)
+        i = 3;
+
+    while (i < n) {
+        uint8_t c = (uint8_t)bytes[i];
+        uint32_t cp;
+        size_t extra;
+
+        if (c < 0x80) { cp = c; extra = 0; }
+        else if ((c & 0xE0) == 0xC0) { cp = c & 0x1F; extra = 1; }
+        else if ((c & 0xF0) == 0xE0) { cp = c & 0x0F; extra = 2; }
+        else if ((c & 0xF8) == 0xF0) { cp = c & 0x07; extra = 3; }
+        else return std::nullopt;
+
+        if (i + extra >= n && extra > 0)
+            return std::nullopt;
+
+        for (size_t k = 1; k <= extra; ++k) {
+            uint8_t cc = (uint8_t)bytes[i + k];
+            if ((cc & 0xC0) != 0x80)
+                return std::nullopt;
+            cp = (cp << 6) | (cc & 0x3F);
+        }
+
+        bool overlong = (extra == 1 && cp < 0x80) || (extra == 2 && cp < 0x800) || (extra == 3 && cp < 0x10000);
+        if (overlong || cp > 0x10FFFF || (cp >= 0xD800 && cp <= 0xDFFF))
+            return std::nullopt;
+
+        appendCodePoint(out, cp);
+        i += extra + 1;
+    }
+
+    return out;
+}
+
+static std::string toUtf8(const std::wstring& text) {
+    std::string out;
+
+    for (size_t i = 0; i < text.size(); ++i) {
+        uint32_t cp = (uint32_t)text[i];
+
+        if (sizeof(wchar_t) == 2 && cp >= 0xD800 && cp <= 0xDBFF && i + 1 < text.size()) {
+            uint32_t low = (uint32_t)text[i + 1];
+            if (low >= 0xDC00 && low <= 0xDFFF) {
+                cp = 0x10000 + ((cp - 0xD800) << 10) + (low - 0xDC00);
+                ++i;
+            }
+        }
+
+        if (cp < 0x80)
+            out += (char)cp;
+        else if (cp < 0x800) {
+            out += (char)(0xC0 | (cp >> 6));
+            out += (char)(0x80 | (cp & 0x3F));
+        }
+        else if (cp < 0x10000) {
+            out += (char)(0xE0 | (cp >> 12));
+            out += (char)(0x80 | ((cp >> 6) & 0x3F));
+            out += (char)(0x80 | (cp & 0x3F));
+        }
+        else {
+            out += (char)(0xF0 | (cp >> 18));
+            out += (char)(0x80 | ((cp >> 12) & 0x3F));
+            out += (char)(0x80 | ((cp >> 6) & 0x3F));
+            out += (char)(0x80 | (cp & 0x3F));
+        }
+    }
+
+    return out;
+}
 
 Settings::Settings() {
     file = getConfigFilePath(CONFIG_FILE_NAME);
@@ -152,8 +276,19 @@ Settings::Settings() {
 
 void Settings::readConfig(const tstring& file, std::map<tstring, tstring>& values) {
     tptree ptree;
-    tifstream iconfig(file);
-    read_ini(iconfig, ptree);
+    std::ifstream iconfig(std::filesystem::path(file), std::ios::binary);
+    std::string bytes((std::istreambuf_iterator<char>(iconfig)), std::istreambuf_iterator<char>());
+
+    // not UTF-8: a file edited by hand in a legacy code page, read byte by byte as before
+    std::optional<std::wstring> text = fromUtf8(bytes);
+    if (!text) {
+        text.emplace();
+        for (char c : bytes)
+            *text += (wchar_t)(uint8_t)c;
+    }
+
+    tistringstream iconfigText(*text);
+    read_ini(iconfigText, ptree);
 
     values.clear();
 
@@ -170,8 +305,12 @@ void Settings::writeConfig(const tstring& file, const std::map<tstring, tstring>
     for (auto& [path, value] : values)
         ptree.put(path, value);
 
-    tofstream oconfig(file);
-    write_ini(oconfig, ptree);
+    tostringstream oconfigText;
+    write_ini(oconfigText, ptree);
+
+    std::ofstream oconfig(std::filesystem::path(file), std::ios::binary);
+    std::string bytes = toUtf8(oconfigText.str());
+    oconfig.write(bytes.data(), (std::streamsize)bytes.size());
 }
 
 void Settings::load(const tstring& file) {
@@ -307,3 +446,22 @@ void Settings::handlePreviousVersions() {
     }
 }
 
+std::vector<tstring> loadQuoteLines(Settings& settings) {
+    if (settings.getInt(Settings::QUOTES_COUNT, -1) < 0)
+        return defaultQuoteLines();
+
+    // keys are zero-padded, so the map keeps them in order
+    return settings.getSectionValues(Settings::QUOTE_LIST);
+}
+
+void saveQuoteLines(Settings& settings, const std::vector<tstring>& lines) {
+    settings.clearSection(Settings::QUOTE_LIST);
+
+    for (size_t i = 0; i < lines.size(); ++i) {
+        tstring number = to_tstring(i);
+        number.insert(0, number.size() < 4 ? 4 - number.size() : 0, _T('0'));
+        settings.setString(tstring(Settings::QUOTE_LIST) + _T("q") + number, lines[i]);
+    }
+
+    settings.setInt(Settings::QUOTES_COUNT, (int)lines.size());
+}

@@ -71,6 +71,42 @@ export struct TimerOrigin { int x; int y; };
 export TimerOrigin timerOrigin(TimerPosition position, int areaW, int areaH,
                                int textW, int textH, int marginX, int marginY);
 
+// The picture above a quote on the break screen. Stored as an int in
+// quotes.image.
+export enum class QuoteImage { Thinker = 0, Custom, None };
+
+export QuoteImage toQuoteImage(int value);
+
+// Quote sizes offered in the settings (points, full-screen mode).
+export constexpr int QUOTE_SIZES[] = { 20, 26, 32, 40 };
+export constexpr int MIN_QUOTE_SIZE = 10;
+export constexpr int MAX_QUOTE_SIZE = 120;
+
+export struct Quote {
+    tstring text;
+    tstring author;
+
+    bool operator==(const Quote&) const = default;
+};
+
+// One quote per line: "Rest is not idleness. — John Lubbock". The author
+// follows the last dash surrounded by spaces (an em or en dash, "--" or "-").
+export Quote parseQuote(const tstring& line);
+
+// Splits the text of the quote editor into lines, trimmed, without empty ones.
+export std::vector<tstring> splitQuoteLines(const tstring& text);
+
+// Joins quote lines for the editor (Windows line breaks).
+export tstring joinQuoteLines(const std::vector<tstring>& lines);
+
+// Quotes used until the user saves their own.
+export std::vector<tstring> defaultQuoteLines();
+
+// Index of the quote for the next break. `last` is the one shown last time
+// (-1 if none); `random` is any non-negative random number. In random order
+// the same quote is not shown twice in a row when there is a choice.
+export int nextQuoteIndex(int count, int last, bool sequential, unsigned random);
+
 module :private;
 
 namespace {
@@ -182,6 +218,19 @@ std::optional<std::bitset<7>> parseDays(const tstring& field) {
 }
 
 const TCHAR* DAY_NAMES[] = { _T("Mon"), _T("Tue"), _T("Wed"), _T("Thu"), _T("Fri"), _T("Sat"), _T("Sun") };
+
+bool isBlank(TCHAR c) {
+    return c == _T(' ') || c == _T('\t') || c == _T('\r') || c == _T('\n') || c == _T('\u00A0');
+}
+
+tstring trim(const tstring& s) {
+    size_t from = 0, to = s.size();
+    while (from < to && isBlank(s[from]))
+        ++from;
+    while (to > from && isBlank(s[to - 1]))
+        --to;
+    return s.substr(from, to - from);
+}
 
 } // namespace
 
@@ -338,4 +387,87 @@ TimerOrigin timerOrigin(TimerPosition position, int areaW, int areaH,
     origin.x = std::clamp(origin.x, 0, std::max(0, areaW - textW));
     origin.y = std::clamp(origin.y, 0, std::max(0, areaH - textH));
     return origin;
+}
+
+QuoteImage toQuoteImage(int value) {
+    if (value < (int)QuoteImage::Thinker || value > (int)QuoteImage::None)
+        return QuoteImage::Thinker;
+    return (QuoteImage)value;
+}
+
+Quote parseQuote(const tstring& line) {
+    static const TCHAR* separators[] = { _T(" \u2014 "), _T(" \u2013 "), _T(" -- "), _T(" - ") };
+
+    tstring text = trim(line);
+
+    // a dash with nothing after it
+    for (const TCHAR* separator : separators) {
+        tstring dangling = tstring(separator).substr(0, tstring(separator).size() - 1);
+        if (text.size() > dangling.size() && text.ends_with(dangling))
+            return { trim(text.substr(0, text.size() - dangling.size())), tstring() };
+    }
+
+    size_t best = tstring::npos, bestLength = 0;
+    for (const TCHAR* separator : separators) {
+        tstring sep(separator);
+        size_t pos = text.rfind(sep);
+        if (pos != tstring::npos && (best == tstring::npos || pos > best)) {
+            best = pos;
+            bestLength = sep.size();
+        }
+    }
+
+    // no dash, or nothing but the author
+    if (best == tstring::npos || best == 0)
+        return { text, tstring() };
+
+    return { trim(text.substr(0, best)), trim(text.substr(best + bestLength)) };
+}
+
+std::vector<tstring> splitQuoteLines(const tstring& text) {
+    std::vector<tstring> lines;
+    for (const tstring& line : split(text, _T('\n'))) {
+        tstring trimmed = trim(line);
+        if (!trimmed.empty())
+            lines.push_back(trimmed);
+    }
+    return lines;
+}
+
+tstring joinQuoteLines(const std::vector<tstring>& lines) {
+    tstring result;
+    for (size_t i = 0; i < lines.size(); ++i) {
+        if (i > 0)
+            result += _T("\r\n");
+        result += lines[i];
+    }
+    return result;
+}
+
+std::vector<tstring> defaultQuoteLines() {
+    return {
+        _T("Very little is needed to make a happy life; it is all within yourself, in your way of thinking. \u2014 Marcus Aurelius"),
+        _T("Rest is not idleness. \u2014 John Lubbock"),
+        _T("Nature does not hurry, yet everything is accomplished. \u2014 Lao Tzu"),
+        _T("Sitting quietly, doing nothing, spring comes, and the grass grows by itself. \u2014 Zen saying"),
+        _T("The unexamined life is not worth living. \u2014 Socrates"),
+        _T("It is not that we have a short time to live, but that we waste a lot of it. \u2014 Seneca"),
+    };
+}
+
+int nextQuoteIndex(int count, int last, bool sequential, unsigned random) {
+    if (count <= 0)
+        return -1;
+    if (count == 1)
+        return 0;
+
+    if (sequential)
+        return (last < 0 || last >= count - 1) ? 0 : last + 1;
+
+    if (last < 0 || last >= count)
+        return (int)(random % (unsigned)count);
+
+    // any quote but the last one
+    int pick = (int)(random % (unsigned)(count - 1));
+    return pick >= last ? pick + 1 : pick;
 }

@@ -149,6 +149,34 @@
 #define IDC_TIMER_SIZE_XL               2173
 #define IDC_TIMER_POS_LABEL             2174
 #define IDC_TIMER_SIZE_LABEL            2175
+#define IDS_QUOTES_SECTION_NAME         169
+#define IDD_QUOTES                      234
+#define IDR_THINKER                     235
+#define IDC_QUOTES_ENABLE               2177
+#define IDC_QUOTE_PREVIEW               2178
+#define IDC_QUOTE_IMAGE_THINKER         2179
+#define IDC_QUOTE_IMAGE_CUSTOM          2180
+#define IDC_QUOTE_IMAGE_NONE            2181
+#define IDC_QUOTE_IMAGE_FILE            2182
+#define IDC_QUOTE_BACKDROP_PICTURE      2183
+#define IDC_QUOTE_BACKDROP_PLAIN        2184
+#define IDC_QUOTE_FONT                  2185
+#define IDC_QUOTE_ITALIC                2186
+#define IDC_QUOTE_COLOR                 2187
+#define IDC_QUOTE_SIZE_S                2188
+#define IDC_QUOTE_SIZE_M                2189
+#define IDC_QUOTE_SIZE_L                2190
+#define IDC_QUOTE_SIZE_XL               2191
+#define IDC_QUOTE_ORDER_RANDOM          2192
+#define IDC_QUOTE_ORDER_SEQUENCE        2193
+#define IDC_QUOTE_TEXT                  2194
+#define IDC_QUOTE_COUNT                 2195
+#define IDC_QUOTE_LABEL_SHOW            2196
+#define IDC_QUOTE_LABEL_FONT            2197
+#define IDC_QUOTE_LABEL_COLOR           2198
+#define IDC_QUOTE_LABEL_SIZE            2199
+#define IDC_QUOTE_LABEL_LIST            2200
+#define IDC_QUOTE_GROUP                 2201
 #define IDR_SHELL_MENU                  20300
 #define ID_MENU_DISABLE                 32771
 #define ID_MENU_SKIP                    32772
@@ -167,7 +195,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        304
 #define _APS_NEXT_COMMAND_VALUE         32800
-#define _APS_NEXT_CONTROL_VALUE         2177
+#define _APS_NEXT_CONTROL_VALUE         2202
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

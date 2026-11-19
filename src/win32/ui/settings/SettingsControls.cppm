@@ -19,6 +19,7 @@ export module SettingsControls;
 
 import Settings;
 import SettingsModel;
+import QuoteCard;
 
 using namespace Gdiplus;
 
@@ -612,6 +613,23 @@ static void fillStar(Graphics& g, REAL cx, REAL cy, REAL r, REAL angleDeg, const
 	g.FillPolygon(&brush, pts, 10);
 }
 
+// random stars on a see-through background, as in Shapes.cppm
+static void drawPreviewStars(Graphics& g, const RectF& area, BYTE alpha) {
+	static const struct { REAL x, y, r; int color; int angle; } stars[] = {
+		{ 0.08f, 0.62f, 0.040f, 0, 10 }, { 0.18f, 0.28f, 0.025f, 1, 40 }, { 0.27f, 0.80f, 0.034f, 2, 70 },
+		{ 0.35f, 0.47f, 0.046f, 3, 15 }, { 0.45f, 0.16f, 0.028f, 4, 50 }, { 0.52f, 0.70f, 0.052f, 5, 80 },
+		{ 0.60f, 0.34f, 0.030f, 6, 20 }, { 0.66f, 0.86f, 0.024f, 0, 60 }, { 0.72f, 0.14f, 0.040f, 2, 5 },
+		{ 0.78f, 0.56f, 0.034f, 1, 30 }, { 0.86f, 0.28f, 0.048f, 3, 65 }, { 0.92f, 0.76f, 0.028f, 4, 45 },
+		{ 0.14f, 0.92f, 0.030f, 5, 25 }, { 0.42f, 0.92f, 0.022f, 6, 75 }, { 0.95f, 0.46f, 0.036f, 0, 35 },
+		{ 0.24f, 0.08f, 0.022f, 1, 55 },
+	};
+	static const COLORREF colors[] = { RGB(31, 176, 255), RGB(141, 255, 65), RGB(252, 75, 105), RGB(189, 161, 255),
+	                                   RGB(243, 159, 58), RGB(250, 255, 91), RGB(255, 173, 207) };
+	for (const auto& s : stars)
+		fillStar(g, area.X + area.Width * s.x, area.Y + area.Height * s.y,
+		         area.Width * s.r * 1.4f, (REAL)s.angle, fromColorRef(colors[s.color], alpha));
+}
+
 void CBreakPreview::Draw(Graphics& g, RectF rc, Fonts& fonts, bool) {
 	// monitor
 	REAL standH = (std::max)(6.0f, rc.Height * 0.08f);
@@ -681,20 +699,7 @@ void CBreakPreview::Draw(Graphics& g, RectF rc, Fonts& fonts, bool) {
 		g.DrawImage(&image, dst, 0, 0, iw, ih, UnitPixel, &attributes);
 	}
 	else {
-		// random stars on a see-through background, as in Shapes.cppm
-		static const struct { REAL x, y, r; int color; int angle; } stars[] = {
-			{ 0.08f, 0.62f, 0.040f, 0, 10 }, { 0.18f, 0.28f, 0.025f, 1, 40 }, { 0.27f, 0.80f, 0.034f, 2, 70 },
-			{ 0.35f, 0.47f, 0.046f, 3, 15 }, { 0.45f, 0.16f, 0.028f, 4, 50 }, { 0.52f, 0.70f, 0.052f, 5, 80 },
-			{ 0.60f, 0.34f, 0.030f, 6, 20 }, { 0.66f, 0.86f, 0.024f, 0, 60 }, { 0.72f, 0.14f, 0.040f, 2, 5 },
-			{ 0.78f, 0.56f, 0.034f, 1, 30 }, { 0.86f, 0.28f, 0.048f, 3, 65 }, { 0.92f, 0.76f, 0.028f, 4, 45 },
-			{ 0.14f, 0.92f, 0.030f, 5, 25 }, { 0.42f, 0.92f, 0.022f, 6, 75 }, { 0.95f, 0.46f, 0.036f, 0, 35 },
-			{ 0.24f, 0.08f, 0.022f, 1, 55 },
-		};
-		static const COLORREF colors[] = { RGB(31, 176, 255), RGB(141, 255, 65), RGB(252, 75, 105), RGB(189, 161, 255),
-		                                   RGB(243, 159, 58), RGB(250, 255, 91), RGB(255, 173, 207) };
-		for (const auto& s : stars)
-			fillStar(g, overlay.X + overlay.Width * s.x, overlay.Y + overlay.Height * s.y,
-			         overlay.Width * s.r * 1.4f, (REAL)s.angle, fromColorRef(colors[s.color], alpha));
+		drawPreviewStars(g, overlay, alpha);
 	}
 
 	m_overlay = overlay;
@@ -723,5 +728,99 @@ void CBreakPreview::Draw(Graphics& g, RectF rc, Fonts& fonts, bool) {
 	if (!fullscreen) {
 		Pen frame(Color(0x60, 0, 0, 0), 1);
 		g.DrawRectangle(&frame, overlay);
+	}
+}
+
+//// CQuotePreview ///////////////////////////////////////////////////////////
+
+export struct QuotePreviewModel {
+	bool enabled = true;
+	bool plainBackdrop = false;
+	Quote quote;
+	tstring face;
+	bool italic = true;
+	COLORREF color = RGB(0xEF, 0xE6, 0xD6);
+	int sizePt = 26;                // points, full screen
+	QuoteImage image = QuoteImage::Thinker;
+	std::shared_ptr<Bitmap> thinkerImage;
+	std::shared_ptr<Bitmap> customImage;
+};
+
+// The middle of the break screen with the quote card, roughly to scale.
+export class CQuotePreview : public CPaintedControl<CQuotePreview> {
+public:
+	DECLARE_WND_SUPERCLASS(_T("RetreatQuotePreview"), _T("Static"))
+
+	void SetModel(const QuotePreviewModel& model) {
+		m_model = model;
+		Refresh();
+	}
+
+	void Draw(Graphics& g, RectF rc, Fonts& fonts, bool windowEnabled);
+
+private:
+	QuotePreviewModel m_model;
+};
+
+void CQuotePreview::Draw(Graphics& g, RectF rc, Fonts&, bool windowEnabled) {
+	GraphicsPath screen;
+	roundRectPath(screen, rc, 5);
+
+	if (m_model.plainBackdrop) {
+		SolidBrush backdrop(Color(0xFF, 0x10, 0x13, 0x18));
+		g.FillPath(&backdrop, &screen);
+	}
+	else {
+		SolidBrush desktop(Color(0xFF, 0x3E, 0x5C, 0x7A));
+		g.FillPath(&desktop, &screen);
+
+		GraphicsState state = g.Save();
+		Region clip(&screen);
+		g.SetClip(&clip);
+		drawPreviewStars(g, rc, 128);
+		g.Restore(state);
+	}
+
+	const REAL screenW = (REAL)(std::max)(1, ::GetSystemMetrics(SM_CXSCREEN));
+	const REAL screenH = (REAL)(std::max)(1, ::GetSystemMetrics(SM_CYSCREEN));
+
+	HDC screenDC = ::GetDC(NULL);
+	const REAL ppi = (REAL)::GetDeviceCaps(screenDC, LOGPIXELSY);
+	::ReleaseDC(NULL, screenDC);
+
+	// a little larger than true scale, so that the quote stays readable
+	const REAL k = rc.Width / screenW * 1.5f;
+
+	QuoteLook look;
+	look.face = m_model.face;
+	look.italic = m_model.italic;
+	look.color = m_model.color;
+	look.image = m_model.image;
+	look.thinkerImage = m_model.thinkerImage.get();
+	look.customImage = m_model.customImage.get();
+	look.unit = ppi / 96 * k;
+	look.fontPx = (std::max)(5.0f, m_model.sizePt * ppi / 72 * k);
+	look.maxTextWidth = (std::min)(screenW * 0.6f, 900 * ppi / 96) * k;
+	look.imageHeight = (std::min)(screenH * 0.3f, 300 * ppi / 96) * k;
+
+	SizeF size = measureQuoteCard(m_model.quote, look);
+
+	// a long quote: shrink the card to fit
+	const REAL availableW = rc.Width - 8, availableH = rc.Height - 8;
+	if (size.Width > availableW || size.Height > availableH) {
+		REAL f = (std::min)(availableW / size.Width, availableH / size.Height);
+		look.unit *= f;
+		look.fontPx = (std::max)(4.0f, look.fontPx * f);
+		look.maxTextWidth *= f;
+		look.imageHeight *= f;
+		size = measureQuoteCard(m_model.quote, look);
+	}
+
+	drawQuoteCard(g, PointF(rc.X + (rc.Width - size.Width) / 2, rc.Y + (rc.Height - size.Height) / 2),
+	              m_model.quote, look);
+
+	if (!m_model.enabled || !windowEnabled) {
+		SolidBrush veil(Color(150, 0xFF, 0xFF, 0xFF));
+		g.FillPath(&veil, &screen);
 	}
 }

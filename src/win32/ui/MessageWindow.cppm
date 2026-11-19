@@ -17,9 +17,11 @@ import Settings;
 
 // Shows the message, replacing the one already shown. When clearCenterPx is
 // non-zero, a band of that height through the middle of the display is kept
-// free (for a centered break timer) and the message goes below it.
+// free (for a centered break timer) and the message goes below it. When
+// belowY is non-zero, the message goes below that screen coordinate instead
+// (under the quote card).
 export void showMessageWindow(const tstring& text, COLORREF textColor, int fontSizePt,
-                              int clearCenterPx = 0);
+                              int clearCenterPx = 0, int belowY = 0);
 export void closeMessageWindow();
 
 module :private;
@@ -44,7 +46,7 @@ public:
 	// the window currently shown, if any
 	static CMessageWindow* current;
 
-	bool Render(const tstring& text, COLORREF textColor, int fontSizePt, int clearCenterPx);
+	bool Render(const tstring& text, COLORREF textColor, int fontSizePt, int clearCenterPx, int belowY);
 
 	// like the break screen, it cannot be closed from outside
 	LRESULT OnClose(UINT, WPARAM, LPARAM, BOOL&)
@@ -76,7 +78,7 @@ void addPill(GraphicsPath& path, REAL x, REAL y, REAL width, REAL height)
 	path.CloseFigure();
 }
 
-bool CMessageWindow::Render(const tstring& text, COLORREF textColor, int fontSizePt, int clearCenterPx)
+bool CMessageWindow::Render(const tstring& text, COLORREF textColor, int fontSizePt, int clearCenterPx, int belowY)
 {
 	CRect workArea;
 	SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0); // primary display
@@ -156,6 +158,9 @@ bool CMessageWindow::Render(const tstring& text, COLORREF textColor, int fontSiz
 		? centerY + clearCenterPx / 2 + (int)paddingY
 		: centerY - height / 2;
 
+	if (belowY > 0)
+		top = (std::min)(belowY + (int)paddingY, (int)workArea.bottom - height);
+
 	POINT position = { workArea.left + (workArea.Width() - width) / 2, top };
 	SIZE size = { width, height };
 	POINT origin = { 0, 0 };
@@ -174,7 +179,7 @@ bool CMessageWindow::Render(const tstring& text, COLORREF textColor, int fontSiz
 
 } // namespace
 
-void showMessageWindow(const tstring& text, COLORREF textColor, int fontSizePt, int clearCenterPx)
+void showMessageWindow(const tstring& text, COLORREF textColor, int fontSizePt, int clearCenterPx, int belowY)
 {
 	closeMessageWindow();
 
@@ -189,7 +194,7 @@ void showMessageWindow(const tstring& text, COLORREF textColor, int fontSizePt, 
 
 	CMessageWindow::current = window;
 
-	if (!window->Render(text, textColor, fontSizePt, clearCenterPx)) {
+	if (!window->Render(text, textColor, fontSizePt, clearCenterPx, belowY)) {
 		window->DestroyWindow(); // deletes itself
 		return;
 	}

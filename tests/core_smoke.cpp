@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <filesystem>
+#include <fstream>
 #include <optional>
 #include <string>
 
@@ -69,6 +70,64 @@ static void testSettingsRoundTrip() {
     CHECK(in.getInt(Settings::BREAK_DURATION, 0) == 7);
     CHECK(in.getBoolean(Settings::SOUNDS_ENABLE, false));
     CHECK(in.getString(Settings::APPEARANCE_IMAGE_DIRECTORY, _T("")) == _T("images"));
+
+    // non-ASCII text survives, and does not cut off the values after it
+    Settings unicode;
+    unicode.setString(_T("quote_list.q0000"), _T("“Rest is not idleness.” — John Lubbock"));
+    unicode.setInt(_T("zzz.after"), 5);
+    unicode.save(file);
+
+    Settings unicodeIn;
+    unicodeIn.load(file);
+    CHECK(unicodeIn.getString(_T("quote_list.q0000"), _T("")) == _T("“Rest is not idleness.” — John Lubbock"));
+    CHECK(unicodeIn.getInt(_T("zzz.after"), 0) == 5);
+
+    // a file edited by hand in a legacy code page is still read to the end
+    {
+        std::ofstream legacy(std::filesystem::path(file), std::ios::binary);
+        legacy << "[breaks]" << (char)10 << "message=caf" << (char)0xE9 << (char)10
+               << "duration=9" << (char)10;
+    }
+    Settings legacyIn;
+    legacyIn.load(file);
+    CHECK(legacyIn.getInt(Settings::BREAK_DURATION, 0) == 9);
+    CHECK(legacyIn.getString(_T("breaks.message"), _T("")).size() == 4);
+
+    // a byte order mark added by an editor is skipped
+    {
+        std::ofstream bom(std::filesystem::path(file), std::ios::binary);
+        bom << (char)0xEF << (char)0xBB << (char)0xBF << "[breaks]" << (char)10 << "duration=8" << (char)10;
+    }
+    Settings bomIn;
+    bomIn.load(file);
+    CHECK(bomIn.getInt(Settings::BREAK_DURATION, 0) == 8);
+
+    // characters outside the basic plane survive
+    Settings emoji;
+    emoji.setString(_T("quote_list.q0000"), _T("Zen 🌸"));
+    emoji.save(file);
+    Settings emojiIn;
+    emojiIn.load(file);
+    CHECK(emojiIn.getString(_T("quote_list.q0000"), _T("")) == _T("Zen 🌸"));
+
+    // quotes: built-in until saved, then exactly what was saved, in order
+    Settings quotes;
+    quotes.save(file);
+    quotes.load(file);
+    CHECK(loadQuoteLines(quotes) == defaultQuoteLines());
+
+    std::vector<tstring> mine;
+    for (int i = 0; i < 12; ++i)
+        mine.push_back(_T("Quote ") + to_tstring(i) + _T(" — Author"));
+    saveQuoteLines(quotes, mine);
+    quotes.save(file);
+
+    Settings quotesIn;
+    quotesIn.load(file);
+    CHECK(loadQuoteLines(quotesIn) == mine);
+
+    saveQuoteLines(quotesIn, {});
+    CHECK(loadQuoteLines(quotesIn).empty());
 
     std::filesystem::remove_all(dir);
 }
@@ -163,6 +222,45 @@ static void testTimerOrigin() {
     CHECK(windowedTimerSize(32) == 22);
     CHECK(windowedTimerSize(72) == 50);
     CHECK(windowedTimerSize(12) == MIN_TIMER_SIZE);
+}
+
+static void testQuotes() {
+    auto q = parseQuote(_T("  Rest is not idleness. — John Lubbock  "));
+    CHECK(q.text == _T("Rest is not idleness.") && q.author == _T("John Lubbock"));
+
+    // the last dash wins, and plain hyphens inside words do not count
+    q = parseQuote(_T("Well-being - a state of mind - Anonymous"));
+    CHECK(q.text == _T("Well-being - a state of mind") && q.author == _T("Anonymous"));
+
+    q = parseQuote(_T("No author here"));
+    CHECK(q.text == _T("No author here") && q.author.empty());
+    q = parseQuote(_T("Trailing dash -- "));
+    CHECK(q.text == _T("Trailing dash") && q.author.empty());
+    q = parseQuote(_T("Text – en dash"));
+    CHECK(q.text == _T("Text") && q.author == _T("en dash"));
+
+    auto lines = splitQuoteLines(_T("one\r\n\r\n  two  \nthree\n"));
+    CHECK(lines.size() == 3 && lines[0] == _T("one") && lines[1] == _T("two") && lines[2] == _T("three"));
+    CHECK(joinQuoteLines(lines) == _T("one\r\ntwo\r\nthree"));
+    CHECK(splitQuoteLines(_T(" \r\n ")).empty());
+
+    for (const tstring& line : defaultQuoteLines())
+        CHECK(!parseQuote(line).author.empty());
+
+    CHECK(nextQuoteIndex(0, -1, false, 7) == -1);
+    CHECK(nextQuoteIndex(1, 0, false, 7) == 0);
+    CHECK(nextQuoteIndex(3, -1, true, 7) == 0);
+    CHECK(nextQuoteIndex(3, 0, true, 7) == 1);
+    CHECK(nextQuoteIndex(3, 2, true, 7) == 0);
+    CHECK(nextQuoteIndex(3, 9, true, 7) == 0);
+    for (unsigned r = 0; r < 20; ++r) {
+        int i = nextQuoteIndex(4, 2, false, r);
+        CHECK(i >= 0 && i < 4 && i != 2);
+    }
+    CHECK(nextQuoteIndex(4, -1, false, 6) == 2);
+
+    CHECK(toQuoteImage(1) == QuoteImage::Custom);
+    CHECK(toQuoteImage(5) == QuoteImage::Thinker);
 }
 
 static void testClampCycle() {
@@ -364,6 +462,7 @@ int main() {
     run("testSimpleSchedule", testSimpleSchedule);
     run("testClampCycle", testClampCycle);
     run("testTimerOrigin", testTimerOrigin);
+    run("testQuotes", testQuotes);
     run("testRestoreTerminated", testRestoreTerminated);
     run("testRestoreOffline", testRestoreOffline);
     run("testPeriodicAlertBetween", testPeriodicAlertBetween);

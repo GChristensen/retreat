@@ -24,6 +24,13 @@ export using BreakWindowPtr = std::shared_ptr<CTimerWindow>;
 // default random stars.
 export tstring getBreakImageDirectory(Settings& settings);
 
+// True when quotes replace the break picture with a plain dark backdrop.
+export bool usePlainQuoteBackdrop(Settings& settings);
+
+// Height of the band through the middle of the primary display that a
+// centered break timer needs, or 0 when the timer is elsewhere or hidden.
+export int centerTimerClearancePx(Settings& settings, bool fullscreen);
+
 // Creates and shows the break windows. `fullscreen` is updated when the
 // windowed mode falls back to full screen (no image to show).
 export std::vector<BreakWindowPtr> createBreakWindows(Settings& settings, int durationSec,
@@ -32,6 +39,8 @@ export std::vector<BreakWindowPtr> createBreakWindows(Settings& settings, int du
 module :private;
 
 namespace {
+
+const COLORREF PLAIN_BACKDROP_COLOR = RGB(0x10, 0x13, 0x18);
 
 struct BuildContext {
 	Settings& settings;
@@ -57,7 +66,8 @@ BreakWindowPtr createTimerWindow(BuildContext& ctx, CRect* pRect, bool primary)
 	bool transparent = settings.getBoolean(Settings::APPEARANCE_TRANSPARENT,
 		Settings::DEFAULT_APPEARANCE_TRANSPARENT);
 
-	tstring imageDir = getBreakImageDirectory(settings);
+	bool plainBackdrop = usePlainQuoteBackdrop(settings);
+	tstring imageDir = plainBackdrop ? tstring() : getBreakImageDirectory(settings);
 	bool backgroundLoaded = false;
 
 	if (!imageDir.empty()) {
@@ -85,7 +95,10 @@ BreakWindowPtr createTimerWindow(BuildContext& ctx, CRect* pRect, bool primary)
 			pTimerWnd = std::make_shared<CTimerWindow>((HWND)0, pRect, nullptr);
 		}
 
-		pTimerWnd->DefaultBackground();
+		if (plainBackdrop)
+			pTimerWnd->PlainBackground(PLAIN_BACKDROP_COLOR);
+		else
+			pTimerWnd->DefaultBackground();
 	}
 
 	pTimerWnd->SetAlpha(settings.getInt(Settings::APPEARANCE_OPACITY_LEVEL,
@@ -95,7 +108,8 @@ BreakWindowPtr createTimerWindow(BuildContext& ctx, CRect* pRect, bool primary)
 		Settings::DEFAULT_APPEARANCE_SHOW_TIMER);
 
 	if (primary && showTimer) {
-		bool antialias = backgroundLoaded && !transparent;
+		// no color key on a plain backdrop, so the text may be smoothed
+		bool antialias = (backgroundLoaded && !transparent) || plainBackdrop;
 
 		COLORREF timerTextColor = settings.getInt(Settings::APPEARANCE_TIMER_TEXT_COLOR,
 			Settings::DEFAULT_APPEARANCE_TIMER_TEXT_COLOR);
@@ -166,6 +180,30 @@ tstring getBreakImageDirectory(Settings& settings)
 		return tstring();
 
 	return imageDir;
+}
+
+bool usePlainQuoteBackdrop(Settings& settings)
+{
+	return settings.getBoolean(Settings::QUOTES_ENABLE, Settings::DEFAULT_QUOTES_ENABLE)
+		&& settings.getBoolean(Settings::QUOTES_PLAIN_BACKDROP, Settings::DEFAULT_QUOTES_PLAIN_BACKDROP);
+}
+
+int centerTimerClearancePx(Settings& settings, bool fullscreen)
+{
+	bool showTimer = settings.getBoolean(Settings::APPEARANCE_SHOW_TIMER,
+		Settings::DEFAULT_APPEARANCE_SHOW_TIMER);
+	TimerPosition position = toTimerPosition(settings.getInt(Settings::APPEARANCE_TIMER_POSITION,
+		Settings::DEFAULT_APPEARANCE_TIMER_POSITION));
+
+	if (!showTimer || position != TimerPosition::Center)
+		return 0;
+
+	int timerSize = std::clamp(settings.getInt(Settings::APPEARANCE_TIMER_SIZE,
+		Settings::DEFAULT_APPEARANCE_TIMER_SIZE), MIN_TIMER_SIZE, MAX_TIMER_SIZE);
+	int fontSize = fullscreen ? timerSize : windowedTimerSize(timerSize);
+
+	CClientDC screenDC(NULL);
+	return MulDiv(fontSize, screenDC.GetDeviceCaps(LOGPIXELSY), 72) * 6 / 5;
 }
 
 std::vector<BreakWindowPtr> createBreakWindows(Settings& settings, int durationSec, bool grabInput, bool& fullscreen)
