@@ -21,13 +21,18 @@ import Settings;
 import SettingsModel;
 import QuoteCard;
 
-// Shows the next quote if quotes are enabled, replacing the one already shown.
-// `advance` remembers the quote shown, so the next break shows another one;
-// the caller saves the settings. When clearCenterPx is non-zero, a band of
-// that height through the middle of the display is kept free (for a centered
-// break timer) and the card goes below it.
-// Returns the bottom of the card in screen coordinates, or 0 if none is shown.
-export int showQuoteWindow(Settings& settings, bool advance, int clearCenterPx = 0);
+// Picks the next quote if quotes are enabled and lays out its card, centered
+// on the primary display, replacing the quote already shown; the window stays
+// hidden until showPreparedQuoteWindow(). `advance` remembers the quote, so the
+// next break shows another one; the caller saves the settings. When
+// timerAbovePx is non-zero, a band of that height is kept free above the card
+// (for a centered break timer, placed there by the caller).
+// Returns the card in screen coordinates, or an empty rectangle if none.
+export CRect prepareQuoteWindow(Settings& settings, bool advance, int timerAbovePx = 0);
+
+// Shows the prepared quote above the break screen.
+export void showPreparedQuoteWindow();
+
 export void closeQuoteWindow();
 
 // Makes the shown quote more or less opaque (numpad +/- on the break screen,
@@ -59,8 +64,8 @@ public:
 	// the window currently shown, if any
 	static CQuoteWindow* current;
 
-	// returns the bottom of the card, or 0 on failure
-	int Render(const Quote& quote, QuoteLook look, int clearCenterPx);
+	// returns the card in screen coordinates, or an empty rectangle on failure
+	CRect Render(const Quote& quote, QuoteLook look, int timerAbovePx);
 
 	// changes the opacity of the whole window, keeping its content
 	void AlterAlpha(int delta);
@@ -89,15 +94,14 @@ public:
 
 CQuoteWindow* CQuoteWindow::current = nullptr;
 
-int CQuoteWindow::Render(const Quote& quote, QuoteLook look, int clearCenterPx)
+CRect CQuoteWindow::Render(const Quote& quote, QuoteLook look, int timerAbovePx)
 {
 	CRect workArea;
 	SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0); // primary display
 
 	int margin = (int)(24 * look.unit);
-	int available = workArea.Height() - 2 * margin;
-	if (clearCenterPx > 0)
-		available = workArea.Height() / 2 - clearCenterPx / 2 - 2 * margin;
+	// a centered card leaves as much room below it as the timer takes above
+	int available = workArea.Height() - 2 * margin - 2 * (std::max)(0, timerAbovePx);
 
 	SizeF size = measureQuoteCard(quote, look);
 
@@ -110,7 +114,7 @@ int CQuoteWindow::Render(const Quote& quote, QuoteLook look, int clearCenterPx)
 	}
 
 	if (size.Width < 1 || size.Height < 1)
-		return 0;
+		return CRect();
 
 	int width = (int)std::ceil(size.Width);
 	int height = (int)std::ceil(size.Height);
@@ -130,7 +134,7 @@ int CQuoteWindow::Render(const Quote& quote, QuoteLook look, int clearCenterPx)
 
 	if (!dib) {
 		::ReleaseDC(NULL, screenDC);
-		return 0;
+		return CRect();
 	}
 
 	{
@@ -145,10 +149,6 @@ int CQuoteWindow::Render(const Quote& quote, QuoteLook look, int clearCenterPx)
 
 	int centerY = workArea.top + workArea.Height() / 2;
 	int top = centerY - height / 2;
-
-	if (clearCenterPx > 0)
-		top = centerY + clearCenterPx / 2 + margin;
-
 	top = (std::max)((int)workArea.top, (std::min)(top, (int)workArea.bottom - height));
 
 	POINT position = { workArea.left + (workArea.Width() - width) / 2, top };
@@ -164,7 +164,7 @@ int CQuoteWindow::Render(const Quote& quote, QuoteLook look, int clearCenterPx)
 	DeleteObject(dib);
 	::ReleaseDC(NULL, screenDC);
 
-	return updated ? position.y + height : 0;
+	return updated ? CRect(position, windowSize) : CRect();
 }
 
 void CQuoteWindow::AlterAlpha(int delta)
@@ -196,12 +196,12 @@ QuoteLook quoteLookFromSettings(Settings& settings, int screenW, int screenH, in
 	return look;
 }
 
-int showQuoteWindow(Settings& settings, bool advance, int clearCenterPx)
+CRect prepareQuoteWindow(Settings& settings, bool advance, int timerAbovePx)
 {
 	closeQuoteWindow();
 
 	if (!settings.getBoolean(Settings::QUOTES_ENABLE, Settings::DEFAULT_QUOTES_ENABLE))
-		return 0;
+		return CRect();
 
 	std::vector<tstring> lines = loadQuoteLines(settings);
 
@@ -249,24 +249,33 @@ int showQuoteWindow(Settings& settings, bool advance, int clearCenterPx)
 
 	if (!window->Create(NULL, initialRect)) {
 		delete window;
-		return 0;
+		return CRect();
 	}
 
 	CQuoteWindow::current = window;
 
-	int bottom = window->Render(quote, look, clearCenterPx);
+	// positions the hidden window
+	CRect card = window->Render(quote, look, timerAbovePx);
 
-	if (!bottom) {
+	if (card.IsRectEmpty()) {
 		window->DestroyWindow(); // deletes itself
-		return 0;
+		return CRect();
 	}
+
+	return card;
+}
+
+void showPreparedQuoteWindow()
+{
+	CQuoteWindow* window = CQuoteWindow::current;
+
+	if (!window)
+		return;
 
 	window->ShowWindow(SW_SHOWNOACTIVATE);
 
 	// above the break screen, which has just taken the foreground
 	window->SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-
-	return bottom;
 }
 
 void closeQuoteWindow()

@@ -32,9 +32,11 @@ export bool usePlainQuoteBackdrop(Settings& settings);
 export int centerTimerClearancePx(Settings& settings, bool fullscreen);
 
 // Creates and shows the break windows. `fullscreen` is updated when the
-// windowed mode falls back to full screen (no image to show).
+// windowed mode falls back to full screen (no image to show). A non-zero
+// quoteTop is the screen y of a quote card's top: a centered timer goes just
+// above it.
 export std::vector<BreakWindowPtr> createBreakWindows(Settings& settings, int durationSec,
-                                                      bool grabInput, bool& fullscreen);
+                                                      bool grabInput, bool& fullscreen, int quoteTop = 0);
 
 module :private;
 
@@ -47,6 +49,7 @@ struct BuildContext {
 	int durationSec;
 	bool grabInput;
 	bool fullscreen;
+	int quoteTop;
 	std::vector<BreakWindowPtr> windows;
 };
 
@@ -132,6 +135,7 @@ BreakWindowPtr createTimerWindow(BuildContext& ctx, CRect* pRect, bool primary)
 				Settings::DEFAULT_APPEARANCE_TIMER_POSITION)),
 			ctx.fullscreen ? DEFAULT_TIMER_X : DEFAULT_TIMER_X_WINDOWED,
 			ctx.fullscreen ? DEFAULT_TIMER_Y : DEFAULT_TIMER_Y_WINDOWED);
+		pTimerWnd->SetTimerAboveY(ctx.quoteTop);
 		pTimerWnd->SetTimer(ctx.durationSec - 1);
 	}
 	else
@@ -206,9 +210,10 @@ int centerTimerClearancePx(Settings& settings, bool fullscreen)
 	return MulDiv(fontSize, screenDC.GetDeviceCaps(LOGPIXELSY), 72) * 6 / 5;
 }
 
-std::vector<BreakWindowPtr> createBreakWindows(Settings& settings, int durationSec, bool grabInput, bool& fullscreen)
+std::vector<BreakWindowPtr> createBreakWindows(Settings& settings, int durationSec, bool grabInput, bool& fullscreen,
+                                               int quoteTop)
 {
-	BuildContext ctx{ settings, durationSec, grabInput, fullscreen, {} };
+	BuildContext ctx{ settings, durationSec, grabInput, fullscreen, quoteTop, {} };
 
 	EnumDisplayMonitors(NULL, NULL, monitorEnumProc, (LPARAM)&ctx);
 

@@ -43,8 +43,8 @@ private:
 
 	std::vector<WindowPtr> windows;
 
-	// returns the bottom of the quote card, or 0
-	int showBreakQuote();
+	// lays out the quote card without showing it; empty if none
+	CRect prepareBreakQuote();
 	void showBreakMessage(int belowY);
 };
 
@@ -92,19 +92,24 @@ LockWindowAdapter::LockWindowAdapter(StateMachine& stateMachine):
 
 	inputLock.lock();
 
-	windows = createBreakWindows(settings, breakDurationSec, true, fullscreen);
+	// the quote first: a centered timer goes above the card
+	CRect quote = prepareBreakQuote();
 
-	showBreakMessage(showBreakQuote());
+	windows = createBreakWindows(settings, breakDurationSec, true, fullscreen, quote.top);
+
+	showPreparedQuoteWindow();
+	showBreakMessage(quote.bottom);
 }
 
-int LockWindowAdapter::showBreakQuote() {
+CRect LockWindowAdapter::prepareBreakQuote() {
 	if (!settings.getBoolean(Settings::QUOTES_ENABLE, Settings::DEFAULT_QUOTES_ENABLE))
-		return 0;
+		return CRect();
 
 	// remembers the quote shown, so the next break shows another one
 	settingsChanged = true;
 
-	return showQuoteWindow(settings, true, centerTimerClearancePx(settings, fullscreen));
+	// the windowed mode may still fall back to full screen: leave room for the larger timer
+	return prepareQuoteWindow(settings, true, centerTimerClearancePx(settings, true));
 }
 
 // the message of a scheduled break, drawn over the break screen like the timer

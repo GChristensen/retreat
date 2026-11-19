@@ -447,9 +447,12 @@ LRESULT CMainOptionsDlg::OnTryBreakScreen(UINT uMsg, WPARAM wParam, LPARAM lPara
 	for (auto &section : m_optionSections)
 		section->write(preview);
 
+	// the quote first: a centered timer goes above the card
+	CRect quote = prepareQuoteWindow(preview, false, centerTimerClearancePx(preview, true));
+
 	bool fullscreen = preview.getBoolean(Settings::APPEARANCE_FULLSCREEN, Settings::DEFAULT_APPEARANCE_FULLSCREEN);
-	m_previewWindows = createBreakWindows(preview, PREVIEW_SECONDS, false, fullscreen);
-	showQuoteWindow(preview, false, centerTimerClearancePx(preview, fullscreen));
+	m_previewWindows = createBreakWindows(preview, PREVIEW_SECONDS, false, fullscreen, quote.top);
+	showPreparedQuoteWindow();
 	m_previewTicks = 0;
 
 	SetTimer(PREVIEW_TIMER_ID, PREVIEW_TICK_MS);

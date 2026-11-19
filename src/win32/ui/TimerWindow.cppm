@@ -2,6 +2,7 @@ module;
 
 #include "wtl.h"
 
+#include <algorithm>
 #include <memory>
 #include "debug.h"
 
@@ -51,6 +52,10 @@ public:
 	// a fixed position; corners keep the given margins from the edges.
 	void SetTimerAnchor(TimerPosition position, int marginX, int marginY);
 
+	// With the center anchor: the countdown goes just above this screen y (the
+	// top of a quote card) instead of the middle. Call before SetTimer().
+	void SetTimerAboveY(int screenY) { timerAboveY = screenY; }
+
 	// Places a window sized to its countdown (the alert) at a corner or the
 	// center of the work area. On the left the text keeps the margin and a star
 	// hangs into it; on the right the window edge keeps it.
@@ -91,6 +96,7 @@ protected:
 	bool hasAnchor = false;
 	TimerPosition anchor = TimerPosition::TopLeft;
 	CSize anchorMargin;
+	int timerAboveY = 0;
 
 	int displayDuration;
 
@@ -357,6 +363,18 @@ void CTimerWindow::setTimer(int durationSec, bool showStar)
 
 		TimerOrigin origin = timerOrigin(anchor, client.Width(), client.Height(),
 			textSize.cx, textSize.cy, anchorMargin.cx, anchorMargin.cy);
+
+		if (anchor == TimerPosition::Center && timerAboveY)
+		{
+			// screen y of the client top: a windowed break screen is centered
+			// on the work area afterwards
+			int clientTop = isFullScreen ? displayRect.top
+				: workAreaRect.top + (workAreaRect.Height() - client.Height()) / 2;
+
+			int y = timerAboveY - clientTop - textSize.cy - textSize.cy / 5;
+			origin.y = (std::clamp)(y, 0, (std::max)(0, (int)client.Height() - (int)textSize.cy));
+		}
+
 		timerPos.SetPoint(origin.x, origin.y);
 	}
 
