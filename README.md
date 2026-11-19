@@ -24,6 +24,12 @@ cmake --preset win-python -DPython3_ROOT_DIR=<enso>/python -DRETREAT_PYD_OUTPUT_
 cmake --build --preset win-python
 ```
 
+`sentinel.exe` must sit next to `retreatlib.pyd` (the module looks for it in its own directory); with
+`RETREAT_PYD_OUTPUT_DIR` set, the build copies it there.
+
+Shortcuts: `just build`, `just release`, `just python <enso-dir>` (or set `ENSO_DIR`, e.g. `ENSO_DIR=C:/Enso` in `.env`), `just installer`. These work from any PowerShell: `tools/vsdev.ps1` enters the VS developer
+environment (found with `vswhere`) when `cl` is not already on `PATH`.
+
 The portable core (scheduler, state machine, settings) also builds on Linux and macOS (GCC 14+ / Clang 18+):
 
 ```sh

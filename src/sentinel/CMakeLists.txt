@@ -4,7 +4,7 @@
 add_executable(sentinel WIN32 main.cpp)
 target_include_directories(sentinel PRIVATE ${CMAKE_SOURCE_DIR}/src/win32)
 target_compile_definitions(sentinel PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
-target_link_libraries(sentinel PRIVATE retreat_options)
+target_link_libraries(sentinel PRIVATE retreat_options shell32)
 
 # the application looks for it next to retreat.exe / retreatlib.pyd
 set_target_properties(sentinel PROPERTIES

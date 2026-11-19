@@ -53,7 +53,7 @@ function(retreat_add_win32_ui target)
     target_compile_definitions(${target} PRIVATE _WINDOWS STRICT)
     target_link_libraries(${target} PRIVATE
         retreat_core retreat_options
-        gdiplus comctl32 pathcch strmiids)
+        gdiplus comctl32 pathcch strmiids shell32)
 endfunction()
 
 if(RETREAT_BUILD_APP)

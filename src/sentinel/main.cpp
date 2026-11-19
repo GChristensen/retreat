@@ -273,7 +273,8 @@ int run() {
 
                 PROCESS_INFORMATION pi = {};
                 if (launchDetached(target.image, target.commandLine, target.currentDirectory, &pi)) {
-                    CloseHandle(pi.hThread);
+                    if (pi.hThread)
+                        CloseHandle(pi.hThread);
                     process = pi.hProcess;
                     processId = pi.dwProcessId;
                 }

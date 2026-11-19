@@ -173,7 +173,8 @@ HANDLE SentinelClient::launch() {
     if (!launchDetached(sentinelPath.c_str(), commandLine.c_str(), sentinelDirectory.c_str(), &pi))
         return nullptr;
 
-    CloseHandle(pi.hThread);
+    if (pi.hThread)
+        CloseHandle(pi.hThread);
     return pi.hProcess;
 }
 

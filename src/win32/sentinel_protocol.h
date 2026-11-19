@@ -3,6 +3,7 @@
 #pragma once
 
 #include <windows.h>
+#include <shellapi.h>
 #include <cstdint>
 #include <cwchar>
 
@@ -85,8 +86,50 @@ inline void copyString(wchar_t* to, size_t size, const wchar_t* from) {
     wcsncpy_s(to, size, from ? from : L"", _TRUNCATE);
 }
 
+// The arguments part of a command line: argv[0] (quoted or not) and the blanks after
+// it skipped, as CommandLineToArgvW does it.
+inline const wchar_t* commandLineArguments(const wchar_t* commandLine) {
+    const wchar_t* p = commandLine ? commandLine : L"";
+
+    if (*p == L'"') {
+        for (++p; *p && *p != L'"'; ++p);
+        if (*p)
+            ++p;
+    }
+    else
+        for (; *p && *p != L' ' && *p != L'\t'; ++p);
+
+    for (; *p == L' ' || *p == L'\t'; ++p);
+    return p;
+}
+
+// CreateProcess refuses executables whose manifest asks for uiAccess (Enso runs in
+// pythonu.exe, signed with uiAccess="true") with ERROR_ELEVATION_REQUIRED; those have
+// to go through ShellExecute, which hands them to the AppInfo service. The window is
+// hidden as by Enso's launcher (pythonu.exe is a console program).
+inline bool launchViaShell(const wchar_t* image, const wchar_t* commandLine,
+                           const wchar_t* directory, PROCESS_INFORMATION* pi) {
+    SHELLEXECUTEINFOW sei = {};
+    sei.cbSize = sizeof(sei);
+    sei.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_FLAG_NO_UI | SEE_MASK_NOASYNC;
+    sei.lpVerb = L"open";
+    sei.lpFile = image;
+    sei.lpParameters = commandLineArguments(commandLine);
+    sei.lpDirectory = directory;
+    sei.nShow = SW_HIDE;
+
+    if (!ShellExecuteExW(&sei) || !sei.hProcess)
+        return false;
+
+    *pi = {};
+    pi->hProcess = sei.hProcess;
+    pi->dwProcessId = GetProcessId(sei.hProcess);
+    return true;
+}
+
 // Starts a process as a child of Explorer, so that "End process tree" on one of the
-// pair does not take the other down. Falls back to a plain child process.
+// pair does not take the other down. Falls back to a plain child process, and to
+// ShellExecute for uiAccess executables. pi->hThread may be null.
 inline bool launchDetached(const wchar_t* image, const wchar_t* commandLine,
                            const wchar_t* currentDirectory, PROCESS_INFORMATION* pi) {
     wchar_t buffer[MAX_COMMAND_LINE];     // CreateProcessW may modify the command line
@@ -129,12 +172,19 @@ inline bool launchDetached(const wchar_t* image, const wchar_t* commandLine,
         if (launched)
             return true;
 
+        if (GetLastError() == ERROR_ELEVATION_REQUIRED)
+            return launchViaShell(image, commandLine, directory, pi);
+
         copyString(buffer, MAX_COMMAND_LINE, commandLine);
     }
 
     STARTUPINFOW si = {};
     si.cb = sizeof(si);
-    return CreateProcessW(image, buffer, nullptr, nullptr, FALSE, 0, nullptr, directory, &si, pi) != FALSE;
+    if (CreateProcessW(image, buffer, nullptr, nullptr, FALSE, 0, nullptr, directory, &si, pi))
+        return true;
+
+    return GetLastError() == ERROR_ELEVATION_REQUIRED
+        && launchViaShell(image, commandLine, directory, pi);
 }
 
 // Restart throttling: more than `burst` restarts within `window` ms back off

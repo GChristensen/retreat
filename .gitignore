@@ -3,6 +3,7 @@
 /out/
 /vcpkg_installed/
 CMakeUserPresets.json
+/.env
 
 # IDEs
 /.vs/
@@ -18,3 +19,6 @@ CMakeUserPresets.json
 /.local/
 /.claude/
 /cmake-build-*/
+
+# local settings
+.env
