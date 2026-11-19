@@ -1,14 +1,20 @@
-/.vs
-/.local
-/packages
-/Debug
-/Release
-/Python
-/retreat/Debug
-/retreat/Release
-/retreat/Python
-/retreat/x64
-/x64
+# CMake / vcpkg
+/build/
+/out/
+/vcpkg_installed/
+CMakeUserPresets.json
+
+# IDEs
+/.vs/
+/.idea/workspace.xml
+/.idea/shelf/
 *.aps
-*.exe
+
+# installer output
+/installer/*.exe
+
 /landing/node_modules
+/.idea/
+/.local/
+/.claude/
+/cmake-build-*/

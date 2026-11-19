@@ -1,0 +1,13 @@
+module;
+
+#include <memory>
+
+export module Monitor;
+
+
+export class Monitor {
+public:
+    virtual bool isSatisfied() = 0;
+};
+
+export using MonitorPtr = std::shared_ptr<Monitor>;

@@ -1,0 +1,12 @@
+{
+  "name": "enso-retreat",
+  "version-string": "1.0",
+  "builtin-baseline": "d13c536672dced4b8c671955ea7d057a1b7a1ff8",
+  "dependencies": [
+    "boost-property-tree",
+    {
+      "name": "wtl",
+      "platform": "windows"
+    }
+  ]
+}

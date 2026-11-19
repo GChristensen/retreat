@@ -1,0 +1,170 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 28,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+    },
+    {
+      "name": "win-base",
+      "hidden": true,
+      "inherits": "base",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "cl",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static"
+      }
+    },
+    {
+      "name": "win-msvc-debug",
+      "displayName": "Windows x64 MSVC Debug",
+      "inherits": "win-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      },
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "Visual Studio"
+        }
+      }
+    },
+    {
+      "name": "win-msvc-release",
+      "displayName": "Windows x64 MSVC Release",
+      "inherits": "win-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      },
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "Visual Studio"
+        }
+      }
+    },
+    {
+      "name": "win-clang-cl-release",
+      "displayName": "Windows x64 clang-cl Release",
+      "inherits": "win-msvc-release",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "clang-cl"
+      },
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "Visual Studio"
+        }
+      }
+    },
+    {
+      "name": "win-x86-release",
+      "displayName": "Windows x86 MSVC Release",
+      "inherits": "win-msvc-release",
+      "architecture": {
+        "value": "x86",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x86-windows-static"
+      }
+    },
+    {
+      "name": "win-python",
+      "displayName": "Windows x64 Enso Python module (retreatlib.pyd)",
+      "inherits": "win-msvc-release",
+      "cacheVariables": {
+        "RETREAT_BUILD_APP": "OFF",
+        "RETREAT_BUILD_PYTHON": "ON"
+      },
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "Visual Studio"
+        }
+      }
+    },
+    {
+      "name": "unix-core",
+      "displayName": "Linux/macOS portable core + tests",
+      "inherits": "base",
+      "condition": {
+        "type": "notEquals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "RETREAT_BUILD_APP": "OFF"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "win-msvc-debug",
+      "configurePreset": "win-msvc-debug"
+    },
+    {
+      "name": "win-msvc-release",
+      "configurePreset": "win-msvc-release"
+    },
+    {
+      "name": "win-clang-cl-release",
+      "configurePreset": "win-clang-cl-release"
+    },
+    {
+      "name": "win-x86-release",
+      "configurePreset": "win-x86-release"
+    },
+    {
+      "name": "win-python",
+      "configurePreset": "win-python"
+    },
+    {
+      "name": "unix-core",
+      "configurePreset": "unix-core"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "win-msvc-debug",
+      "configurePreset": "win-msvc-debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "win-msvc-release",
+      "configurePreset": "win-msvc-release",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "win-clang-cl-release",
+      "configurePreset": "win-clang-cl-release",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "unix-core",
+      "configurePreset": "unix-core",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}
