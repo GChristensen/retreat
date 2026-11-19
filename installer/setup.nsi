@@ -1,7 +1,7 @@
 Unicode True
 
 !define APPNAME "Enso Retreat"
-!define VERSION "1.0"
+!define VERSION "2.0"
 
 !define APPNAMEANDVERSION "Enso Retreat ${VERSION}"
 
@@ -14,8 +14,8 @@ SetCompressor LZMA
 
 !include "MUI.nsh"
 
-!define MUI_ICON "retreat/res/main.ico"
-!define MUI_UNICON "retreat/res/main.ico"
+!define MUI_ICON "..\src\win32\res\main.ico"
+!define MUI_UNICON "..\src\win32\res\main.ico"
 
 !define MUI_HEADERIMAGE
 ;!define MUI_HEADERIMAGE_LEFT
