@@ -1,7 +1,8 @@
 // Builds the landing page into the GitHub Pages entry point (the repo-root index.html).
 //
 //   node build.mjs          aggressive build: one minified index.html with the CSS, the JS and the small
-//                           icons inlined. Larger svgs stay files, minified into media/landing/.
+//                           icons inlined. Larger svgs stay files, minified into media/landing/;
+//                           raster images (png, jpg, webp...) are copied there as they are.
 //   node build.mjs --plain  no build to speak of, no npm packages needed: a readable index.html whose
 //                           assets are still the files in landing/, only the paths are re-based.
 //   --out <dir>             write into <dir> instead of the repo root (to preview without touching the site)
@@ -116,7 +117,12 @@ if (plain) {
     svgs.set(url, optimize(src, { path: url, ...svgOpts }).data);
   }
   const written = new Set();
+  const rasters = new Set();                // url of a raster image, copied as is next to the svgs
   html = mapUrls(html, (url, attr) => {
+    if (/\.(png|jpe?g|gif|webp|avif)$/i.test(url)) {
+      rasters.add(url);
+      return `${SVG_DIR}/${path.basename(url)}`;
+    }
     const svg = svgs.get(url);
     if (svg === undefined) throw new Error(`unhandled local asset: ${url}`);
     if (attr !== "data" && bytes(svg) <= INLINE_LIMIT)
@@ -156,6 +162,13 @@ if (plain) {
     await writeFile(path.join(svgOut, path.basename(url)), data, "utf8");
     after += bytes(data);
     log.push(`  + ${SVG_DIR}/${path.basename(url)}  ${bytes(await read(url))} -> ${bytes(data)} bytes`);
+  }
+  for (const url of rasters) {
+    const data = await readFile(path.join(here, url));
+    await writeFile(path.join(svgOut, path.basename(url)), data);
+    before += data.length;
+    after += data.length;
+    log.push(`  + ${SVG_DIR}/${path.basename(url)}  ${data.length} bytes (copied)`);
   }
   log.push(`  ${svgs.size - written.size} small svgs inlined as data: URIs`);
 }

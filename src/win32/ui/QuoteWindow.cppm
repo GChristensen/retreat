@@ -30,6 +30,10 @@ import QuoteCard;
 export int showQuoteWindow(Settings& settings, bool advance, int clearCenterPx = 0);
 export void closeQuoteWindow();
 
+// Makes the shown quote more or less opaque (numpad +/- on the break screen,
+// to peek at the desktop). Not saved: every quote is shown fully opaque.
+export void alterQuoteWindowAlpha(int delta);
+
 // The quote look from the settings, at full-screen size for the given display.
 export QuoteLook quoteLookFromSettings(Settings& settings, int screenW, int screenH, int ppi);
 
@@ -57,6 +61,11 @@ public:
 
 	// returns the bottom of the card, or 0 on failure
 	int Render(const Quote& quote, QuoteLook look, int clearCenterPx);
+
+	// changes the opacity of the whole window, keeping its content
+	void AlterAlpha(int delta);
+
+	BYTE alpha = 255;
 
 	// like the break screen, it cannot be closed from outside
 	LRESULT OnClose(UINT, WPARAM, LPARAM, BOOL&)
@@ -145,7 +154,7 @@ int CQuoteWindow::Render(const Quote& quote, QuoteLook look, int clearCenterPx)
 	POINT position = { workArea.left + (workArea.Width() - width) / 2, top };
 	SIZE windowSize = { width, height };
 	POINT origin = { 0, 0 };
-	BLENDFUNCTION blend = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
+	BLENDFUNCTION blend = { AC_SRC_OVER, 0, alpha, AC_SRC_ALPHA };
 
 	BOOL updated = ::UpdateLayeredWindow(m_hWnd, screenDC, &position, &windowSize, memDC, &origin,
 		0, &blend, ULW_ALPHA);
@@ -156,6 +165,15 @@ int CQuoteWindow::Render(const Quote& quote, QuoteLook look, int clearCenterPx)
 	::ReleaseDC(NULL, screenDC);
 
 	return updated ? position.y + height : 0;
+}
+
+void CQuoteWindow::AlterAlpha(int delta)
+{
+	alpha = (BYTE)std::clamp((int)alpha + delta, 0, 255);
+
+	// without a source DC only the blend changes; the bitmap stays
+	BLENDFUNCTION blend = { AC_SRC_OVER, 0, alpha, AC_SRC_ALPHA };
+	::UpdateLayeredWindow(m_hWnd, NULL, NULL, NULL, NULL, NULL, 0, &blend, ULW_ALPHA);
 }
 
 } // namespace
@@ -255,4 +273,10 @@ void closeQuoteWindow()
 {
 	if (CQuoteWindow::current)
 		CQuoteWindow::current->DestroyWindow(); // deletes itself
+}
+
+void alterQuoteWindowAlpha(int delta)
+{
+	if (CQuoteWindow::current)
+		CQuoteWindow::current->AlterAlpha(delta);
 }

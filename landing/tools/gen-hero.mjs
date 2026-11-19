@@ -346,27 +346,37 @@ function taskbar() {
 
 // ---------------------------------------------------------------- stars
 
-// Evenly spread like the real break screen: one star per cell of a jittered grid.
+// As the real break screen draws them (randomStars in src/win32/ui/gdi/Shapes.cppm), scaled from a
+// 1920 px wide screen to this image: one star in each 120 px slice of the screen, a circumradius of
+// 20-90 px, any rotation, one of SHAPE_COLORS. The whole star layer then takes the window's opacity
+// (128 of 255 by default), so overlapping stars don't blend.
 function stars() {
   const rand = mulberry32(20260922);
-  const palette = ["#F7A541", "#F5D63D", "#8ED96B", "#4CC38A", "#4AA8F0", "#6F8EF2", "#B08AE8", "#F48FB1", "#F2706F"];
+  const palette = ["#1FB0FF", "#8DFF41", "#FC4B69", "#BDA1FF", "#F39F3A", "#FAFF5B", "#FFADCF"];
   const byColor = new Map(palette.map((c) => [c, []]));
-  const cell = 72;
-  for (let gy = -cell / 3; gy < H; gy += cell)
-    for (let gx = -cell / 3; gx < W; gx += cell) {
-      const x = gx + rand() * cell, y = gy + rand() * cell;
-      const scale = 1.2 + rand() ** 2 * 1.6;
-      const rot = Math.round(rand() * 72);
+  const k = W / 1920;
+  const slicesX = Math.floor(W / (120 * k)), slicesY = Math.floor(H / (120 * k));
+  const cw = W / slicesX, ch = H / slicesY;
+  for (let i = 0; i < slicesX; i++)
+    for (let j = 0; j < slicesY; j++) {
+      const x = cw * (i + rand()), y = ch * (j + rand());
+      const r = (20 + rand() * 70) * k;            // #s has a circumradius of 10
+      const rot = Math.floor(rand() * 360);
       const color = palette[Math.floor(rand() * palette.length)];
-      const op = .6 + rand() * .25;
-      byColor.get(color).push(`<use href="#s" transform="translate(${n(x)} ${n(y)}) rotate(${rot}) scale(${scale.toFixed(2)})" fill-opacity="${op.toFixed(2)}"/>`);
+      byColor.get(color).push(`<use href="#s" transform="translate(${n(x)} ${n(y)}) rotate(${rot}) scale(${(r / 10).toFixed(2)})"/>`);
     }
-  return [...byColor].map(([c, uses]) => `<g fill="${c}">${uses.join("")}</g>`).join("");
+  return `<g opacity=".5">` + [...byColor].map(([c, uses]) => `<g fill="${c}">${uses.join("")}</g>`).join("") + `</g>`;
 }
+
+// generateStar in src/core/algorithms.cppm: 10 vertices, the inner ones at 1/phi^2 of the radius
+const starPath = "M" + Array.from({ length: 10 }, (_, i) => {
+  const a = i * Math.PI / 5, r = i % 2 ? 10 * 0.38197 : 10;
+  return `${n(r * Math.cos(a))} ${n(r * Math.sin(a))}`;
+}).join("L") + "Z";
 
 // ---------------------------------------------------------------- assemble
 
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#262626" role="img" aria-label="A Windows desktop with Excel and Word open, covered edge to edge by small translucent stars in many colours: Enso Retreat's break screen.">
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#262626" role="img" aria-label="A Windows desktop with Excel and Word open, covered edge to edge by translucent stars in many colours: Enso Retreat's break screen.">
 <defs>
 <linearGradient id="wall" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#DCE8F7"/><stop offset=".55" stop-color="#9EC0EC"/><stop offset="1" stop-color="#4F7FD0"/></linearGradient>
 <radialGradient id="bloom" cx=".7" cy=".6" r=".5"><stop offset="0" stop-color="#1E5BD6" stop-opacity=".8"/><stop offset=".5" stop-color="#3B7BE8" stop-opacity=".4"/><stop offset="1" stop-color="#3B7BE8" stop-opacity="0"/></radialGradient>
@@ -374,7 +384,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" fon
 <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#35C1F1"/><stop offset=".6" stop-color="#1B8BD6"/><stop offset="1" stop-color="#0C59A4"/></linearGradient>
 <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0B2350" flood-opacity=".35"/></filter>
 <filter id="page" x="-5%" y="-5%" width="110%" height="110%"><feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity=".25"/></filter>
-<path id="s" d="M0-10L2.59-3.56 9.51-3.09 4.18 1.36 5.88 8.09 0 4.4-5.88 8.09-4.18 1.36-9.51-3.09-2.59-3.56Z"/>
+<path id="s" d="${starPath}"/>
 </defs>
 ${rect(0, 0, W, H, "url(#wall)")}${rect(0, 0, W, H, "url(#bloom)")}
 ${desktopIcons()}
@@ -404,7 +414,7 @@ ${appWindow({
 })}
 ${taskbar()}
 ${stars()}
-${text(40, 58, "00:50", { "font-size": 30, "font-weight": 600, fill: "#E8485F", stroke: "#fff", "stroke-opacity": ".6", "stroke-width": 3, "paint-order": "stroke" })}
+${text(40, 58, "00:50", { "font-size": 30, "font-weight": 700, fill: "#EF1B1B" })}
 </svg>
 `;
 

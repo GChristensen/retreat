@@ -68,6 +68,8 @@ LockWindowAdapter::LockWindowAdapter(StateMachine& stateMachine):
 		for (const WindowPtr& window: this->windows)
 			window->AlterAlpha(10);
 
+		alterQuoteWindowAlpha(10); // not saved
+
 		if (!this->windows.empty())
 			this->settings.setInt(Settings::APPEARANCE_OPACITY_LEVEL, 
 				this->windows[0]->GetAlpha());
@@ -78,6 +80,8 @@ LockWindowAdapter::LockWindowAdapter(StateMachine& stateMachine):
 	inputLock.onNumpadMinus = [this]() {
 		for (const WindowPtr& window : this->windows)
 			window->AlterAlpha(-10);
+
+		alterQuoteWindowAlpha(-10); // not saved
 
 		if (!this->windows.empty())
 			this->settings.setInt(Settings::APPEARANCE_OPACITY_LEVEL,

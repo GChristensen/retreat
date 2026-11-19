@@ -278,6 +278,97 @@ img { max-width: 100%; display: block; }
 .feature__title { font-size: 18px; font-weight: 600; }
 .feature__desc { font-size: 15.5px; color: var(--ink-2); }
 
+/* ---------- quotes ---------- */
+
+/* A dark band that echoes the break screen itself. */
+.quotes {
+  background: #22262B;
+  color: #EFE6D6;
+  border-block: 1px solid #14171A;
+}
+.quotes .section-title { color: #F7F4EC; }
+.quotes .eyebrow { color: var(--accent-bright); }
+
+.quotes__row {
+  display: grid;
+  grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+  gap: 56px;
+  align-items: center;
+}
+
+.quotes__screen {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #3A3F46;
+  background: #15181B;
+  box-shadow: 0 44px 80px -40px rgba(0, 0, 0, .7);
+}
+/* the break screen draws its stars on a see-through window: dim them like a typical opacity */
+.quotes__stars {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: .55;
+}
+
+.quotes__center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.quote-card {
+  width: min(62%, 380px);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 26px 24px;
+  border-radius: 12px;
+  background: rgba(12, 14, 16, .88);
+  border: 1px solid #33383F;
+}
+.quote-card__img { width: auto; height: 150px; object-fit: contain; }
+.quote-card__text {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 17px;
+  line-height: 1.45;
+  text-align: center;
+  color: #EFE6D6;
+}
+.quote-card__author { font-size: 13px; color: #B9B2A5; }
+
+.quotes__text { display: flex; flex-direction: column; gap: 18px; }
+.quotes__lede { font-size: 18px; color: #C9C2B6; }
+
+.quotes__points {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 28px;
+  margin-top: 14px;
+}
+.quotes__point {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 14px;
+  border-top: 2px solid var(--accent-bright);
+  font-size: 15px;
+  line-height: 1.55;
+  color: #B9B2A5;
+}
+.quotes__title { font-size: 16px; font-weight: 600; color: #F7F4EC; }
+
 /* ---------- demo ---------- */
 
 .demo-row {
@@ -332,6 +423,7 @@ img { max-width: 100%; display: block; }
   .statement { font-size: 24px; }
   .demo-row .demo-figure { order: -1; }
   .features { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .quotes__row { grid-template-columns: minmax(0, 1fr); gap: 40px; }
 }
 
 @media (max-width: 640px) {
@@ -345,6 +437,13 @@ img { max-width: 100%; display: block; }
   .cta__title { font-size: 30px; }
   .features { grid-template-columns: minmax(0, 1fr); }
   .lock__points { grid-template-columns: minmax(0, 1fr); margin-top: 32px; }
+  .quotes__points { grid-template-columns: minmax(0, 1fr); }
+  /* the mock screen is too small for the card at phone width: let it grow to fit */
+  .quotes__screen { aspect-ratio: auto; }
+  .quotes__center { position: relative; padding: 40px 16px; }
+  .quote-card { width: 100%; max-width: 340px; }
+  .quote-card__img { height: 120px; }
+  .quote-card__text { font-size: 16px; }
   .statement { font-size: 21px; }
   .site-nav a:not(.site-nav__keep) { display: none; }
   .site-footer { flex-direction: column; align-items: flex-start; }
