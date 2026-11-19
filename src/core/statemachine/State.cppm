@@ -4,6 +4,8 @@ module;
 
 export module State;
 
+import StateSnapshot;
+
 
 export class State {
 public:
@@ -20,6 +22,10 @@ public:
     virtual bool canSkip() { return false; };
 
     virtual void onTimer() {};
+
+    // for snapshots: what to restore and how many seconds are left in this state
+    virtual StateKind kind() { return StateKind::Idle; }
+    virtual int remainingSec() { return 0; }
 };
 
 export using StatePtr = std::shared_ptr<State>;

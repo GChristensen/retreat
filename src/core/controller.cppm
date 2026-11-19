@@ -2,6 +2,7 @@ module;
 
 #include <ctime>
 #include <cstdlib>
+#include <cstdint>
 
 #include <memory>
 #include <exception>
@@ -14,6 +15,8 @@ import Settings;
 import Scheduler;
 import StateMachine;
 import StateMachineImpl;
+import StateSnapshot;
+import StateRestore;
 import PeriodicEvent;
 
 
@@ -35,7 +38,8 @@ public:
 
     void reset();
     void stop();
-    void resume();
+    // after the computer wakes up; `suspended` was taken (offline) when it went to sleep
+    void resume(const StateSnapshot& suspended);
 
     void debug();
 
@@ -44,6 +48,14 @@ public:
     void skip() { stateMachine.setIdle(true); }
     void lock() { stateMachine.setLocked(); }
 
+    StateKind kind() { return stateMachine.kind(); }
+
+    // offline: the computer is going to sleep or the session ends;
+    // cleanExit: the application quits normally
+    StateSnapshot snapshot(bool offline = false, bool cleanExit = false);
+    // continue from a snapshot left by a previous run (see StateRestore)
+    RestorePlan restore(const StateSnapshot& snapshot, time_t bootTime);
+
     Settings &getSettings() { return settings; }
 
 private:
@@ -51,6 +63,9 @@ private:
     Settings settings;
     StateMachine stateMachine;
     Scheduler scheduler;
+    std::uint64_t seq = 0;
+
+    RestoreContext restoreContext(time_t bootTime);
 };
 
 
@@ -74,9 +89,8 @@ void Controller::stop() {
     stateMachine.setHalted();
 }
 
-void Controller::resume() {
-    PeriodicEvent::resetStartTime(settings);
-    stateMachine.setIdle();
+void Controller::resume(const StateSnapshot& suspended) {
+    restore(suspended, 0);
 }
 
 void Controller::debug() {
@@ -92,4 +106,51 @@ void Controller::enable(bool enable) {
         stateMachine.setIdle();
     else if (!enable)
         stateMachine.setSuspended();
+}
+
+StateSnapshot Controller::snapshot(bool offline, bool cleanExit) {
+    time_t now = time(nullptr);
+
+    StateSnapshot s = stateMachine.snapshot(now);
+    s.seq = ++seq;
+    s.writtenAt = now;
+    s.periodStartTime = PeriodicEvent::getStartTime();
+    s.offline = offline;
+    s.cleanExit = cleanExit;
+
+    return s;
+}
+
+RestoreContext Controller::restoreContext(time_t bootTime) {
+    RestoreContext context;
+
+    context.breakDurationSec = settings.getMinutesInSec(Settings::BREAK_DURATION, Settings::DEFAULT_BREAK_DURATION);
+    context.alertDurationSec = settings.getMinutesInSec(Settings::ALERT_DURATION, Settings::DEFAULT_ALERT_DURATION);
+    context.staleSec = settings.getBoolean(Settings::PERIOD_ENABLE, Settings::DEFAULT_PERIOD_ENABLE)
+        ? settings.getMinutesInSec(Settings::PERIOD_DURATION, Settings::DEFAULT_PERIOD_DURATION)
+        : 60 * 60;
+    context.bootTime = bootTime;
+    context.missedAlert = [this](time_t from, time_t to) { return scheduler.missedAlert(from, to); };
+
+    return context;
+}
+
+RestorePlan Controller::restore(const StateSnapshot& snapshot, time_t bootTime) {
+    time_t now = time(nullptr);
+
+    if (snapshot.isValid() && snapshot.seq > seq)
+        seq = snapshot.seq;
+
+    // the period start decides when scheduled alerts were due, so set it before planning
+    if (snapshot.isValid() && !snapshot.cleanExit && snapshot.periodStartTime)
+        PeriodicEvent::setStartTime((time_t)snapshot.periodStartTime);
+
+    RestorePlan plan = planRestore(snapshot, now, restoreContext(bootTime));
+
+    if (plan.action == RestoreAction::Fresh)
+        PeriodicEvent::resetStartTime(settings);
+
+    stateMachine.apply(plan);
+
+    return plan;
 }

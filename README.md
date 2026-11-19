@@ -14,7 +14,7 @@ cmake --build --preset win-msvc-release
 ctest --preset win-msvc-release
 ```
 
-The executable ends up in `build/<preset>/src/win32/retreat.exe`. Dependencies (Boost.PropertyTree, WTL)
+The executable ends up in `build/<preset>/src/win32/retreat.exe`, next to `sentinel.exe`. Dependencies (Boost.PropertyTree, WTL)
 come from `vcpkg.json`.
 
 Enso Python module (`retreatlib.pyd`):
@@ -38,6 +38,7 @@ Installer: build `win-msvc-release`, then run `makensis installer/setup.nsi`.
 |------|----------|
 | `src/core` | Portable library `retreat_core`: scheduler, state machine, settings, cron parser. The `system` module and the window/monitor factories are declared here and implemented per platform. |
 | `src/win32` | Windows layer: WTL UI (`ui/`), Win32 implementations of `system` and the factories, resources, entry points for `retreat.exe` and `retreatlib.pyd`. |
+| `src/sentinel` | `sentinel.exe`: restarts retreat.exe (or Enso, for the pyd) when it is terminated; the app restarts the sentinel in turn. Shares only `src/win32/sentinel_protocol.h`. |
 | `tests` | Core smoke test with a headless stub platform. |
 | `installer` | NSIS installer script. |
 | `help`, `media`, `landing`, `index.html` | Website (GitHub Pages) and installer assets. |

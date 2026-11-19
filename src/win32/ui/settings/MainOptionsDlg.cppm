@@ -466,7 +466,7 @@ void CMainOptionsDlg::stopPreview()
 
 	for (auto it = m_previewWindows.rbegin(); it != m_previewWindows.rend(); ++it)
 		if ((*it)->IsWindow())
-			(*it)->SendMessage(WM_CLOSE);
+			(*it)->Close();
 
 	m_previewWindows.clear();
 }

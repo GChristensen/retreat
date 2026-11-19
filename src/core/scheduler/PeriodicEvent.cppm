@@ -2,6 +2,9 @@ module;
 
 #include <ctime>
 
+#include <optional>
+#include <string>
+#include "tstring.h"
 #include "debug.h"
 
 export module PeriodicEvent;
@@ -16,8 +19,11 @@ public:
 
     virtual bool isMonitoring(time_t time) override;
     virtual bool isAlert(time_t time) override;
+    virtual std::optional<MissedAlert> alertBetween(time_t from, time_t to) override;
 
     static void resetStartTime(Settings &settings);
+    static time_t getStartTime() { return startTime; }
+    static void setStartTime(time_t time) { startTime = time; }
 
 private:
     static std::time_t startTime;
@@ -114,4 +120,22 @@ bool PeriodicEvent::isAlert(time_t time) {
         alertEventSet = false;
 
     return false;
+}
+
+std::optional<MissedAlert> PeriodicEvent::alertBetween(time_t from, time_t to) {
+    if (periodDurationSec <= 0 || to <= from)
+        return std::nullopt;
+
+    // alerts start at startTime + k * period + timeToAlert; find the first one after `from`
+    long long offset = (long long)(from - startTime) - timeToAlertSec;
+    long long k = offset >= 0 ? offset / periodDurationSec : -((-offset + periodDurationSec - 1) / periodDurationSec);
+    time_t alertStart = startTime + (time_t)((k + 1) * periodDurationSec) + timeToAlertSec;
+
+    if (alertStart <= from)
+        alertStart += periodDurationSec;
+
+    if (alertStart > to)
+        return std::nullopt;
+
+    return MissedAlert{ alertStart, 0, tstring() };
 }

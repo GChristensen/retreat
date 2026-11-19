@@ -5,6 +5,8 @@ module;
 
 export module StateDelay;
 
+import StateSnapshot;
+
 import State;
 import StateMachine;
 
@@ -12,6 +14,8 @@ import StateMachine;
 export class StateDelay : public State {
 public:
     StateDelay(StateMachine& stateMachine);
+    // restored from a snapshot: does not count as a new delay
+    StateDelay(StateMachine& stateMachine, int remainingSec);
 
     virtual void onTimer() override;
 
@@ -22,6 +26,11 @@ public:
     }
 
     static void reset() { delaysRequested = 0; }
+    static int getDelaysRequested() { return delaysRequested; }
+    static void setDelaysRequested(int amount) { delaysRequested = amount; }
+
+    virtual StateKind kind() override { return StateKind::Delay; }
+    virtual int remainingSec() override { return counter; }
 
 private:
     int counter;
@@ -41,6 +50,12 @@ StateDelay::StateDelay(StateMachine& stateMachine) : stateMachine(stateMachine) 
     delaysRequested += 1;
 
     DBGLOG(_T("delay"));
+}
+
+StateDelay::StateDelay(StateMachine& stateMachine, int remainingSec) : stateMachine(stateMachine) {
+    counter = remainingSec > 0 ? remainingSec : 1;
+
+    DBGLOG(_T("delay (restored)"));
 }
 
 void StateDelay::onTimer() {

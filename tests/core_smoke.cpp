@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <filesystem>
+#include <optional>
 #include <string>
 
 #include "tstring.h"
@@ -13,6 +14,10 @@ import Settings;
 import SettingsModel;
 import StateMachine;
 import StateMachineImpl;
+import StateSnapshot;
+import StateRestore;
+import Event;
+import PeriodicEvent;
 
 static int failures = 0;
 
@@ -176,6 +181,169 @@ static void testClampCycle() {
     CHECK(tiny.periodMin == MIN_PERIOD_MIN && tiny.breakMin == 1 && tiny.alertMin == 1);
 }
 
+
+static StateSnapshot snap(StateKind kind, time_t writtenAt, time_t deadline) {
+    StateSnapshot s;
+    s.kind = kind;
+    s.writtenAt = writtenAt;
+    s.deadline = deadline;
+    s.periodStartTime = 1000;
+    s.delaysRequested = 1;
+    return s;
+}
+
+static RestoreContext context(std::optional<MissedAlert> missed = std::nullopt) {
+    RestoreContext c;
+    c.breakDurationSec = 600;
+    c.alertDurationSec = 60;
+    c.staleSec = 3600;
+    c.missedAlert = [missed](time_t from, time_t to) -> std::optional<MissedAlert> {
+        if (missed && missed->alertStart > from && missed->alertStart <= to)
+            return missed;
+        return std::nullopt;
+    };
+    return c;
+}
+
+static void testRestoreTerminated() {
+    const time_t t = 1000000;
+    auto c = context();
+
+    // invalid / clean exit: fresh start
+    CHECK(planRestore(StateSnapshot::invalid(), t, c).action == RestoreAction::Fresh);
+    auto clean = snap(StateKind::Locked, t - 1, t + 100);
+    clean.cleanExit = 1;
+    CHECK(planRestore(clean, t, c).action == RestoreAction::Fresh);
+
+    // locked: the rest of the break, or the whole break if it was outlived
+    auto p = planRestore(snap(StateKind::Locked, t - 1, t + 100), t, c);
+    CHECK(p.action == RestoreAction::Locked && p.remainingSec == 100 && !p.penalty);
+    CHECK(p.periodStartTime == 1000 && p.delaysRequested == 1);
+    p = planRestore(snap(StateKind::Locked, t - 200, t - 100), t, c);
+    CHECK(p.action == RestoreAction::Locked && p.remainingSec == 600 && p.penalty);
+
+    // alert: always the whole break
+    p = planRestore(snap(StateKind::Alert, t - 1, t + 30), t, c);
+    CHECK(p.action == RestoreAction::Locked && p.remainingSec == 600 && p.penalty);
+
+    // a cron break keeps its own length and message
+    auto cron = snap(StateKind::Alert, t - 1, t + 30);
+    cron.lockDurationOverride = 300;
+    cron.setMessageText(_T("lunch"));
+    p = planRestore(cron, t, c);
+    CHECK(p.remainingSec == 300 && p.lockDurationOverride == 300 && p.messageText == _T("lunch"));
+
+    // delay: continue it, or the whole break once it ran out
+    p = planRestore(snap(StateKind::Delay, t - 1, t + 50), t, c);
+    CHECK(p.action == RestoreAction::Delay && p.remainingSec == 50);
+    p = planRestore(snap(StateKind::Delay, t - 100, t - 10), t, c);
+    CHECK(p.action == RestoreAction::Locked && p.remainingSec == 600 && p.penalty);
+
+    // suspended
+    p = planRestore(snap(StateKind::Suspended, t - 1, t + 500), t, c);
+    CHECK(p.action == RestoreAction::Suspended && p.remainingSec == 500);
+    p = planRestore(snap(StateKind::Suspended, t - 100, t - 10), t, c);
+    CHECK(p.action == RestoreAction::Idle);
+
+    // idle: keep the schedule; an alert that came due while dead is imposed in full
+    p = planRestore(snap(StateKind::Idle, t - 5, 0), t, c);
+    CHECK(p.action == RestoreAction::Idle && p.periodStartTime == 1000);
+    p = planRestore(snap(StateKind::Idle, t - 5, 0), t, context(MissedAlert{ t - 2, 0, _T("") }));
+    CHECK(p.action == RestoreAction::Locked && p.remainingSec == 600 && p.penalty);
+    p = planRestore(snap(StateKind::Idle, t - 5, 0), t, context(MissedAlert{ t - 2, 120, _T("cron") }));
+    CHECK(p.action == RestoreAction::Locked && p.remainingSec == 120 && p.messageText == _T("cron"));
+
+    // dead for longer than a period: start over
+    CHECK(planRestore(snap(StateKind::Alert, t - 4000, t - 3970), t, c).action == RestoreAction::Fresh);
+}
+
+static void testRestoreOffline() {
+    const time_t t = 1000000;
+    auto c = context();
+
+    auto offline = [&](StateKind kind, time_t writtenAt, time_t deadline) {
+        auto s = snap(kind, writtenAt, deadline);
+        s.offline = 1;
+        return s;
+    };
+
+    // time away counts as break
+    auto p = planRestore(offline(StateKind::Locked, t - 100, t + 100), t, c);
+    CHECK(p.action == RestoreAction::Locked && p.remainingSec == 100 && !p.penalty);
+    CHECK(planRestore(offline(StateKind::Locked, t - 300, t - 100), t, c).action == RestoreAction::Fresh);
+
+    // alert ended 100 s ago: the break started then
+    p = planRestore(offline(StateKind::Alert, t - 130, t - 100), t, c);
+    CHECK(p.action == RestoreAction::Locked && p.remainingSec == 500 && !p.penalty);
+    CHECK(planRestore(offline(StateKind::Alert, t - 1000, t - 990), t, c).action == RestoreAction::Fresh);
+
+    p = planRestore(offline(StateKind::Delay, t - 10, t + 20), t, c);
+    CHECK(p.action == RestoreAction::Delay && p.remainingSec == 20);
+
+    // idle: a short absence keeps the schedule, a long one starts over
+    CHECK(planRestore(offline(StateKind::Idle, t - 100, 0), t, c).action == RestoreAction::Idle);
+    CHECK(planRestore(offline(StateKind::Idle, t - 700, 0), t, c).action == RestoreAction::Fresh);
+    // ... unless a break is still under way: alert 100 s ago, break ends at +560
+    p = planRestore(offline(StateKind::Idle, t - 700, 0), t, context(MissedAlert{ t - 100, 0, _T("") }));
+    CHECK(p.action == RestoreAction::Locked && p.remainingSec == 560 && !p.penalty);
+
+    // a reboot since the snapshot also means offline
+    auto rebooted = context();
+    rebooted.bootTime = t - 50;
+    p = planRestore(snap(StateKind::Alert, t - 130, t - 100), t, rebooted);
+    CHECK(p.action == RestoreAction::Locked && p.remainingSec == 500 && !p.penalty);
+}
+
+static void testPeriodicAlertBetween() {
+    Settings settings;
+    PeriodicEvent event(settings);
+
+    int period = settings.getMinutesInSec(Settings::PERIOD_DURATION, Settings::DEFAULT_PERIOD_DURATION);
+    int toAlert = period
+        - settings.getMinutesInSec(Settings::BREAK_DURATION, Settings::DEFAULT_BREAK_DURATION)
+        - settings.getMinutesInSec(Settings::ALERT_DURATION, Settings::DEFAULT_ALERT_DURATION);
+
+    const time_t start = 1000000;
+    PeriodicEvent::setStartTime(start);
+
+    auto a = event.alertBetween(start, start + period);
+    CHECK(a && a->alertStart == start + toAlert);
+    CHECK(!event.alertBetween(start, start + toAlert - 1));
+    CHECK(!event.alertBetween(start + toAlert, start + period));     // `from` is exclusive
+    a = event.alertBetween(start + toAlert, start + 2 * period);
+    CHECK(a && a->alertStart == start + period + toAlert);
+    a = event.alertBetween(start + 5 * period + toAlert - 1, start + 5 * period + toAlert);
+    CHECK(a && a->alertStart == start + 5 * period + toAlert);
+}
+
+static void testSnapshotApply() {
+    Settings settings;
+    StateMachine sm(settings, nullptr);
+
+    sm.setAlert();
+    sm.setDelay();
+    auto s = sm.snapshot(1000);
+    CHECK(s.kind == StateKind::Delay && s.deadline > 1000 && s.delaysRequested == 1);
+
+    RestorePlan plan;
+    plan.action = RestoreAction::Locked;
+    plan.remainingSec = 42;
+    plan.delaysRequested = 2;
+    sm.apply(plan);
+    CHECK(sm.kind() == StateKind::Locked);
+    s = sm.snapshot(1000);
+    CHECK(s.deadline == 1042 && s.delaysRequested == 2);
+
+    plan.action = RestoreAction::Delay;
+    plan.remainingSec = 7;
+    sm.apply(plan);
+    CHECK(sm.kind() == StateKind::Delay && sm.snapshot(0).delaysRequested == 2);
+
+    plan.action = RestoreAction::Fresh;
+    sm.apply(plan);
+    CHECK(sm.kind() == StateKind::Idle);
+}
+
 template <typename F>
 static void run(const char* name, F test) {
     try {
@@ -196,6 +364,10 @@ int main() {
     run("testSimpleSchedule", testSimpleSchedule);
     run("testClampCycle", testClampCycle);
     run("testTimerOrigin", testTimerOrigin);
+    run("testRestoreTerminated", testRestoreTerminated);
+    run("testRestoreOffline", testRestoreOffline);
+    run("testPeriodicAlertBetween", testPeriodicAlertBetween);
+    run("testSnapshotApply", testSnapshotApply);
 
     if (failures)
         std::fprintf(stderr, "%d check(s) failed\n", failures);

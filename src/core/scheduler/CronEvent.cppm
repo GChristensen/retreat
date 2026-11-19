@@ -3,6 +3,7 @@ module;
 #include <ctime>
 #include "cron.h"
 
+#include <optional>
 #include <regex>
 #include <string>
 #include "tstring.h"
@@ -24,6 +25,7 @@ public:
 
     virtual bool isMonitoring(time_t time) override;
     virtual bool isAlert(time_t time) override;
+    virtual std::optional<MissedAlert> alertBetween(time_t from, time_t to) override;
 
 private:
 
@@ -129,3 +131,15 @@ bool CronEvent::isAlert(time_t time) {
     return false;
 }
 
+std::optional<MissedAlert> CronEvent::alertBetween(time_t from, time_t to) {
+	if (malformed || to <= from)
+		return std::nullopt;
+
+	// the cron time is the start of the break; its alert starts alertBoundarySec earlier
+	time_t breakStart = cron::cron_next(cronExpr, from + alertBoundarySec);
+
+	if (breakStart == cron::INVALID_TIME || breakStart - alertBoundarySec > to)
+		return std::nullopt;
+
+	return MissedAlert{ breakStart - alertBoundarySec, breakDurationSec, messageText };
+}

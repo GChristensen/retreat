@@ -39,12 +39,23 @@ SetCompressor LZMA
 !insertmacro MUI_UNPAGE_INSTFILES
 
 !insertmacro MUI_LANGUAGE "English"
+
+; Stop a running copy: the sentinel first (it refuses during a break), so that it does
+; not restart Retreat, then Retreat itself (closes normally unless a break is under way).
+!macro StopRetreat
+	IfFileExists "$INSTDIR\sentinel.exe" 0 +2
+		nsExec::Exec '"$INSTDIR\sentinel.exe" --quit'
+	nsExec::Exec 'taskkill /im retreat.exe'
+	Sleep 500
+!macroend
 #!insertmacro MUI_RESERVEFILE_LANGDLL
 
 Section "Enso Retreat" Section1
 	SetOverwrite on
 	SetOutPath "$INSTDIR\"
+	!insertmacro StopRetreat
 	File "..\build\win-msvc-release\src\win32\retreat.exe"
+	File "..\build\win-msvc-release\src\win32\sentinel.exe"
 	File "..\help\retreat.html"
 	File "..\media\copying.rtf"
 #	SetOutPath "$APPDATA\${APPNAME}"
@@ -75,6 +86,8 @@ SectionEnd
 
 ;Uninstall section
 Section Uninstall
+
+	!insertmacro StopRetreat
 
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
 	DeleteRegKey HKLM "SOFTWARE\${APPNAME}"

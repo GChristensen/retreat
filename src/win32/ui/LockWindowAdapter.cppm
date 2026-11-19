@@ -90,7 +90,7 @@ LockWindowAdapter::~LockWindowAdapter() {
 	std::reverse(windows.begin(), windows.end());
 
 	for (const WindowPtr &window : windows)
-		window->SendMessage(WM_CLOSE);
+		window->Close();
 
 	if (settings.getBoolean(_T("midnight.wake"), false)) {
 		SYSTEMTIME time;

@@ -102,6 +102,8 @@ void CBreaksSettingsSection::read(Settings &settings)
 	SetChecked(IDC_PERIODIC_ENABLE, settings.getBoolean(Settings::PERIOD_ENABLE, Settings::DEFAULT_PERIOD_ENABLE));
 	SetChecked(IDC_SYNC, !settings.getBoolean(Settings::PERIOD_FROM_LAUNCH, Settings::DEFAULT_PERIOD_FROM_LAUNCH));
 	SetChecked(IDC_BEEP, settings.getBoolean(Settings::SOUNDS_ENABLE, Settings::DEFAULT_SOUNDS_ENABLE));
+	SetChecked(IDC_RESTART_ON_TERMINATION,
+		settings.getBoolean(Settings::RESTART_ON_TERMINATION, Settings::DEFAULT_RESTART_ON_TERMINATION));
 
 	m_loading = false;
 	updateView();
@@ -120,6 +122,7 @@ void CBreaksSettingsSection::write(Settings &settings)
 	settings.setBoolean(Settings::PERIOD_ENABLE, IsChecked(IDC_PERIODIC_ENABLE));
 	settings.setBoolean(Settings::PERIOD_FROM_LAUNCH, !IsChecked(IDC_SYNC));
 	settings.setBoolean(Settings::SOUNDS_ENABLE, IsChecked(IDC_BEEP));
+	settings.setBoolean(Settings::RESTART_ON_TERMINATION, IsChecked(IDC_RESTART_ON_TERMINATION));
 }
 
 CycleTiming CBreaksSettingsSection::currentTiming()
@@ -222,7 +225,8 @@ LRESULT CBreaksSettingsSection::OnButtonClicked(WORD, WORD id, HWND, BOOL& bHand
 		|| applyPreset(BREAK_PRESETS, std::size(BREAK_PRESETS), id, IDC_BREAK)
 		|| applyPreset(ALERT_PRESETS, std::size(ALERT_PRESETS), id, IDC_ALERT);
 
-	if (preset || id == IDC_PERIODIC_ENABLE || id == IDC_SYNC || id == IDC_BEEP) {
+	if (preset || id == IDC_PERIODIC_ENABLE || id == IDC_SYNC || id == IDC_BEEP
+			|| id == IDC_RESTART_ON_TERMINATION) {
 		if (preset) {
 			// keep break and warning consistent with a shorter cycle
 			CycleTiming t = currentTiming();

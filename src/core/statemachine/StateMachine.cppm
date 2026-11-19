@@ -1,5 +1,6 @@
 module;
 
+#include <ctime>
 #include <memory>
 #include <exception>
 
@@ -11,6 +12,8 @@ export module StateMachine;
 import Settings;
 
 import State;
+import StateSnapshot;
+import StateRestore;
 
 export class StateMachine {
 public:
@@ -26,6 +29,13 @@ public:
     void setMonitoring();
 
     void onTimer();
+
+    // kind, deadline, delays and cron break data of the current state; the caller
+    // fills in the remaining fields (time, sequence, period start)
+    StateSnapshot snapshot(time_t now);
+    // enter the state chosen by planRestore() (the period start is the caller's business)
+    void apply(const RestorePlan& plan);
+    StateKind kind();
 
     bool isMonitoring();
     bool isSuspended();

@@ -4,6 +4,7 @@ module;
 #include <cstdlib>
 
 #include <memory>
+#include <optional>
 #include <vector>
 #include "debug.h"
 
@@ -25,6 +26,9 @@ public:
     void addEvent(EventPtr);
 
     bool schedule(StateMachine& machine);
+
+    // the earliest alert of any event that starts in (from, to]
+    std::optional<MissedAlert> missedAlert(time_t from, time_t to);
 
     void debug();
 
@@ -83,6 +87,18 @@ bool Scheduler::schedule(StateMachine& machine) {
 
     machine.onTimer();
     return false;
+}
+
+std::optional<MissedAlert> Scheduler::missedAlert(time_t from, time_t to) {
+    std::optional<MissedAlert> earliest;
+
+    for (auto& event : events) {
+        auto missed = event->alertBetween(from, to);
+        if (missed && (!earliest || missed->alertStart < earliest->alertStart))
+            earliest = missed;
+    }
+
+    return earliest;
 }
 
 void Scheduler::debug() {

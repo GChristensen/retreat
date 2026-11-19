@@ -48,6 +48,7 @@
 #define IDC_DELAY_LIMIT                 1034
 #define IDC_SYNC                        1035
 #define IDC_BEEP                        1036
+#define IDC_RESTART_ON_TERMINATION      2176
 #define IDC_ADD_CRON                    1038
 #define IDC_DELETE_CRON                 1039
 #define IDC_DELAY_LIMIT_SPIN            1040
@@ -166,7 +167,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        304
 #define _APS_NEXT_COMMAND_VALUE         32800
-#define _APS_NEXT_CONTROL_VALUE         2176
+#define _APS_NEXT_CONTROL_VALUE         2177
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

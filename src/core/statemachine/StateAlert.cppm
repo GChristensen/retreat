@@ -8,6 +8,7 @@ module;
 
 export module StateAlert;
 
+import StateSnapshot;
 
 import State;
 import StateDelay;
@@ -30,6 +31,9 @@ public:
     virtual bool canAlert() override { return false; };
     virtual bool canExit() override { return false; }
     virtual bool canSkip() override { return skippable; }
+
+    virtual StateKind kind() override { return StateKind::Alert; }
+    virtual int remainingSec() override { return counter; }
 
     static int getCurrentDay();
     static int setSkipExpended();

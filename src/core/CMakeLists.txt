@@ -36,6 +36,8 @@ target_sources(retreat_core
             statemachine/StateMachine.cppm
             statemachine/StateMachineImpl.cppm
             statemachine/StateMonitoring.cppm
+            statemachine/StateRestore.cppm
+            statemachine/StateSnapshot.cppm
             statemachine/StateSuspended.cppm
             statemachine/StateWindowAdapter.cppm
             statemachine/StateWindowFactory.cppm)

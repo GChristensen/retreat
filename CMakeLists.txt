@@ -46,6 +46,7 @@ add_subdirectory(src/core)
 
 if(RETREAT_BUILD_APP OR RETREAT_BUILD_PYTHON)
     add_subdirectory(src/win32)
+    add_subdirectory(src/sentinel)
 endif()
 
 if(RETREAT_BUILD_TESTS)

@@ -38,6 +38,10 @@ public:
 	void CenterWindowOnWorkArea();
 	void RandomlyPlaceWindowOnWorkArea();
 
+	// Destroys the window. WM_CLOSE from elsewhere (e.g. taskkill) is ignored, so a
+	// break screen cannot be closed from outside.
+	void Close();
+
 	//////////////////////////////////////////////////////////////////////
 	// Messages
 	//////////////////////////////////////////////////////////////////////
@@ -242,9 +246,14 @@ void CTranslucentWindow::RandomlyPlaceWindowOnWorkArea()
 	SetWindowPos(NULL, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
 }
 
+void CTranslucentWindow::Close()
+{
+	if (IsWindow())
+		DestroyWindow();
+}
+
 LRESULT CTranslucentWindow::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
 {
-	DestroyWindow();
 	return 0;
 }
 

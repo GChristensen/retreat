@@ -5,6 +5,8 @@
 find_path(WTL_INCLUDE_DIR atlapp.h PATH_SUFFIXES wtl REQUIRED)
 
 set(RETREAT_WIN32_MODULES
+    SentinelClient.cppm
+    StateStore.cppm
     ui/AboutDlg.cppm
     ui/AlertWindowAdapter.cppm
     ui/BreakWindow.cppm

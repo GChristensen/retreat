@@ -81,7 +81,7 @@ BreakWindowPtr createTimerWindow(BuildContext& ctx, CRect* pRect, bool primary)
 	else {
 		if (!ctx.fullscreen) {
 			ctx.fullscreen = true;
-			pTimerWnd->SendMessage(WM_CLOSE);
+			pTimerWnd->Close();
 			pTimerWnd = std::make_shared<CTimerWindow>((HWND)0, pRect, nullptr);
 		}
 

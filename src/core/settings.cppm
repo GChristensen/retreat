@@ -69,6 +69,8 @@ public:
     // not under "cron.": every value in that section is a break
     static constexpr const TCHAR* SCHEDULE_ENABLE = _T("schedule.enable");
 
+    static constexpr const TCHAR* RESTART_ON_TERMINATION = _T("behavior.restart_on_termination");
+
     static constexpr const bool DEFAULT_PERIOD_ENABLE = true;
     static constexpr const bool DEFAULT_SCHEDULE_ENABLE = true;
     static constexpr const int DEFAULT_PERIOD_DURATION = 60;
@@ -84,6 +86,7 @@ public:
     static constexpr const int DEFAULT_SUSPENDED_DURATION = 2;
 
     static constexpr const bool DEFAULT_BEHAVIOR_BEEP = false;
+    static constexpr const bool DEFAULT_RESTART_ON_TERMINATION = true;
 
     static constexpr const bool DEFAULT_APPEARANCE_FULLSCREEN = true;
     static constexpr const bool DEFAULT_APPEARANCE_TRANSPARENT = false;

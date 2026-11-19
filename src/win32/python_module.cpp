@@ -1,5 +1,6 @@
 #ifdef PYTHON_MODULE
 
+#include <atomic>
 #include <string>
 
 #include "wtl.h"
@@ -13,11 +14,18 @@
 #include "tstring.h"
 
 #define WM_GET_LOCK_STATE (WM_USER + 10)
+#define WM_PROCESS_EXIT (WM_USER + 11)
+
+import StateSnapshot;
+import StateStore;
 
 extern HWND hDispatchWnd;
 int entry_win32(HINSTANCE hInstance, LPTSTR lpstrCmdLine, int nCmdShow);
 
 HINSTANCE hDllInst = NULL;
+
+// the Retreat thread is running (start() may be called more than once)
+static std::atomic<bool> started = false;
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
 	hDllInst = hinstDLL;
@@ -26,12 +34,40 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
 }
 
 DWORD WINAPI pyenso_thread(LPVOID lpParam) {
-	return entry_win32(hDllInst, 0, 0);
+	int result = entry_win32(hDllInst, 0, 0);
+	started = false;
+	return result;
+}
+
+static void startRetreat() {
+	if (started.exchange(true))
+		return;
+
+	HANDLE hThread = CreateThread(NULL, 0, pyenso_thread, 0, 0, 0);
+	if (hThread)
+		CloseHandle(hThread);
+}
+
+// Python is exiting normally: let Retreat tell the sentinel not to restart Enso
+static void onPythonExit() {
+	if (hDispatchWnd && IsWindow(hDispatchWnd))
+		SendMessageTimeout(hDispatchWnd, WM_PROCESS_EXIT, 0, 0, SMTO_ABORTIFHUNG, 2000, NULL);
+}
+
+// A break was under way when Enso was terminated: bring it back as soon as the module
+// is imported, without waiting for Enso to call start().
+static void resumeInterruptedBreak() {
+	StateSnapshot snapshot = StateStore().load();
+
+	if (snapshot.isValid() && !snapshot.cleanExit
+			&& (snapshot.kind == StateKind::Alert || snapshot.kind == StateKind::Delay
+				|| snapshot.kind == StateKind::Locked))
+		startRetreat();
 }
 
 static PyObject*
 pyenso_retreat_start(PyObject* self, PyObject* args) {
-	HANDLE hThread = CreateThread(NULL, 0, pyenso_thread, 0, 0, 0);
+	startRetreat();
 
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -157,6 +193,9 @@ PyInit_retreatlib(void)
 
 	if (m == NULL)
 		INITERROR;
+
+	Py_AtExit(onPythonExit);
+	resumeInterruptedBreak();
 
 	return m;
 }

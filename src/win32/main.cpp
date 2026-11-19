@@ -6,6 +6,7 @@
 
 #include "dbgcout.h"
 #include "LimitSingleInstance.h"
+#include "sentinel_protocol.h"
 
 import DispatchWnd;
 
@@ -44,8 +45,9 @@ int entry_win32(HINSTANCE hInstance, LPTSTR lpstrCmdLine, int nCmdShow)
 
 	LimitSingleInstance singleInstance(GLOBAL_MUTEX_NAME);
 
+	// tells the sentinel not to restart this instance
 	if (singleInstance.IsAnotherInstanceRunning())
-		return 0;
+		return sentinel::EXIT_ALREADY_RUNNING;
 
 	HRESULT hRes = ::CoInitialize(NULL);
 	ATLASSERT(SUCCEEDED(hRes));

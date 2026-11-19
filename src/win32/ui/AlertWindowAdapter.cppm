@@ -58,7 +58,7 @@ AlertWindowAdapter::AlertWindowAdapter(StateMachine &stateMachine):
 
 AlertWindowAdapter::~AlertWindowAdapter() {
 	for (const WindowPtr &window : windows)
-		window->SendMessage(WM_CLOSE);
+		window->Close();
 }
 
 bool AlertWindowAdapter::isThereForbiddenProcesses() {

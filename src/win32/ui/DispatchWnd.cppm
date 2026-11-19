@@ -6,6 +6,7 @@ module;
 #include "tstring.h"
 
 #include "python_module.h"
+#include "sentinel_protocol.h"
 
 #include <memory>
 #include "debug.h"
@@ -14,11 +15,17 @@ export module DispatchWnd;
 
 
 import Controller;
+import Settings;
 import TrayIconImpl;
+import StateSnapshot;
+import StateStore;
+import SentinelClient;
 
 
 #define WM_USER_TIMER (WM_USER + 1)
 #define WM_GET_LOCK_STATE (WM_USER + 10)
+// sent by retreatlib.pyd when the Python process exits normally
+#define WM_PROCESS_EXIT (WM_USER + 11)
 
 typedef CWinTraits<WS_BORDER | WS_SYSMENU> DispatchTraits;
 
@@ -35,7 +42,9 @@ public:
 	LRESULT OnGetLockState(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnTaskBarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPowerBroadcast(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	//LRESULT OnQueryEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnQueryEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnProcessExit(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
@@ -50,7 +59,9 @@ public:
 		MESSAGE_HANDLER(WM_GET_LOCK_STATE, OnGetLockState)
 		MESSAGE_HANDLER(msgTaskbarCreated, OnTaskBarCreated)
 		MESSAGE_HANDLER(WM_POWERBROADCAST, OnPowerBroadcast)
-		//MESSAGE_HANDLER(WM_QUERYENDSESSION, OnQueryEndSession)
+		MESSAGE_HANDLER(WM_QUERYENDSESSION, OnQueryEndSession)
+		MESSAGE_HANDLER(WM_ENDSESSION, OnEndSession)
+		MESSAGE_HANDLER(WM_PROCESS_EXIT, OnProcessExit)
 		CHAIN_MSG_MAP(CTrayIconImpl<CDispatchWnd>)
 	END_MSG_MAP()
 
@@ -72,6 +83,18 @@ protected:
 	void disableMenu();
 	void setMenuItemText(HMENU hMenu, int id, int resource);
 
+	// survival across termination, sleep and sign-out
+	StateStore stateStore;
+	SentinelClient sentinelClient;
+	StateSnapshot suspendSnapshot = StateSnapshot::invalid();
+	StateKind savedKind = StateKind::Idle;
+	int ticksSinceSave = 0;
+
+	void restoreState();
+	void persistState(bool offline = false, bool cleanExit = false);
+	void updateSentinel();
+	void quitCleanly(sentinel::GoodbyeReason reason);
+
 	HANDLE timer = NULL;
 	HANDLE timerEvent = NULL;
 	HANDLE timerThread = NULL;
@@ -90,6 +113,10 @@ import AboutDlg;
 import MainOptionsDlg;
 
 const int TIMER_PERIOD = 1000;
+// state.dat is rewritten on every change of state and at least this often
+const int SAVE_PERIOD_TICKS = 10;
+// how long to wait for the snapshot held by an already running sentinel
+const DWORD SENTINEL_SNAPSHOT_TIMEOUT = 500;
 
 CDispatchWnd::CDispatchWnd(HINSTANCE hInstance): controller(hInstance)
 {
@@ -99,6 +126,9 @@ CDispatchWnd::CDispatchWnd(HINSTANCE hInstance): controller(hInstance)
 LRESULT CDispatchWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	controller.reset();
+
+	updateSentinel();
+	restoreState();
 
 	// show icon on Explorer restart by receiving TaskbarCreated message
 	msgTaskbarCreated = RegisterWindowMessage(_T("TaskbarCreated"));
@@ -114,6 +144,11 @@ LRESULT CDispatchWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 LRESULT CDispatchWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	unsigned command = LOWORD(wParam);
+
+	struct PersistAfterCommand {
+		CDispatchWnd* wnd;
+		~PersistAfterCommand() { if (wnd->IsWindow()) wnd->persistState(); }
+	} persistAfterCommand{ this };
 
 	switch (command)
 	{
@@ -135,8 +170,10 @@ LRESULT CDispatchWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 			disableMenu();
 
 			CMainOptionsDlg optionsDlg(controller.getSettings());
-			if (optionsDlg.DoModal(m_hWnd) == IDOK || optionsDlg.IsApplied())
+			if (optionsDlg.DoModal(m_hWnd) == IDOK || optionsDlg.IsApplied()) {
 				controller.reset();
+				updateSentinel();
+			}
 
 			enableMenu();
 		}
@@ -175,11 +212,17 @@ LRESULT CDispatchWnd::OnPowerBroadcast(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	switch (wParam)
 	{
 	case PBT_APMSUSPEND:
+		// the time asleep counts as time away from the computer
+		suspendSnapshot = controller.snapshot(true);
+		sentinelClient.post(suspendSnapshot);
+		stateStore.save(suspendSnapshot);
+
 		controller.stop();
-		terminateTimerThread();		
+		terminateTimerThread();
 		break;
 	case PBT_APMRESUMEAUTOMATIC:
-		controller.resume();
+		controller.resume(suspendSnapshot);
+		persistState();
 		createTimerThread();
 		break;
 	}
@@ -187,11 +230,72 @@ LRESULT CDispatchWnd::OnPowerBroadcast(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	return 0;
 }
 
-//LRESULT CDispatchWnd::OnQueryEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
-//{
-//	
-//	return TRUE;
-//}
+LRESULT CDispatchWnd::OnQueryEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
+{
+	// signing out or shutting down: a break under way continues at the next start
+	persistState(true);
+	return TRUE;
+}
+
+LRESULT CDispatchWnd::OnEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
+{
+	if (wParam) {
+		persistState(true);
+		sentinelClient.goodbye(sentinel::GOODBYE_SESSION_END);
+	}
+
+	return 0;
+}
+
+LRESULT CDispatchWnd::OnProcessExit(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
+{
+	// Enso is exiting normally; during a break let the sentinel bring it back
+	if (controller.canExit())
+		quitCleanly(sentinel::GOODBYE_EXIT);
+
+	return 0;
+}
+
+// state persistence and the sentinel ///////////////////////////////////////////////
+
+void CDispatchWnd::restoreState()
+{
+	StateSnapshot fromSentinel = sentinelClient.initialSnapshot(SENTINEL_SNAPSHOT_TIMEOUT);
+	StateSnapshot fromDisk = stateStore.load();
+
+	controller.restore(StateSnapshot::newest(fromSentinel, fromDisk), StateStore::bootTime());
+
+	persistState();
+}
+
+void CDispatchWnd::persistState(bool offline, bool cleanExit)
+{
+	StateSnapshot snapshot = controller.snapshot(offline, cleanExit);
+
+	sentinelClient.post(snapshot);
+	stateStore.save(snapshot);
+
+	savedKind = snapshot.kind;
+	ticksSinceSave = 0;
+}
+
+void CDispatchWnd::updateSentinel()
+{
+	Settings& settings = controller.getSettings();
+
+	bool restart = settings.getBoolean(Settings::RESTART_ON_TERMINATION, Settings::DEFAULT_RESTART_ON_TERMINATION);
+
+	if (restart && !sentinelClient.isRunning())
+		sentinelClient.start();
+	else if (!restart && sentinelClient.isRunning())
+		sentinelClient.goodbye(sentinel::GOODBYE_RESTART_DISABLED);
+}
+
+void CDispatchWnd::quitCleanly(sentinel::GoodbyeReason reason)
+{
+	persistState(false, true);
+	sentinelClient.goodbye(reason);
+}
 
 LRESULT CDispatchWnd::OnTaskBarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
 {
@@ -202,6 +306,12 @@ LRESULT CDispatchWnd::OnTaskBarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 LRESULT CDispatchWnd::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	// WM_CLOSE also comes from outside (taskkill without /f, Enso): not during a break
+	if (!controller.canExit())
+		return 0;
+
+	quitCleanly(sentinel::GOODBYE_EXIT);
+
 	destroyTimer();
 
 	RemoveIcon();
@@ -354,9 +464,18 @@ DWORD WINAPI CDispatchWnd::timerThreadProc(LPVOID param)
 	return 0;
 }
 
-LRESULT CDispatchWnd::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) 
+LRESULT CDispatchWnd::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	controller.onTimer();
+
+	StateSnapshot snapshot = controller.snapshot();
+	sentinelClient.post(snapshot);
+
+	if (snapshot.kind != savedKind || ++ticksSinceSave >= SAVE_PERIOD_TICKS) {
+		stateStore.save(snapshot);
+		savedKind = snapshot.kind;
+		ticksSinceSave = 0;
+	}
 
 	return 0;
 }
