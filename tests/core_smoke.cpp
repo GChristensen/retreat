@@ -10,6 +10,7 @@
 #include "scheduler/cron.h"
 
 import Settings;
+import SettingsModel;
 import StateMachine;
 import StateMachineImpl;
 
@@ -83,6 +84,70 @@ static void testStateMachine() {
     CHECK(!sm.isSuspended());
 }
 
+static void testSimpleSchedule() {
+    auto weekdays = parseSimpleSchedule(_T("30 12 * * 1-5"));
+    CHECK(weekdays.has_value());
+    if (weekdays) {
+        CHECK(weekdays->minute == 30);
+        CHECK(weekdays->hour == 12);
+        CHECK(isWeekdays(weekdays->days));
+        CHECK(toCron(*weekdays) == _T("30 12 * * 1-5"));
+        CHECK(describeSchedule(*weekdays) == _T("Weekdays at 12:30"));
+    }
+
+    auto friday = parseSimpleSchedule(_T("0 17 * * 5"));
+    CHECK(friday && friday->days.count() == 1 && friday->days.test(4));
+    CHECK(friday && toCron(*friday) == _T("0 17 * * 5"));
+
+    auto daily = parseSimpleSchedule(_T("30 21 * * *"));
+    CHECK(daily && isEveryDay(daily->days));
+    CHECK(daily && toCron(*daily) == _T("30 21 * * *"));
+
+    auto sunday0 = parseSimpleSchedule(_T("0 9 * * 0"));
+    auto sunday7 = parseSimpleSchedule(_T("0 9 * * 7"));
+    CHECK(sunday0 && sunday7 && *sunday0 == *sunday7 && sunday0->days.test(6));
+    CHECK(sunday0 && toCron(*sunday0) == _T("0 9 * * 0"));
+
+    auto names = parseSimpleSchedule(_T("30 9 * * MON-FRI"));
+    CHECK(names && isWeekdays(names->days));
+
+    auto weekend = parseSimpleSchedule(_T("0 10 * * 6,0"));
+    CHECK(weekend && isWeekend(weekend->days));
+    CHECK(weekend && toCron(*weekend) == _T("0 10 * * 0,6"));
+    CHECK(weekend && describeDays(weekend->days) == _T("Weekends"));
+
+    auto monToSat = parseSimpleSchedule(_T("0 15 * * 1,2,3,4,5,6"));
+    CHECK(monToSat && toCron(*monToSat) == _T("0 15 * * 1-6"));
+    CHECK(monToSat && describeDays(monToSat->days) == _T("Mon–Sat"));
+
+    auto scattered = parseSimpleSchedule(_T("0 15 * * 1,3,4"));
+    CHECK(scattered && toCron(*scattered) == _T("0 15 * * 1,3,4"));
+    CHECK(scattered && describeDays(scattered->days) == _T("Mon, Wed, Thu"));
+
+    CHECK(!parseSimpleSchedule(_T("*/15 * * * *")));
+    CHECK(!parseSimpleSchedule(_T("0 9 1 * *")));
+    CHECK(!parseSimpleSchedule(_T("0 9-17 * * *")));
+    CHECK(!parseSimpleSchedule(_T("0 9 * 1 *")));
+    CHECK(!parseSimpleSchedule(_T("60 9 * * *")));
+    CHECK(!parseSimpleSchedule(_T("0 9 * *")));
+}
+
+static void testClampCycle() {
+    auto normal = clampCycle(60, 10, 1);
+    CHECK(normal.periodMin == 60 && normal.breakMin == 10 && normal.alertMin == 1);
+    CHECK(normal.workMin() == 50 && normal.alertStartMin() == 49);
+
+    auto longBreak = clampCycle(30, 40, 1);
+    CHECK(longBreak.breakMin == 30 - MIN_WORK_MIN);
+
+    auto longAlert = clampCycle(20, 10, 15);
+    CHECK(longAlert.alertMin == longAlert.workMin() - 1);
+    CHECK(longAlert.alertStartMin() >= 1);
+
+    auto tiny = clampCycle(1, 0, 0);
+    CHECK(tiny.periodMin == MIN_PERIOD_MIN && tiny.breakMin == 1 && tiny.alertMin == 1);
+}
+
 template <typename F>
 static void run(const char* name, F test) {
     try {
@@ -100,6 +165,8 @@ int main() {
     run("testCron", testCron);
     run("testSettingsRoundTrip", testSettingsRoundTrip);
     run("testStateMachine", testStateMachine);
+    run("testSimpleSchedule", testSimpleSchedule);
+    run("testClampCycle", testClampCycle);
 
     if (failures)
         std::fprintf(stderr, "%d check(s) failed\n", failures);

@@ -18,3 +18,5 @@ export void playAudioFile(tstring& filePath);
 export void playSystemSound();
 export void displayMessage(tstring& text);
 export bool isProcessRunning(std::vector<tstring>& processes);
+// Canonical full paths of the running executables, deduplicated and sorted.
+export std::vector<tstring> getRunningProcessPaths();

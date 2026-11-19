@@ -21,3 +21,4 @@ void playAudioFile(tstring&) {}
 void playSystemSound() {}
 void displayMessage(tstring&) {}
 bool isProcessRunning(std::vector<tstring>&) { return false; }
+std::vector<tstring> getRunningProcessPaths() { return {}; }

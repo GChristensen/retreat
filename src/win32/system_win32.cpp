@@ -9,6 +9,7 @@ module;
 #include "resource.h"
 #include "python_module.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 #include <string>
@@ -152,46 +153,49 @@ void displayMessage(tstring& text) {
 	displayThread.detach();
 }
 
-bool isProcessRunning(std::vector<tstring> &processes) {
+std::vector<tstring> getRunningProcessPaths() {
+	std::vector<tstring> result;
+
+	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	if (snapshot == INVALID_HANDLE_VALUE)
+		return result;
+
 	PROCESSENTRY32 entry;
 	entry.dwSize = sizeof(PROCESSENTRY32);
 
-	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-
-	auto checkProcess = [&processes](PROCESSENTRY32 &entry) { 
-		bool matches = false;
-	
-		HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, entry.th32ProcessID);
-		if (hProcess != NULL) {
-			TCHAR processPath[MAX_PATH], canonizedPath[MAX_PATH] = { 0, };
-			DWORD pathSize = MAX_PATH;
-			if (QueryFullProcessImageName(hProcess, NULL, processPath, &pathSize)) {
-				if (S_OK == PathCchCanonicalize(canonizedPath, MAX_PATH, processPath)) {
-					for (auto& process : processes)
-						if (!_tcsicmp(process.c_str(), canonizedPath)) {
-							matches = true;
-							break;
-						}
-				}
+	if (Process32First(snapshot, &entry)) {
+		do {
+			HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, entry.th32ProcessID);
+			if (hProcess != NULL) {
+				TCHAR processPath[MAX_PATH], canonizedPath[MAX_PATH] = { 0, };
+				DWORD pathSize = MAX_PATH;
+				if (QueryFullProcessImageName(hProcess, 0, processPath, &pathSize)
+						&& S_OK == PathCchCanonicalize(canonizedPath, MAX_PATH, processPath))
+					result.push_back(canonizedPath);
+				CloseHandle(hProcess);
 			}
-			CloseHandle(hProcess);
-		}
-	
-		return matches;
-	};
-
-	bool running = false;
-	if (Process32First(snapshot, &entry) && !checkProcess(entry))
-		while (Process32Next(snapshot, &entry)) {
-			running = checkProcess(entry);
-
-			if (running)
-				break;
-		}
-	else {
-		running = true;
+		} while (Process32Next(snapshot, &entry));
 	}
 
 	CloseHandle(snapshot);
-	return running;
+
+	auto lessNoCase = [](const tstring& a, const tstring& b) { return _tcsicmp(a.c_str(), b.c_str()) < 0; };
+	auto equalNoCase = [](const tstring& a, const tstring& b) { return _tcsicmp(a.c_str(), b.c_str()) == 0; };
+
+	std::sort(result.begin(), result.end(), lessNoCase);
+	result.erase(std::unique(result.begin(), result.end(), equalNoCase), result.end());
+
+	return result;
+}
+
+bool isProcessRunning(std::vector<tstring> &processes) {
+	if (processes.empty())
+		return false;
+
+	for (const tstring& running : getRunningProcessPaths())
+		for (const tstring& process : processes)
+			if (!_tcsicmp(process.c_str(), running.c_str()))
+				return true;
+
+	return false;
 }

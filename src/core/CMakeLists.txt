@@ -19,6 +19,7 @@ target_sources(retreat_core
             algorithms.cppm
             controller.cppm
             settings.cppm
+            settings_model.cppm
             system.cppm
             scheduler/CronEvent.cppm
             scheduler/Event.cppm

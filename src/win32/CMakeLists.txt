@@ -7,6 +7,7 @@ find_path(WTL_INCLUDE_DIR atlapp.h PATH_SUFFIXES wtl REQUIRED)
 set(RETREAT_WIN32_MODULES
     ui/AboutDlg.cppm
     ui/AlertWindowAdapter.cppm
+    ui/BreakWindow.cppm
     ui/DispatchWnd.cppm
     ui/InputLock.cppm
     ui/InputMonitor.cppm
@@ -17,11 +18,13 @@ set(RETREAT_WIN32_MODULES
     ui/gdi/BitmapBuffer.cppm
     ui/gdi/Shapes.cppm
     ui/gdi/TextBuffer.cppm
-    ui/settings/GeneralSettingsSection.cppm
+    ui/settings/BreakScreenSettingsSection.cppm
+    ui/settings/BreaksSettingsSection.cppm
+    ui/settings/ExceptionsSettingsSection.cppm
     ui/settings/MainOptionsDlg.cppm
-    ui/settings/RestrictionSettingsSection.cppm
     ui/settings/ScheduleSettingsSection.cppm
-    ui/settings/SectionDlg.cppm)
+    ui/settings/SectionDlg.cppm
+    ui/settings/SettingsControls.cppm)
 
 set(RETREAT_WIN32_SOURCES
     main.cpp

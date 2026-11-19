@@ -50,6 +50,7 @@ public:
     static constexpr const TCHAR *APPEARANCE_OPACITY_LEVEL = _T("appearance.opacity_level");
     static constexpr const TCHAR *APPEARANCE_BACKGROUND_COLOR = _T("appearance.background_color");
     static constexpr const TCHAR *APPEARANCE_IMAGE_DIRECTORY = _T("appearance.image_directory");
+    static constexpr const TCHAR *APPEARANCE_USE_IMAGES = _T("appearance.use_images");
     static constexpr const TCHAR *APPEARANCE_STRETCH_IMAGES = _T("appearance.stretch_images");
     static constexpr const TCHAR *APPEARANCE_SHOW_TIMER = _T("appearance.show_timer");
     static constexpr const TCHAR *APPEARANCE_TIMER_TEXT_COLOR = _T("appearance.timer_text_color");
@@ -63,8 +64,11 @@ public:
 
     static constexpr const TCHAR* PROCESSES = _T("processes.");
     static constexpr const TCHAR* CRON = _T("cron.");
+    // not under "cron.": every value in that section is a break
+    static constexpr const TCHAR* SCHEDULE_ENABLE = _T("schedule.enable");
 
     static constexpr const bool DEFAULT_PERIOD_ENABLE = true;
+    static constexpr const bool DEFAULT_SCHEDULE_ENABLE = true;
     static constexpr const int DEFAULT_PERIOD_DURATION = 60;
     static constexpr const bool DEFAULT_PERIOD_FROM_LAUNCH = false;
 

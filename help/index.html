@@ -48,133 +48,69 @@
             </ul>
         </blockquote>
 
-        <h3>Behavior Settings</h3>
+        <p>The settings window has four pages, listed on its left side. Most changes are previewed right away;
+            press <b>Apply</b> or <b>OK</b> to save them.</p>
+        <h3>Periodic Breaks</h3>
         <blockquote>
-            <img src="images/behaviour_settings.png">
-
-            <h4>Periodic Breaks</h4>
-            <p>A periodic break occurs once in a specified period of time (near to the end of it).</p>
+            <p>A periodic break takes the last minutes of every cycle. For example, with a 60-minute cycle and a 10-minute break
+                you work for 50 minutes, then rest for 10. The bar at the top of the page shows one cycle: the work time,
+                the warning before the break, and the break itself. If postponing is allowed, a second row shows how a postponed
+                break moves into the next cycle (cycles keep their schedule, so the postponed time is taken from the next one).</p>
             <ul>
-                <li><b>Period Duration</b> - period duration in minutes.</li>
-                <li><b>Break Duration</b> - break duration in minutes.</li>
-                <li><b>Disable for</b> - the amount of time used to disable Enso retreat from the context menu.</li>
-                <li><b>Turn Off Periodic Breaks</b> - use only scheduled breaks.</li>
-                <li><b>Synchronize With System Time</b> - if checked, the start of a period is attached to the beginning of an hour. 
-                    Otherwise, periods are measured from the program start time.</li>
-            </ul>
-
-            <h4>Delays</h4>
-            <ul>
-                <li><b>Alert Time</b> - show an alert by the specified time before the start of a break.</li>
-                <li><b>Delay Time</b> - it is possible to delay a break several times for the time specified in this setting.</li>
-                <li><b>Number of Delays</b> - specifies the maximum number of available delays.</li>
-                <li><b>Play Sound at the Break End</b> - play a system or custom sound after the break ends.</li>
-            </ul>
-
-        </blockquote>
-
-        <h3>Appearance Settings</h3>
-        <blockquote>
-
-            <img src="images/appearance_settings.png">
-
-            <h4>Window</h4>
-            <ul>
-                <li><b>Mode</b> - select how Enso Retreat will look when locking the system:</li>
-                <ul>
-                    <li><b>Fullscreen</b> - show a fullscreen image.</li>
-                    <li><b>Windowed</b> - show image in a window matching the image dimensions.</li>
-                </ul>
-                <li><b>Opacity Level</b> - an opacity level of the Enso Retreat window (0-255). It is also adjustable with +/- numpad keys during the break.</li>
-                <li><b>Background Color</b> - the background color of the Enso Retreat window areas not covered by the displayed image.</li>
-                <li><b>Allow Transparent Regions</b> - allow completely transparent areas. The transparent color is selected from the upper-left pixel of the displayed image.</li>
-            </ul>
-
-            <h4>Timer</h4>
-
-            <ul>
-                <li><b>Show Timer</b> - the timer will not be displayed when unchecked.</li>
-                <li><b>Timer Font Color</b> - the color of timer text.</li>
-            </ul>
-
-            <h4>Media</h4>
-            <ul>
-                <li><b>Image Folder</b> - if specified, a random image will be selected from this folder to show during a break. 
-                To show only one specific image, store a single image in this folder. JPEG, PNG, GIF, and BMP image formats are supported.</li>
-                <li><b>Stretch Images</b> - stretch images if they are too small to fit the screen.</li>
-                <li><b>Sound Folder</b> - the folder for sounds to be played at the end of a break randomly. Supported audio formats are: WAV, MP3, WMA, and FLAC. 
-                    If not specified, Enso Retreat will play the standard system sound.</li>
+                <li><b>Enabled</b> - uncheck to turn periodic breaks off.</li>
+                <li><b>Cycle length</b> - the length of one cycle in minutes, including the break. The buttons next to it are common presets.</li>
+                <li><b>Break for</b> - the break duration in minutes, taken from the end of each cycle.</li>
+                <li><b>Warn me before</b> - show a warning the specified number of minutes before a break. This also applies to scheduled breaks.</li>
+                <li><b>Postpone up to N times, by M min each</b> - how many times, and for how long, a break may be postponed from the warning. This also applies to scheduled breaks.</li>
+                <li><b>Align cycles to the clock</b> - if checked, cycles start at the beginning of an hour.
+                    Otherwise, cycles are measured from the program start time.</li>
+                <li><b>Chime when a break ends</b> - play a system or custom sound after the break ends (see <i>Break Screen</i>).</li>
+                <li><b>Pause Retreat lasts</b> - the time used by <b>Disable</b> in the context menu.</li>
             </ul>
         </blockquote>
-
-
-        <h3>Scheduled Breaks</h4>
+        <h3>Scheduled Breaks</h3>
         <blockquote>
-            <p>A scheduled break occurs exactly at the time specified by a <a href="http://en.wikipedia.org/wiki/Crontab" target="_blank">Crontab</a> record.
-                For example, you can use the crontab record, shown on screenshots below, to make 15 min. breaks starting at 13:15 on each working day.
-                Leave the "Display Message" field blank, if you don't want any messages to be displayed after the end of a break.</p>
-
-            <p>Use "Add..." and "Remove" buttons to add and remove schedules, double click to edit the break.
-
-            <div>
-                <img src="images/scheduled_breaks.png">
-                <img src="images/crontab.png">
-            </div>
-
-            <table class="ArticleTable">
-
-            <br>
-
-   <thead>
-      <tr>
-         <td>Field</td>
-         <td>Allowed value</td>
-         <td>Allowed special characters</td>
-      </tr>
-   </thead>
-   <tbody>
-      <tr>
-         <td>Minute</td>
-         <td>0-59</td>
-         <td><code>*</code> <code>,</code> <code>-</code></td>
-      </tr>
-      <tr>
-         <td>Hour</td>
-         <td>0-23</td>
-         <td><code>*</code> <code>,</code> <code>-</code></td>
-      </tr>
-      <tr>
-         <td>Day</td>
-         <td>1-31</td>
-         <td><code>*</code> <code>,</code> <code>-</code> <code>L</code></td>
-      </tr>
-      <tr>
-         <td>Month</td>
-         <td>1-12</td>
-         <td><code>*</code> <code>,</code> <code>-</code></td>
-      </tr>
-      <tr>
-         <td>Days of week</td>
-         <td>1-7</td>
-         <td><code>*</code> <code>,</code> <code>-</code> <code>L</code></td>
-      </tr>
-   </tbody>
-</table>
-
-        </blockquote>
-
-        <h3>Restrictions</h3>
-        <blockquote>
-            <p>Enso Retreat allows to automatically skip breaks when the specified conditions are met.</p>
-
-            <img src="images/restriction_settings.png">
+            <p>Scheduled breaks happen at fixed times, in addition to the regular cycle. The week view at the top shows every scheduled
+                break; click one to select it. Press <b>Add break</b> to create a new break and edit it below the list:</p>
             <ul>
-                <li><b>Do not lock the system if no activity has been detected for</b> - do not lock the system if there have been no keyboard or mouse actions during the specified time before the start of a break.
-                Set this value to 0 to selectively disable the feature.</li>
-                <li><b>Do not lock the system if one of the listed programs is running</b> - Enso Retreat will not lock the system if at least one of the programs specified in this list is running.</li>
+                <li><b>Enabled</b> - uncheck to turn all scheduled breaks off without deleting them.</li>
+                <li><b>Repeat</b> - the days of the week, or the <i>Every day</i> and <i>Weekdays</i> shortcuts.</li>
+                <li><b>At</b> - the start time (hours and minutes).</li>
+                <li><b>For</b> - the break duration in minutes.</li>
+                <li><b>Message</b> - an optional message shown after the break ends.</li>
+            </ul>
+            <p>Breaks are stored as <a href="http://en.wikipedia.org/wiki/Crontab" target="_blank">crontab</a> records, shown in the last column.
+                Records that use more than days of the week and a time (for example, <code>*/30 9-17 * * *</code> or a day of the month),
+                written in the settings file by hand, are shown as <i>Custom</i>: they are kept as is, and only their duration and message can be changed here.</p>
+        </blockquote>
+        <h3>Break Screen</h3>
+        <blockquote>
+            <p>The preview at the top shows how the break will look with the current settings.
+                Press <b>Try it for 10 s</b> to see the real break screen for ten seconds without locking anything;
+                press Esc or click to close it earlier.</p>
+            <ul>
+                <li><b>Cover</b> - <i>Whole screen</i> covers all monitors; <i>A window</i> shows the image in a window that matches its size.
+                    Without an image, the break always covers the whole screen with stars.</li>
+                <li><b>Opacity</b> - how opaque the break screen is. It can also be adjusted with the +/- numpad keys during a break.</li>
+                <li><b>Show countdown</b> - show the remaining break time in the upper-left corner, in the selected color.</li>
+                <li><b>Picture</b> - <i>Random stars</i> draws a new star pattern every break; <i>Images from a folder</i> shows a random image
+                    from the selected folder (JPEG, PNG, GIF and BMP are supported). To always show the same image, keep a single image in the folder.</li>
+                <li><b>Fit</b> - <i>Fill screen</i> stretches images to the screen keeping their proportions; <i>Original size</i> only shrinks images that are too large.</li>
+                <li><b>Fill around image</b> - the color of the screen areas not covered by the image.</li>
+                <li><b>Allow transparent regions</b> - the color of the image's upper-left pixel becomes fully transparent, showing the desktop.</li>
+                <li><b>Sound</b> - a folder with sounds to play at the end of a break (WAV, MP3, WMA and FLAC).
+                    If empty, the standard system sound is played. <b>Play</b> plays a sample.</li>
             </ul>
         </blockquote>
-
+        <h3>Exceptions</h3>
+        <blockquote>
+            <p>Enso Retreat can skip breaks automatically. Both conditions can be turned on separately.</p>
+            <ul>
+                <li><b>Skip the break if there was no keyboard or mouse input for a while</b> - if you were away for the selected time
+                    right before the warning, you have already had your break, so Retreat skips it.</li>
+                <li><b>Don't lock the screen while any of these programs is running</b> - add programs with <b>Pick from running programs</b>
+                    or <b>Browse for .exe</b>. The list shows which of them are running now.</li>
+            </ul>
         </blockquote>
     </div>
     <div class="placeholder"></div>

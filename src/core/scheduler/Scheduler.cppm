@@ -45,6 +45,9 @@ void Scheduler::reset(Settings &settings) {
     if (settings.getBoolean(Settings::PERIOD_ENABLE, Settings::DEFAULT_PERIOD_ENABLE))
         addEvent(std::make_shared<PeriodicEvent>(settings));
 
+    if (!settings.getBoolean(Settings::SCHEDULE_ENABLE, Settings::DEFAULT_SCHEDULE_ENABLE))
+        return;
+
     auto cronStrings = settings.getSectionValues(Settings::CRON);
 
     for (auto& cronString : cronStrings) {
