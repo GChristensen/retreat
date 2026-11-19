@@ -31,5 +31,10 @@ python enso=enso_dir:
 installer: release
     makensis installer/setup.nsi
 
+# landing page -> repo-root index.html (minified); pass --plain or --out <dir> through to build.mjs
+landing *args:
+    if (-not (Test-Path landing/node_modules)) { npm --prefix landing install }
+    node landing/build.mjs {{args}}
+
 clean:
     cmake -E rm -rf build
