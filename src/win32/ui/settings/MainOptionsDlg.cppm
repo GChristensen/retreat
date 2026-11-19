@@ -25,6 +25,7 @@ import QuotesSettingsSection;
 import ScheduleSettingsSection;
 import ExceptionsSettingsSection;
 import BreakWindow;
+import AlertWindowAdapter;
 import TimerWindow;
 import QuoteWindow;
 
@@ -56,6 +57,7 @@ public:
 		MESSAGE_HANDLER(WM_TIMER, OnTimer)
 		MESSAGE_HANDLER(WM_SECTION_CHANGED, OnSectionChanged)
 		MESSAGE_HANDLER(WM_TRY_BREAK_SCREEN, OnTryBreakScreen)
+		MESSAGE_HANDLER(WM_TRY_ALERT, OnTryAlert)
 		COMMAND_ID_HANDLER_EX(IDOK, OnSettingsOK)
 		COMMAND_ID_HANDLER_EX(IDCANCEL, OnSettingsCancel)
 		COMMAND_ID_HANDLER_EX(IDC_APPLY, OnSettingsApply)
@@ -78,7 +80,7 @@ private:
 	CFont m_sidebarFont, m_sidebarBoldFont;
 	double m_sidebarScale = 1.0;  // sidebar spacing grows with the font
 
-	// "Try it" preview of the break screen
+	// "Try it" preview of the break screen or of the alert
 	std::vector<BreakWindowPtr> m_previewWindows;
 	int m_previewTicks = 0;
 
@@ -96,6 +98,7 @@ private:
 	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&);
 	LRESULT OnSectionChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&);
 	LRESULT OnTryBreakScreen(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&);
+	LRESULT OnTryAlert(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&);
 	void OnSettingGroupSelect(UINT uCode, int nCtrlID, HWND hwndCtrl);
 
 	void addSection(SectionPtr section, SectionIcon icon, int x, int y);
@@ -447,6 +450,22 @@ LRESULT CMainOptionsDlg::OnTryBreakScreen(UINT uMsg, WPARAM wParam, LPARAM lPara
 	bool fullscreen = preview.getBoolean(Settings::APPEARANCE_FULLSCREEN, Settings::DEFAULT_APPEARANCE_FULLSCREEN);
 	m_previewWindows = createBreakWindows(preview, PREVIEW_SECONDS, false, fullscreen);
 	showQuoteWindow(preview, false, centerTimerClearancePx(preview, fullscreen));
+	m_previewTicks = 0;
+
+	SetTimer(PREVIEW_TIMER_ID, PREVIEW_TICK_MS);
+	return 0;
+}
+
+LRESULT CMainOptionsDlg::OnTryAlert(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
+{
+	stopPreview();
+
+	// the values entered in the dialog, without saving them
+	Settings preview = m_settings;
+	for (auto &section : m_optionSections)
+		section->write(preview);
+
+	m_previewWindows = createAlertWindows(preview, PREVIEW_SECONDS);
 	m_previewTicks = 0;
 
 	SetTimer(PREVIEW_TIMER_ID, PREVIEW_TICK_MS);

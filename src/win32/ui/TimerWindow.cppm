@@ -51,6 +51,11 @@ public:
 	// a fixed position; corners keep the given margins from the edges.
 	void SetTimerAnchor(TimerPosition position, int marginX, int marginY);
 
+	// Places a window sized to its countdown (the alert) at a corner or the
+	// center of the work area. On the left the text keeps the margin and a star
+	// hangs into it; on the right the window edge keeps it.
+	void AnchorWindowOnWorkArea(TimerPosition position, int marginX, int marginY);
+
 	bool LoadBackground(const TCHAR* name, bool stretch, COLORREF canvas);
 	void DefaultBackground();
 
@@ -157,6 +162,27 @@ void CTimerWindow::SetTimerAnchor(TimerPosition position, int marginX, int margi
 	hasAnchor = true;
 	anchor = position;
 	anchorMargin.SetSize(marginX, marginY);
+}
+
+void CTimerWindow::AnchorWindowOnWorkArea(TimerPosition position, int marginX, int marginY)
+{
+	if (isFullScreen)
+		return;
+
+	CRect windowRect;
+	GetWindowRect(&windowRect);
+
+	int areaW = workAreaRect.Width(), areaH = workAreaRect.Height();
+	int w = windowRect.Width(), h = windowRect.Height();
+
+	TimerOrigin origin = timerOrigin(position, areaW, areaH, w, h, marginX, marginY);
+
+	// keep the text where the break timer starts: the star sits left of it
+	if (position == TimerPosition::TopLeft || position == TimerPosition::BottomLeft)
+		origin.x = (std::max)(0, origin.x + displayOffsetX);
+
+	SetWindowPos(NULL, workAreaRect.left + origin.x, workAreaRect.top + origin.y,
+		0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
 }
 
 void CTimerWindow::SetTimerPos(int x, int y)

@@ -27,6 +27,8 @@ import system;
 // Posted to the main settings dialog to show the break screen briefly with
 // the values currently entered in the dialog.
 export constexpr UINT WM_TRY_BREAK_SCREEN = WM_APP + 0x52;
+// Likewise for the countdown warning shown before a break.
+export constexpr UINT WM_TRY_ALERT = WM_APP + 0x53;
 
 static const std::vector<tstring> IMAGE_EXTENSIONS = { _T("jp*"), _T("bmp"), _T("gif"), _T("png") };
 static const std::vector<tstring> SOUND_EXTENSIONS = { _T("wav"), _T("mp3"), _T("wma"), _T("flac") };
@@ -66,6 +68,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_BROWSE_SOUND_FOLDER, OnBrowseSoundFolder)
 		COMMAND_ID_HANDLER(IDC_PLAY_SOUND, OnPlaySound)
 		COMMAND_ID_HANDLER(IDC_TRY_BREAK, OnTryBreak)
+		COMMAND_ID_HANDLER(IDC_TRY_ALERT, OnTryAlert)
 		COMMAND_HANDLER(IDC_BREAK_PREVIEW, BPN_TIMER_POSITION, OnPreviewClick)
 		COMMAND_HANDLER(IDC_IMAGE_FOLDER, EN_CHANGE, OnImageFolderChange)
 		COMMAND_HANDLER(IDC_SOUND_FOLDER, EN_CHANGE, OnSimpleChange)
@@ -92,6 +95,7 @@ private:
 	LRESULT OnBrowseSoundFolder(WORD, WORD, HWND, BOOL&);
 	LRESULT OnPlaySound(WORD, WORD, HWND, BOOL&);
 	LRESULT OnTryBreak(WORD, WORD, HWND, BOOL&);
+	LRESULT OnTryAlert(WORD, WORD, HWND, BOOL&);
 	LRESULT OnPreviewClick(WORD, WORD, HWND, BOOL&);
 	LRESULT OnImageFolderChange(WORD, WORD, HWND, BOOL&);
 	LRESULT OnSimpleChange(WORD, WORD, HWND, BOOL&);
@@ -404,6 +408,12 @@ LRESULT CBreakScreenSettingsSection::OnPlaySound(WORD, WORD, HWND, BOOL&)
 LRESULT CBreakScreenSettingsSection::OnTryBreak(WORD, WORD, HWND, BOOL&)
 {
 	::PostMessage(GetParent(), WM_TRY_BREAK_SCREEN, 0, 0);
+	return 0;
+}
+
+LRESULT CBreakScreenSettingsSection::OnTryAlert(WORD, WORD, HWND, BOOL&)
+{
+	::PostMessage(GetParent(), WM_TRY_ALERT, 0, 0);
 	return 0;
 }
 

@@ -28,8 +28,12 @@ python enso=enso_dir:
     {{vs}} cmake --build --preset win-python
 
 # NSIS installer (installer/enso-retreat-<version>.exe) from the release build
-installer: release
+installer: release help
     makensis installer/setup.nsi
+
+# help/index.html -> help/retreat.html, the single-file copy the installer ships
+help:
+    node help/build.mjs
 
 # landing page -> repo-root index.html (minified); pass --plain or --out <dir> through to build.mjs
 landing *args:

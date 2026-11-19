@@ -1,137 +1,485 @@
 <!DOCTYPE html>
-<html lang="{{ site.lang | default: "en-US" }}">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Enso Retreat Help</title>
-    <style>
-        body {
-            display: flex;
-            font-family: Helvetica, Arial, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enso Retreat Help</title>
+<link rel="icon" type="image/svg+xml" href="../landing/img/logo.svg">
+<!-- help/build.mjs replaces this link with the inlined fonts when it writes retreat.html -->
+<link rel="stylesheet" href="../landing/fonts/fonts.css">
+<style>
+:root {
+    --bg: #F7F4EC;
+    --bg-alt: #EFEAE0;
+    --surface: #FFFFFF;
+    --ink: #22262B;
+    --text: #3A3F45;
+    --muted: #5A5F66;
+    --line: #E3DED4;
+    --line-soft: #EFEAE0;
+    --line-strong: #CFC7B4;
+    --accent: #00733E;
+    --accent-hover: #005A30;
+    --logo: #00CD6D;
+    --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    --font-serif: 'Fraunces', Georgia, serif;
+    --font-mono: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+}
 
-        .placeholder {
-            flex-grow: 1;
-        }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+}
+a { color: var(--accent); }
+a:hover { color: var(--accent-hover); }
+p { margin: 0; }
+code {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 6px 10px;
+    white-space: nowrap;
+}
 
-        .content {
-            flex-grow: 0;
-            width: 800px;
-        }
+/* header */
+.hero { background: var(--bg-alt); border-bottom: 1px solid var(--line); }
+.hero__inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 72px 24px 56px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    align-items: center;
+    justify-content: space-between;
+}
+.hero__text { flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.hero h1 {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: clamp(40px, 6vw, 56px);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+}
+.hero__lede { font-size: 19px; color: var(--text); max-width: 620px; }
+.hero__logo { flex: 0 0 auto; width: 168px; height: 168px; }
 
-        td {
-            padding: 5px;
-            padding-right: 10px
-        }
+.eyebrow {
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--accent);
+}
 
-        thead td {
-            font-weight: bold;
-        }
-    </style>
+/* layout */
+.layout {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px 96px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 48px;
+    align-items: flex-start;
+}
+.toc {
+    flex: 1 1 200px;
+    max-width: 240px;
+    padding-top: 56px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.toc__title {
+    margin-bottom: 8px;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--muted);
+}
+.toc a { padding: 6px 0; font-size: 15px; text-decoration: none; color: var(--text); }
+.toc a:hover { color: var(--accent); }
+.toc a.sub { padding-left: 14px; }
+@media (min-width: 900px) {
+    .toc { position: sticky; top: 0; }
+}
+main { flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; }
+
+section { padding-top: 72px; display: flex; flex-direction: column; gap: 20px; scroll-margin-top: 16px; }
+section:first-child { padding-top: 56px; }
+section.page { padding-top: 56px; }
+section.intro { gap: 16px; }
+h2, h3 { margin: 0; font-family: var(--font-serif); font-weight: 500; }
+h2 { font-size: 34px; line-height: 1.15; }
+h3 { font-size: 28px; line-height: 1.2; }
+.lede { font-size: 17px; color: var(--text); max-width: 680px; }
+
+/* settings lists */
+.settings {
+    margin: 0;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+}
+.settings > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 24px;
+    padding: 16px 22px;
+}
+.settings > div + div { border-top: 1px solid var(--line-soft); }
+.settings dt { flex: 0 0 200px; margin: 0; font-weight: 600; font-size: 15px; }
+.settings dd { flex: 1 1 320px; margin: 0; font-size: 15px; color: var(--text); }
+.settings--narrow dt { flex-basis: 150px; }
+.settings--narrow dd { flex-basis: 260px; }
+.settings--compact dt { flex-basis: 120px; }
+.settings--compact dd { flex-basis: 240px; }
+
+.row { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+.row--stretch { align-items: stretch; }
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.card--tinted { background: var(--bg-alt); border-color: transparent; }
+.card__title { font-weight: 600; font-size: 15px; }
+.card p { font-size: 15px; color: var(--text); }
+.card--tinted code { background: var(--surface); }
+.card code { align-self: flex-start; }
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+.grid .card__title { font-size: 16px; }
+
+/* tray menu mock */
+.menu {
+    flex: 0 0 220px;
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    padding: 6px;
+    box-shadow: 0 8px 24px rgba(34, 38, 43, 0.10);
+    font-size: 14px;
+}
+.menu div { padding: 7px 12px; }
+.menu .hl { background: var(--bg-alt); border-radius: 4px; font-weight: 600; }
+.menu .sep { height: 1px; padding: 0; background: var(--line); margin: 5px 8px; }
+.row .settings--narrow { flex: 1 1 360px; }
+
+/* cycle diagram */
+.cycle {
+    margin: 0;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.cycle__bar { display: flex; height: 40px; border-radius: 8px; overflow: hidden; font-size: 13px; font-weight: 600; }
+.cycle__bar div { display: flex; align-items: center; justify-content: center; }
+.cycle__work { flex: 45 1 0; background: var(--line); justify-content: flex-start !important; padding: 0 12px; }
+.cycle__warn { flex: 5 1 0; background: #F2C46B; }
+.cycle__break { flex: 10 1 0; background: var(--accent); color: #FFFFFF; }
+.cycle__scale { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); }
+.cycle figcaption { font-size: 14px; color: var(--muted); }
+
+/* cron examples */
+.cron { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+.cron span { flex: 1 1 260px; font-size: 15px; color: var(--text); }
+
+/* quote card mock */
+.quote-demo {
+    flex: 1 1 280px;
+    min-height: 260px;
+    background: #14171B;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+}
+.quote-demo i { position: absolute; width: 3px; height: 3px; border-radius: 50%; }
+.quote-demo__card {
+    background: var(--ink);
+    border-radius: 10px;
+    padding: 22px 24px;
+    max-width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+    text-align: center;
+}
+.quote-demo__text { font-family: var(--font-serif); font-style: italic; font-size: 17px; line-height: 1.45; color: #F1EEE6; }
+.quote-demo__author { font-size: 13px; color: #B9BEC4; }
+.row--stretch .settings--compact { flex: 2 1 380px; }
+
+/* keys */
+.keys { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 8px 22px; }
+.keys > div { display: flex; flex-wrap: wrap; gap: 8px 24px; padding: 14px 0; align-items: center; }
+.keys > div + div { border-top: 1px solid var(--line-soft); }
+.keys__combo { flex: 0 0 200px; display: flex; gap: 6px; }
+.keys p { flex: 1 1 300px; font-size: 15px; color: var(--text); }
+kbd {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    min-width: 28px;
+    text-align: center;
+    padding: 4px 8px;
+    border: 1px solid var(--line-strong);
+    border-bottom-width: 2px;
+    border-radius: 6px;
+    background: var(--bg);
+}
+
+footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: space-between;
+    font-size: 14px;
+    color: var(--muted);
+}
+</style>
 </head>
 <body>
-    <div class="placeholder"></div>
-    <div class="content">
-        <h1 id="add-torrent">Enso Retreat Help</h1>
 
-        <h3>The Context Menu</h3>
-        <blockquote>
-            <img src="images/context_menu.png">
-
-            <ul>
-                <li><b>Disable</b> - temporarily disable Enso Retreat for the time specified in settings.</li>
-                <li><b>Delay</b> - delay a break for the specified time.</li>
-                <li><b>Skip</b> - skip a break (available once per day).</li>
-                <li><b>Take Break Now</b> - lock the system immediately.</li>
-                <li><b>Settings</b> - show the options dialog.</li>
-                <li><b>About</b> - show copyright and versioning information.</li>
-                <li><b>Exit</b> - close Enso Retreat.</li>
-            </ul>
-        </blockquote>
-
-        <p>The settings window has four pages, listed on its left side. Most changes are previewed right away;
-            press <b>Apply</b> or <b>OK</b> to save them.</p>
-        <h3>Periodic Breaks</h3>
-        <blockquote>
-            <p>A periodic break takes the last minutes of every cycle. For example, with a 60-minute cycle and a 10-minute break
-                you work for 50 minutes, then rest for 10. The bar at the top of the page shows one cycle: the work time,
-                the warning before the break, and the break itself. If postponing is allowed, a second row shows how a postponed
-                break moves into the next cycle (cycles keep their schedule, so the postponed time is taken from the next one).</p>
-            <ul>
-                <li><b>Enabled</b> - uncheck to turn periodic breaks off.</li>
-                <li><b>Cycle length</b> - the length of one cycle in minutes, including the break. The buttons next to it are common presets.</li>
-                <li><b>Break for</b> - the break duration in minutes, taken from the end of each cycle.</li>
-                <li><b>Warn me before</b> - show a warning the specified number of minutes before a break. This also applies to scheduled breaks.</li>
-                <li><b>Postpone up to N times, by M min each</b> - how many times, and for how long, a break may be postponed from the warning. This also applies to scheduled breaks.</li>
-                <li><b>Align cycles to the clock</b> - if checked, cycles start at the beginning of an hour.
-                    Otherwise, cycles are measured from the program start time.</li>
-                <li><b>Chime when a break ends</b> - play a system or custom sound after the break ends (see <i>Break Screen</i>).</li>
-                <li><b>Pause Retreat lasts</b> - the time used by <b>Disable</b> in the context menu.</li>
-            </ul>
-        </blockquote>
-        <h3>Scheduled Breaks</h3>
-        <blockquote>
-            <p>Scheduled breaks happen at fixed times, in addition to the regular cycle. The week view at the top shows every scheduled
-                break; click one to select it. Press <b>Add break</b> to create a new break and edit it below the list:</p>
-            <ul>
-                <li><b>Enabled</b> - uncheck to turn all scheduled breaks off without deleting them.</li>
-                <li><b>Repeat</b> - the days of the week, or the <i>Every day</i> and <i>Weekdays</i> shortcuts.</li>
-                <li><b>At</b> - the start time (hours and minutes).</li>
-                <li><b>For</b> - the break duration in minutes.</li>
-                <li><b>Message</b> - an optional message shown over the break screen during the break.</li>
-            </ul>
-            <p>Breaks are stored as <a href="http://en.wikipedia.org/wiki/Crontab" target="_blank">crontab</a> records, shown in the last column.
-                Records that use more than days of the week and a time (for example, <code>*/30 9-17 * * *</code> or a day of the month),
-                written in the settings file by hand, are shown as <i>Custom</i>: they are kept as is, and only their duration and message can be changed here.</p>
-        </blockquote>
-        <h3>Break Screen</h3>
-        <blockquote>
-            <p>The preview at the top shows how the break will look with the current settings.
-                Press <b>Try it for 10 s</b> to see the real break screen for ten seconds without locking anything;
-                press Esc or click to close it earlier.</p>
-            <ul>
-                <li><b>Cover</b> - <i>Whole screen</i> covers all monitors; <i>A window</i> shows the image in a window that matches its size.
-                    Without an image, the break always covers the whole screen with stars.</li>
-                <li><b>Opacity</b> - how opaque the break screen is. It can also be adjusted with the +/- numpad keys during a break.</li>
-                <li><b>Show countdown</b> - show the remaining break time in the selected color.</li>
-                <li><b>Position</b> - put the countdown in one of the four corners or in the center of the screen.
-                    You can also click the place in the preview.</li>
-                <li><b>Size</b> - the countdown size: S, M (the default), L or XL. In a window it is drawn a bit smaller.</li>
-                <li><b>Picture</b> - <i>Random stars</i> draws a new star pattern every break; <i>Images from a folder</i> shows a random image
-                    from the selected folder (JPEG, PNG, GIF and BMP are supported). To always show the same image, keep a single image in the folder.</li>
-                <li><b>Fit</b> - <i>Fill screen</i> stretches images to the screen keeping their proportions; <i>Original size</i> only shrinks images that are too large.</li>
-                <li><b>Fill around image</b> - the color of the screen areas not covered by the image.</li>
-                <li><b>Allow transparent regions</b> - the color of the image's upper-left pixel becomes fully transparent, showing the desktop.</li>
-                <li><b>Sound</b> - a folder with sounds to play at the end of a break (WAV, MP3, WMA and FLAC).
-                    If empty, the standard system sound is played. <b>Play</b> plays a sample.</li>
-            </ul>
-        </blockquote>
-        <h3>Quotes</h3>
-        <blockquote>
-            <p>When enabled, every break shows a picture with a quote below it, on a dark card in the middle of the screen.
-                The preview shows the first quote of the list; <b>Try it for 10 s</b> shows the real break screen.</p>
-            <ul>
-                <li><b>Picture</b> - <i>The Thinker</i> (a drawing of Rodin's sculpture), your own image chosen with <i>Image...</i>
-                    (click it again to choose another one), or <i>None</i> for the quote alone.</li>
-                <li><b>Show over</b> - <i>Break picture</i> keeps the stars or the images from the <i>Break Screen</i> section around the card;
-                    <i>Plain dark</i> replaces them with a dark backdrop, dimmed according to the break screen opacity.</li>
-                <li><b>Font</b>, <b>Italic</b>, <b>Color</b> and <b>Size</b> - the look of the quote. Any installed TrueType font can be used.</li>
-                <li><b>Quotes</b> - one quote per line, with the author after a dash surrounded by spaces, for example
-                    <i>Rest is not idleness. - John Lubbock</i>. Empty lines are ignored; without quotes only the picture is shown.</li>
-                <li><b>Random</b> or <b>In order</b> - how the next quote is chosen. In random order the same quote is not shown twice in a row.</li>
-            </ul>
-            <p>A scheduled break's message is shown below the card.</p>
-        </blockquote>
-        <h3>Exceptions</h3>
-        <blockquote>
-            <p>Enso Retreat can skip breaks automatically. Both conditions can be turned on separately.</p>
-            <ul>
-                <li><b>Skip the break if there was no keyboard or mouse input for a while</b> - if you were away for the selected time
-                    right before the warning, you have already had your break, so Retreat skips it.</li>
-                <li><b>Don't lock the screen while any of these programs is running</b> - add programs with <b>Pick from running programs</b>
-                    or <b>Browse for .exe</b>. The list shows which of them are running now.</li>
-            </ul>
-        </blockquote>
+<header class="hero">
+    <div class="hero__inner">
+        <div class="hero__text">
+            <p class="eyebrow">Enso Retreat 2.0 · Help</p>
+            <h1>Using Enso Retreat</h1>
+            <p class="hero__lede">Retreat sits in the notification area and locks the screen for a few minutes at a time,
+                either at the end of each work cycle or at times you set. This page covers the tray menu and every page
+                of the settings window.</p>
+        </div>
+        <svg class="hero__logo" viewBox="0 0 1864.33 1864.33" role="img" aria-label="Enso Retreat logo">
+            <polygon fill="#00CD6D" points="182.56,182.56 825.08,511.58 1334.7,0 1220.44,712.79 1864.33,1039.45 1150.95,1150.95 1039.45,1864.33 712.79,1220.44 0,1334.7 511.58,825.08"/>
+        </svg>
     </div>
-    <div class="placeholder"></div>
+</header>
+
+<div class="layout">
+
+<nav class="toc" aria-label="On this page">
+    <p class="toc__title">On this page</p>
+    <a href="#menu">The tray menu</a>
+    <a href="#settings">The settings window</a>
+    <a class="sub" href="#periodic">Periodic breaks</a>
+    <a class="sub" href="#scheduled">Scheduled breaks</a>
+    <a class="sub" href="#screen">Break screen</a>
+    <a class="sub" href="#quotes">Quotes</a>
+    <a class="sub" href="#exceptions">Exceptions</a>
+    <a href="#keys">During a break</a>
+</nav>
+
+<main>
+
+<section id="menu">
+    <h2>The tray menu</h2>
+    <p class="lede">Right-click the Retreat icon in the notification area to open it.</p>
+    <div class="row">
+        <div class="menu" role="img" aria-label="The Retreat tray menu">
+            <div>Disable</div>
+            <div>Delay</div>
+            <div>Skip</div>
+            <div class="hl">Take break now</div>
+            <div class="sep"></div>
+            <div>Settings</div>
+            <div>About</div>
+            <div class="sep"></div>
+            <div>Exit</div>
+        </div>
+        <dl class="settings settings--narrow">
+            <div><dt>Disable</dt><dd>Pauses Retreat for the time set in <i>Pause Retreat lasts</i> on the Periodic breaks page.</dd></div>
+            <div><dt>Delay</dt><dd>Pushes the next break back by the set time.</dd></div>
+            <div><dt>Skip</dt><dd>Skips the next break. You can do this once a day.</dd></div>
+            <div><dt>Take break now</dt><dd>Starts a break immediately.</dd></div>
+            <div><dt>Settings</dt><dd>Opens the settings window.</dd></div>
+            <div><dt>About</dt><dd>Version and copyright.</dd></div>
+            <div><dt>Exit</dt><dd>Closes Retreat.</dd></div>
+        </dl>
+    </div>
+</section>
+
+<section id="settings" class="intro">
+    <h2>The settings window</h2>
+    <p class="lede">The five pages are listed down the left side. Previews update as you change things, but nothing is
+        saved until you press <b>Apply</b> or <b>OK</b>. The <b>Help</b> link in the corner opens this page.</p>
+</section>
+
+<section id="periodic" class="page">
+    <p class="eyebrow">Page 1</p>
+    <h3>Periodic breaks</h3>
+    <p class="lede">A periodic break takes the last minutes of every cycle. With a 60-minute cycle and a 10-minute
+        break, you work for 50 minutes and rest for 10. The bar at the top of the page draws one cycle like this:</p>
+    <figure class="cycle">
+        <div class="cycle__bar" role="img" aria-label="One 60-minute cycle: 45 minutes of work, a 5-minute warning, then a 10-minute break">
+            <div class="cycle__work">Work</div>
+            <div class="cycle__warn">Warn</div>
+            <div class="cycle__break">Break</div>
+        </div>
+        <div class="cycle__scale"><span>0 min</span><span>45</span><span>50</span><span>60</span></div>
+        <figcaption>When postponing is allowed, a second row shows where a postponed break lands. Cycles keep their
+            schedule, so the postponed time comes out of the next cycle.</figcaption>
+    </figure>
+    <dl class="settings">
+        <div><dt>Enabled</dt><dd>Turns periodic breaks on or off.</dd></div>
+        <div><dt>Cycle length</dt><dd>One cycle in minutes, break included. The buttons next to the field are common lengths.</dd></div>
+        <div><dt>Break for</dt><dd>How long the break lasts, taken from the end of each cycle.</dd></div>
+        <div><dt>Warn me before</dt><dd>Shows a warning this many minutes before a break. It applies to scheduled breaks too.</dd></div>
+        <div><dt>Postpone up to N times, by M min each</dt><dd>How often, and by how much, you can postpone a break from the warning. Scheduled breaks follow the same limit.</dd></div>
+        <div><dt>Align cycles to the clock</dt><dd>Starts cycles on the hour. When it's off, cycles count from the moment Retreat started.</dd></div>
+        <div><dt>Chime when a break ends</dt><dd>Plays a sound when the break is over. Choose your own sounds on the Break screen page.</dd></div>
+        <div><dt>Pause Retreat lasts</dt><dd>How many hours <b>Disable</b> in the tray menu pauses Retreat for.</dd></div>
+    </dl>
+</section>
+
+<section id="scheduled">
+    <p class="eyebrow">Page 2</p>
+    <h3>Scheduled breaks</h3>
+    <p class="lede">Scheduled breaks happen at fixed times of day, on top of the regular cycle. The week view at the
+        top shows all of them; click one to select it. <b>Add break</b> creates a new one, which you then edit under
+        the list.</p>
+    <dl class="settings">
+        <div><dt>Enabled</dt><dd>Turns all scheduled breaks off without deleting them.</dd></div>
+        <div><dt>Repeat</dt><dd>The days of the week. <i>Every day</i> and <i>Weekdays</i> fill them in for you.</dd></div>
+        <div><dt>At</dt><dd>The start time, in hours and minutes.</dd></div>
+        <div><dt>For</dt><dd>How long the break lasts, in minutes.</dd></div>
+        <div><dt>Message</dt><dd>Optional text shown for the whole break, on top of everything else on the break screen, the quote card included.</dd></div>
+    </dl>
+    <div class="card card--tinted">
+        <p class="card__title">Custom schedules</p>
+        <p>Each break is stored as a <a href="https://en.wikipedia.org/wiki/Cron" target="_blank" rel="noopener">crontab</a>
+            record, shown in the last column of the list. The settings window only sets days of the week and a time, but
+            you can write other records into the settings file by hand. The five fields are minute, hour, day of the
+            month, month and day of the week.</p>
+        <div class="cron"><code>*/30 9-17 * * *</code><span>A break every 30 minutes from 9:00 to 17:30, every day.</span></div>
+        <div class="cron"><code>0 12 1,15 * *</code><span>A break at 12:00 on the 1st and 15th of every month, whatever the day of the week.</span></div>
+        <p>The list shows these as <i>Custom</i>. Retreat keeps them as written, and only their duration and message can
+            be edited here.</p>
+    </div>
+</section>
+
+<section id="screen">
+    <p class="eyebrow">Page 3</p>
+    <h3>Break screen</h3>
+    <p class="lede">The preview at the top shows the break with your current settings. <b>Try it for 10 s</b> opens the
+        real break screen for ten seconds without locking anything. Press Esc or click to close it sooner.</p>
+    <dl class="settings">
+        <div><dt>Cover</dt><dd><i>Whole screen</i> covers every monitor. <i>A window</i> shows the image in a window of the same size. Without an image, the break always fills the screen with stars.</dd></div>
+        <div><dt>Opacity</dt><dd>How see-through the break screen is. You can also change it during a break with the numpad + and − keys.</dd></div>
+        <div><dt>Show countdown</dt><dd>Shows the time left in the color you pick.</dd></div>
+        <div><dt>Position</dt><dd>One of the four corners or the center. Clicking a spot in the preview works too.</dd></div>
+        <div><dt>Size</dt><dd>S, M, L or XL. M is the default. In a window the countdown is drawn a little smaller.</dd></div>
+        <div><dt>Picture</dt><dd><i>Random stars</i> draws a new pattern for every break. <i>Images from a folder</i> picks a random JPEG, PNG, GIF or BMP from the folder you choose. For the same image every time, keep only one in the folder.</dd></div>
+        <div><dt>Fit</dt><dd><i>Fill screen</i> scales the image up to the screen and keeps its proportions. <i>Original size</i> only shrinks images that don't fit.</dd></div>
+        <div><dt>Fill around image</dt><dd>The color of any part of the screen the image doesn't cover.</dd></div>
+        <div><dt>Allow transparent regions</dt><dd>Makes the color of the image's top-left pixel fully transparent, so the desktop shows through wherever that color appears.</dd></div>
+        <div><dt>Sound</dt><dd>A folder of WAV, MP3, WMA or FLAC files to play when a break ends. Leave it empty for the standard system sound. <b>Play</b> plays a sample.</dd></div>
+    </dl>
+</section>
+
+<section id="quotes">
+    <p class="eyebrow">Page 4</p>
+    <h3>Quotes</h3>
+    <p class="lede">With quotes turned on, every break shows a picture and a quote on a dark card in the middle of the
+        screen. The preview uses the first quote in the list.</p>
+    <div class="row row--stretch">
+        <div class="quote-demo" role="img" aria-label="Example of a quote card on the break screen">
+            <i style="top: 34px; left: 40px; background: #BDA1FF"></i>
+            <i style="top: 70px; right: 52px; background: #FAFF5B"></i>
+            <i style="bottom: 40px; left: 76px; background: #1FB0FF"></i>
+            <i style="bottom: 58px; right: 30px; background: #FFADCF"></i>
+            <div class="quote-demo__card">
+                <svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="#9AA0A6" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="30" cy="14" r="7"/><path d="M24 22c-6 4-8 12-6 18l-4 8h22l-2-10c3-2 4-6 2-9"/><path d="M30 26c-2 3-1 6 2 7"/></svg>
+                <p class="quote-demo__text">Rest is not idleness.</p>
+                <p class="quote-demo__author">John Lubbock</p>
+            </div>
+        </div>
+        <dl class="settings settings--compact">
+            <div><dt>Picture</dt><dd><i>The Thinker</i>, a drawing of Rodin's sculpture; your own image, chosen with <i>Image...</i> (click it again to pick another); or <i>None</i> for the quote alone.</dd></div>
+            <div><dt>Show over</dt><dd><i>Break picture</i> keeps the stars or images from the Break screen page around the card. <i>Plain dark</i> puts a dark backdrop behind it instead, dimmed to match the break screen opacity.</dd></div>
+            <div><dt>Font, Italic, Color, Size</dt><dd>How the quote looks. Any installed TrueType font works.</dd></div>
+            <div><dt>Random, In order</dt><dd>How the next quote is picked. In random order, the same quote never comes up twice in a row.</dd></div>
+        </dl>
+    </div>
+    <div class="card">
+        <p class="card__title">Writing your own quotes</p>
+        <p>Retreat comes with fifty quotes. Edit the list freely: one quote per line, with the author after a dash that
+            has a space on each side. Any of these dashes works: an em dash (—), an en dash (–), a double hyphen (--)
+            or a plain hyphen (-). If a line has several, the author starts after the last one. Empty lines are
+            skipped. If the list is empty, the card shows only the picture.</p>
+        <code>Rest is not idleness. - John Lubbock</code>
+    </div>
+</section>
+
+<section id="exceptions">
+    <p class="eyebrow">Page 5</p>
+    <h3>Exceptions</h3>
+    <p class="lede">Retreat can skip a break on its own in two situations. Each one is turned on separately.</p>
+    <div class="grid">
+        <div class="card">
+            <p class="card__title">You were already away</p>
+            <p>If there was no keyboard or mouse input for the time set with <i>Away for at least</i>, right before the
+                warning, you've had your break and Retreat skips it.</p>
+        </div>
+        <div class="card">
+            <p class="card__title">A listed program is running</p>
+            <p>Retreat won't lock the screen while any program on the list is open. Add programs with
+                <b>Pick from running programs</b> or <b>Browse for .exe</b>. The list marks the ones running right now.</p>
+        </div>
+    </div>
+</section>
+
+<section id="keys">
+    <h2>During a break</h2>
+    <div class="keys">
+        <div>
+            <div class="keys__combo"><kbd>Num +</kbd><kbd>Num −</kbd></div>
+            <p>Make the break screen more or less opaque, so you can keep an eye on a download or a build.</p>
+        </div>
+        <div>
+            <div class="keys__combo"><kbd>Esc</kbd></div>
+            <p>Closes the ten-second preview started with <b>Try it for 10 s</b>. Clicking anywhere does the same.</p>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <span>Enso Retreat 2.0 · © 2007–2026 g/christensen</span>
+    <a href="https://gchristensen.github.io/retreat" target="_blank" rel="noopener">gchristensen.github.io/retreat</a>
+</footer>
+
+</main>
+</div>
+
 </body>
 </html>

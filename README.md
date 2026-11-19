@@ -36,7 +36,9 @@ The portable core (scheduler, state machine, settings) also builds on Linux and 
 cmake --preset unix-core && cmake --build --preset unix-core && ctest --preset unix-core
 ```
 
-Installer: build `win-msvc-release`, then run `makensis installer/setup.nsi`.
+Installer: build `win-msvc-release`, run `node help/build.mjs` (or `just help`), then `makensis installer/setup.nsi`.
+The help page is edited in `help/index.html`; the build writes `help/retreat.html`, the single-file copy with the
+fonts inlined that the installer ships and the settings window opens.
 
 ## Source layout
 

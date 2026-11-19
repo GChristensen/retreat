@@ -6,13 +6,16 @@ Unicode True
 !define APPNAMEANDVERSION "Enso Retreat ${VERSION}"
 
 Name "${APPNAMEANDVERSION}"
-InstallDir "$PROGRAMFILES\Enso Retreat"
-InstallDirRegKey HKLM "Software\${APPNAME}" ""
+; retreat.exe and sentinel.exe are x64: install into the 64-bit Program Files and use the 64-bit
+; registry view (see .onInit). InstallDirRegKey is not used because it is read before .onInit
+; switches the view, so it would look in WOW6432Node.
+InstallDir "$PROGRAMFILES64\Enso Retreat"
 OutFile "enso-retreat-${VERSION}.exe"
 
 SetCompressor LZMA
 
 !include "MUI.nsh"
+!include "x64.nsh"
 
 !define MUI_ICON "..\src\win32\res\main.ico"
 !define MUI_UNICON "..\src\win32\res\main.ico"
@@ -105,6 +108,24 @@ SectionEnd
 Function .onInit
 
 	#!insertmacro MUI_LANGDLL_DISPLAY
+
+	${IfNot} ${RunningX64}
+		MessageBox MB_OK|MB_ICONSTOP "${APPNAME} requires 64-bit Windows."
+		Abort
+	${EndIf}
+
+	SetRegView 64
+
+	; reinstall into the folder of a previous 64-bit installation
+	ReadRegStr $0 HKLM "Software\${APPNAME}" ""
+	StrCmp $0 "" +2
+		StrCpy $INSTDIR $0
+
+FunctionEnd
+
+Function un.onInit
+
+	SetRegView 64
 
 FunctionEnd
 

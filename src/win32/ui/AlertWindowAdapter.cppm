@@ -2,6 +2,7 @@ module;
 
 #include "wtl.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 #include <map>
@@ -12,11 +13,16 @@ export module AlertWindowAdapter;
 
 
 import Settings;
+import SettingsModel;
 import TimerWindow;
 import StateMachine;
 import StateWindowAdapter;
 
 using WindowPtr = std::shared_ptr<CTimerWindow>;
+
+// Creates and shows the pre-break warning (one countdown per monitor). Used by
+// the alert state and by the settings dialog's "Try alert" preview.
+export std::vector<WindowPtr> createAlertWindows(Settings& settings, int durationSec);
 
 export class AlertWindowAdapter: public StateWindowAdapter {
 public:
@@ -25,23 +31,86 @@ public:
 	virtual ~AlertWindowAdapter();
 
 private:
-	int alertDurationSec;
 	Settings &settings;
 
 	std::vector<WindowPtr> windows;
 
 	bool isThereForbiddenProcesses();
-
-	auto createTimerWindow(CRect* rect);
-	static BOOL CALLBACK monitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, 
-		LPRECT lprcMonitor, LPARAM dwData);
 };
 
 module :private;
 
 import system;
 
-AlertWindowAdapter::AlertWindowAdapter(StateMachine &stateMachine): 
+namespace {
+
+struct AlertContext {
+	Settings& settings;
+	int durationSec;
+	std::vector<WindowPtr> windows;
+};
+
+WindowPtr createAlertWindow(AlertContext& ctx, CRect* pRect) {
+	Settings& settings = ctx.settings;
+
+	// the warning must never take focus away from what the user is doing
+	auto pTimerWnd = std::make_shared<CTimerWindow>((HWND)0, nullptr, pRect, WS_EX_NOACTIVATE);
+
+	COLORREF timerTextColor = settings.getInt(Settings::APPEARANCE_TIMER_TEXT_COLOR,
+		Settings::DEFAULT_APPEARANCE_TIMER_TEXT_COLOR);
+
+	// the same size as the full-screen break timer; the star scales with the text
+	int timerSize = std::clamp(settings.getInt(Settings::APPEARANCE_TIMER_SIZE,
+		Settings::DEFAULT_APPEARANCE_TIMER_SIZE), MIN_TIMER_SIZE, MAX_TIMER_SIZE);
+
+	pTimerWnd->SetTimerProperties(
+		DEFAULT_TIMER_FONT_FACE,
+		timerSize,
+		DEFAULT_CHARSET,
+		timerTextColor,
+		false,
+		true,
+		true
+	);
+
+	pTimerWnd->SetTimer(ctx.durationSec - 1, true);
+	// where the full-screen break timer will appear
+	pTimerWnd->AnchorWindowOnWorkArea(
+		toTimerPosition(settings.getInt(Settings::APPEARANCE_TIMER_POSITION,
+			Settings::DEFAULT_APPEARANCE_TIMER_POSITION)),
+		DEFAULT_TIMER_X, DEFAULT_TIMER_Y);
+	pTimerWnd->SetAlpha(settings.getInt(Settings::APPEARANCE_OPACITY_LEVEL,
+		Settings::DEFAULT_APPEARANCE_OPACITY_LEVEL));
+
+	pTimerWnd->ApplyLayeredWindowAttributes();
+	pTimerWnd->ShowWindow(SW_SHOWNOACTIVATE);
+
+	return pTimerWnd;
+}
+
+BOOL CALLBACK monitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData) {
+	AlertContext* ctx = (AlertContext*)dwData;
+
+	// the work area keeps the bottom positions clear of the taskbar
+	MONITORINFO info = { sizeof(info) };
+	CRect rect(GetMonitorInfo(hMonitor, &info) ? info.rcWork : *lprcMonitor);
+
+	ctx->windows.push_back(createAlertWindow(*ctx, &rect));
+
+	return TRUE;
+}
+
+}
+
+std::vector<WindowPtr> createAlertWindows(Settings& settings, int durationSec) {
+	AlertContext ctx{ settings, durationSec, {} };
+
+	EnumDisplayMonitors(NULL, NULL, monitorEnumProc, (LPARAM)&ctx);
+
+	return std::move(ctx.windows);
+}
+
+AlertWindowAdapter::AlertWindowAdapter(StateMachine &stateMachine):
 	settings(stateMachine.getSettings()) {
 
 	bool checkForProcesses = settings.getBoolean(Settings::MONITORING_PROCESSES,
@@ -50,10 +119,10 @@ AlertWindowAdapter::AlertWindowAdapter(StateMachine &stateMachine):
 	if (checkForProcesses && isThereForbiddenProcesses())
 		throw StateForbiddenException();
 
-	alertDurationSec = settings.getMinutesInSec(Settings::ALERT_DURATION, 
+	int alertDurationSec = settings.getMinutesInSec(Settings::ALERT_DURATION,
 		Settings::DEFAULT_ALERT_DURATION);
 
-    EnumDisplayMonitors(NULL, NULL, monitorEnumProc, (LPARAM)this);
+	windows = createAlertWindows(settings, alertDurationSec);
 }
 
 AlertWindowAdapter::~AlertWindowAdapter() {
@@ -70,44 +139,4 @@ bool AlertWindowAdapter::isThereForbiddenProcesses() {
 void AlertWindowAdapter::onTimer() {
 	for (const WindowPtr &window : windows)
 		window->PostMessage(CTimerWindow::WM_TIMER_WND_NOTIFY);
-}
-
-auto AlertWindowAdapter::createTimerWindow(CRect* pRect) {
-	// the warning must never take focus away from what the user is doing
-	auto pTimerWnd = std::make_shared<CTimerWindow>((HWND)0, nullptr, pRect, WS_EX_NOACTIVATE);
-
-	COLORREF timerTextColor = settings.getInt(Settings::APPEARANCE_TIMER_TEXT_COLOR, 
-		Settings::DEFAULT_APPEARANCE_TIMER_TEXT_COLOR);
-
-	pTimerWnd->SetTimerProperties(
-		DEFAULT_TIMER_FONT_FACE,
-		DEFAULT_TIMER_FONT_SIZE,
-		DEFAULT_CHARSET,
-		timerTextColor,
-		false,
-		true,
-		true
-	);
-
-	pTimerWnd->SetTimer(alertDurationSec - 1, true);
-	pTimerWnd->PlaceWindowOnWorkArea(DEFAULT_TIMER_X, DEFAULT_TIMER_Y);
-	pTimerWnd->SetAlpha(settings.getInt(Settings::APPEARANCE_OPACITY_LEVEL, 
-		Settings::DEFAULT_APPEARANCE_OPACITY_LEVEL));
-
-	pTimerWnd->ApplyLayeredWindowAttributes();
-	pTimerWnd->ShowWindow(SW_SHOWNOACTIVATE);
-
-	return pTimerWnd;
-}
-
-BOOL CALLBACK AlertWindowAdapter::monitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, 
-		LPRECT lprcMonitor, LPARAM dwData) {
-
-	AlertWindowAdapter* adapter = (AlertWindowAdapter *)dwData;
-
-	CRect rect(*lprcMonitor);
-
-	adapter->windows.push_back(adapter->createTimerWindow(&rect));
-
-	return TRUE;
 }

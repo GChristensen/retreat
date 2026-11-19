@@ -177,6 +177,7 @@
 #define IDC_QUOTE_LABEL_SIZE            2199
 #define IDC_QUOTE_LABEL_LIST            2200
 #define IDC_QUOTE_GROUP                 2201
+#define IDC_TRY_ALERT                   2202
 #define IDR_SHELL_MENU                  20300
 #define ID_MENU_DISABLE                 32771
 #define ID_MENU_SKIP                    32772
@@ -195,7 +196,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        304
 #define _APS_NEXT_COMMAND_VALUE         32800
-#define _APS_NEXT_CONTROL_VALUE         2202
+#define _APS_NEXT_CONTROL_VALUE         2203
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

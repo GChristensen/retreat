@@ -162,7 +162,8 @@ STYLE DS_SETFONT | DS_CONTROL | WS_CHILD
 FONT 9, "Segoe UI", 400, 0, 0x1
 BEGIN
     LTEXT           "Break screen",IDC_SECTION_TITLE,8,4,150,14
-    LTEXT           "What covers your screen during a break.",IDC_SECTION_DESC,8,19,200,8
+    LTEXT           "What covers your screen during a break.",IDC_SECTION_DESC,8,19,156,8
+    PUSHBUTTON      "Try alert",IDC_TRY_ALERT,170,6,52,14
     PUSHBUTTON      "Try it for 10 s",IDC_TRY_BREAK,226,6,70,14
     CONTROL         "",IDC_BREAK_PREVIEW,"Static",SS_NOTIFY,8,34,144,90
     LTEXT           "",IDC_PREVIEW_CAPTION,8,126,144,8
