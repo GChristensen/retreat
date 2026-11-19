@@ -73,7 +73,8 @@ void AlertWindowAdapter::onTimer() {
 }
 
 auto AlertWindowAdapter::createTimerWindow(CRect* pRect) {
-	auto pTimerWnd = std::make_shared<CTimerWindow>((HWND)0, nullptr, pRect);
+	// the warning must never take focus away from what the user is doing
+	auto pTimerWnd = std::make_shared<CTimerWindow>((HWND)0, nullptr, pRect, WS_EX_NOACTIVATE);
 
 	COLORREF timerTextColor = settings.getInt(Settings::APPEARANCE_TIMER_TEXT_COLOR, 
 		Settings::DEFAULT_APPEARANCE_TIMER_TEXT_COLOR);

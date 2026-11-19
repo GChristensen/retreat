@@ -28,7 +28,7 @@ public:
 		WM_TIMER_WND_NOTIFY = WM_USER + 2
 	};
 
-	CTimerWindow(HWND parent, CRect* pRect, CRect* pWorkArea);
+	CTimerWindow(HWND parent, CRect* pRect, CRect* pWorkArea, DWORD extraExStyle = 0);
 
 	virtual ~CTimerWindow();
 
@@ -100,8 +100,8 @@ protected:
 
 module :private;
 
-CTimerWindow::CTimerWindow(HWND parent, CRect* pRect, CRect* pWorkArea) :
-	CTranslucentWindow(parent, pRect, pWorkArea),
+CTimerWindow::CTimerWindow(HWND parent, CRect* pRect, CRect* pWorkArea, DWORD extraExStyle) :
+	CTranslucentWindow(parent, pRect, pWorkArea, extraExStyle),
 	pTexBuffer(std::make_unique<CTextBuffer>(CClientDC(m_hWnd), 1)),
 	isBackgroundLoaded(false),
 	hParentWnd(parent),
@@ -277,7 +277,7 @@ void CTimerWindow::setTimer(int durationSec, bool showStar)
 			displayOffsetX = -offset;
 		}
 
-		SetWindowPos(NULL, 0, 0, textSize.cx, textSize.cy, SWP_NOMOVE | SWP_NOZORDER);
+		SetWindowPos(NULL, 0, 0, textSize.cx, textSize.cy, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 
 		bitmapBuffer->FillBackground(textSize.cx, textSize.cy, TRANSPARENT_BACKGORUND_COLOR);
 
@@ -346,7 +346,7 @@ void CTimerWindow::adjustWindowSize(text_buff_ptr_t buffer, unsigned item)
 
 	buffer->GetTextExtent(item, textSize);
 
-	SetWindowPos(NULL, 0, 0, textSize.cx, textSize.cy, SWP_NOMOVE | SWP_NOZORDER);
+	SetWindowPos(NULL, 0, 0, textSize.cx, textSize.cy, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
 CString CTimerWindow::parseSeconds(int seconds)

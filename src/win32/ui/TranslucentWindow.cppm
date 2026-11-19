@@ -16,7 +16,9 @@ export class CTranslucentWindow: public CWindowImpl<CTranslucentWindow, CWindow,
 {
 public:
 
-	CTranslucentWindow(HWND parent, CRect *pRect, CRect *pWorkArea);
+	// extraExStyle is added to the window traits, e.g. WS_EX_NOACTIVATE for
+	// windows that must never take focus from the user
+	CTranslucentWindow(HWND parent, CRect *pRect, CRect *pWorkArea, DWORD extraExStyle = 0);
 	//~CTranslucentWindow();
 
 	// option determines if there should be totally transparent regions 
@@ -45,6 +47,7 @@ public:
 	LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnEraseBkgnd(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	DECLARE_WND_CLASS_EX(_T("EnsoRetreatTimerWindow"), 0, NULL)
 
@@ -54,6 +57,7 @@ public:
 		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
+		MESSAGE_HANDLER(WM_MOUSEACTIVATE, OnMouseActivate)
 	END_MSG_MAP()
 
 protected:
@@ -90,13 +94,15 @@ protected:
 
 module :private;
 
-CTranslucentWindow::CTranslucentWindow(HWND parent, CRect *pRect, CRect *pWorkArea) :
+CTranslucentWindow::CTranslucentWindow(HWND parent, CRect *pRect, CRect *pWorkArea, DWORD extraExStyle) :
 	bitmapBuffer(std::make_unique<CBitmapBuffer>(CClientDC(m_hWnd))),
 	isUsingTransparency(false),
 	isFullScreen(pWorkArea == nullptr),
 	windowAlpha(255)
 {
-	Create(parent, pRect, NULL, isFullScreen ? WS_MAXIMIZE : 0);
+	// a non-zero ex-style replaces the traits instead of being combined with them
+	Create(parent, pRect, NULL, isFullScreen ? WS_MAXIMIZE : 0,
+		WindowTraits::GetWndExStyle(0) | extraExStyle);
 	ModifyStyle(WS_CAPTION, 0, SWP_FRAMECHANGED);
 
 	if (pWorkArea)
@@ -191,7 +197,7 @@ void CTranslucentWindow::PlaceWindowOnWorkArea(int x, int y)
 		NULL,
 		workAreaRect.left + x + displayOffsetX,
 		workAreaRect.top + y,
-		0, 0, SWP_NOZORDER | SWP_NOSIZE
+		0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE
 	);
 }
 
@@ -209,7 +215,7 @@ void CTranslucentWindow::CenterWindowOnWorkArea()
 		NULL,
 		workAreaRect.left + (workAreaRect.Width() - clientRect.Width()) / 2,
 		workAreaRect.top + (workAreaRect.Height() - clientRect.Height()) / 2,
-		0, 0, SWP_NOZORDER | SWP_NOSIZE
+		0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE
 	);
 }
 
@@ -233,7 +239,7 @@ void CTranslucentWindow::RandomlyPlaceWindowOnWorkArea()
 		workAreaRect.bottom - clientRect.Height()
 	);
 
-	SetWindowPos(NULL, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+	SetWindowPos(NULL, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
 }
 
 LRESULT CTranslucentWindow::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
@@ -265,6 +271,15 @@ LRESULT CTranslucentWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
 LRESULT CTranslucentWindow::OnEraseBkgnd(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
 {
+	return 0;
+}
+
+LRESULT CTranslucentWindow::OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if (GetExStyle() & WS_EX_NOACTIVATE)
+		return MA_NOACTIVATE;
+
+	bHandled = FALSE;
 	return 0;
 }
 
@@ -343,7 +358,7 @@ void CTranslucentWindow::AdjustToVPort(CBitmapBuffer *pBitmapBuffer)
 	AdjustImageToVPort(pBitmapBuffer, targetSize, false);
 
 	SetWindowPos(NULL, 0, 0, pBitmapBuffer->GetWitdth(),
-		pBitmapBuffer->GetHeight(), SWP_NOZORDER | SWP_NOMOVE);
+		pBitmapBuffer->GetHeight(), SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
 
 	pBitmapBuffer->SetPlotRect(
 		CRect(
