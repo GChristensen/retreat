@@ -50,8 +50,6 @@ private:
 
 module :private;
 
-import system;
-
 int StateLocked::lockDurationOverride = 0;
 tstring StateLocked::messageText;
 
@@ -78,12 +76,8 @@ void StateLocked::onTimer() {
 
     lockWindow->onTimer();
 
-    if (!counter) {
-        if (!messageText.empty())
-            displayMessage(messageText);
-
+    if (!counter)
         stateMachine.setIdle();
-    }
 }
 
 void StateLocked::setLockDurationOverride(int duration) {

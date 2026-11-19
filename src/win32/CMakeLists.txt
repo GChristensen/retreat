@@ -14,6 +14,7 @@ set(RETREAT_WIN32_MODULES
     ui/InputLock.cppm
     ui/InputMonitor.cppm
     ui/LockWindowAdapter.cppm
+    ui/MessageWindow.cppm
     ui/TimerWindow.cppm
     ui/TranslucentWindow.cppm
     ui/TrayIconImpl.cppm

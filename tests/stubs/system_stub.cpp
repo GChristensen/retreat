@@ -19,6 +19,5 @@ void searchForFiles(const tstring&, const tstring&, std::vector<tstring>&) {}
 tstring getRandomFile(const tstring&, const std::vector<tstring>&) { return tstring(); }
 void playAudioFile(tstring&) {}
 void playSystemSound() {}
-void displayMessage(tstring&) {}
 bool isProcessRunning(std::vector<tstring>&) { return false; }
 std::vector<tstring> getRunningProcessPaths() { return {}; }

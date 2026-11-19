@@ -14,7 +14,7 @@ export module Event;
 export struct MissedAlert {
     time_t alertStart = 0;      // when the alert window began
     int breakDurationSec = 0;   // length of the break that follows the alert, 0 = default
-    tstring messageText;        // shown when the break ends (cron events)
+    tstring messageText;        // shown during the break (cron events)
 };
 
 export class Event {

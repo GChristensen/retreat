@@ -43,7 +43,7 @@ export struct StateSnapshot {
     std::int32_t delaysRequested = 0;
     std::int32_t lockDurationOverride = 0;  // break length set by a cron event, seconds
 
-    TCHAR messageText[MESSAGE_LENGTH] = {}; // shown when a cron break ends
+    TCHAR messageText[MESSAGE_LENGTH] = {}; // shown during a cron break
 
     bool isValid() const {
         return magic == MAGIC && version == VERSION;

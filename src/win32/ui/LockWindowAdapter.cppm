@@ -18,6 +18,9 @@ import Settings;
 import InputLock;
 import TimerWindow;
 import BreakWindow;
+import StateLocked;
+import MessageWindow;
+import SettingsModel;
 import StateMachine;
 import StateWindowAdapter;
 
@@ -38,6 +41,8 @@ private:
 	int breakDurationSec;
 
 	std::vector<WindowPtr> windows;
+
+	void showBreakMessage();
 };
 
 module :private;
@@ -81,9 +86,45 @@ LockWindowAdapter::LockWindowAdapter(StateMachine& stateMachine):
 	inputLock.lock();
 
 	windows = createBreakWindows(settings, breakDurationSec, true, fullscreen);
+
+	showBreakMessage();
+}
+
+// the message of a scheduled break, drawn over the break screen like the timer
+void LockWindowAdapter::showBreakMessage() {
+	const tstring& message = StateLocked::getMessageText();
+
+	if (message.empty())
+		return;
+
+	COLORREF textColor = settings.getInt(Settings::APPEARANCE_TIMER_TEXT_COLOR,
+		Settings::DEFAULT_APPEARANCE_TIMER_TEXT_COLOR);
+
+	int timerSize = std::clamp(settings.getInt(Settings::APPEARANCE_TIMER_SIZE,
+		Settings::DEFAULT_APPEARANCE_TIMER_SIZE), MIN_TIMER_SIZE, MAX_TIMER_SIZE);
+
+	// `fullscreen` already reflects a fallback from the windowed mode
+	int fontSize = fullscreen ? timerSize : windowedTimerSize(timerSize);
+
+	bool showTimer = settings.getBoolean(Settings::APPEARANCE_SHOW_TIMER,
+		Settings::DEFAULT_APPEARANCE_SHOW_TIMER);
+	TimerPosition timerPosition = toTimerPosition(settings.getInt(Settings::APPEARANCE_TIMER_POSITION,
+		Settings::DEFAULT_APPEARANCE_TIMER_POSITION));
+
+	// keep clear of a timer in the middle of the screen
+	int clearCenterPx = 0;
+
+	if (showTimer && timerPosition == TimerPosition::Center) {
+		CClientDC screenDC(NULL);
+		clearCenterPx = MulDiv(fontSize, screenDC.GetDeviceCaps(LOGPIXELSY), 72) * 6 / 5;
+	}
+
+	showMessageWindow(message, textColor, fontSize, clearCenterPx);
 }
 
 LockWindowAdapter::~LockWindowAdapter() {
+	closeMessageWindow();
+
 	if (settingsChanged)
 		settings.save();
 

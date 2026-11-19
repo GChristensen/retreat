@@ -141,18 +141,6 @@ void playSystemSound() {
 	MessageBeep(MB_ICONASTERISK);
 }
 
-void displayMessage(tstring& text) {
-	auto pText = std::make_shared<tstring>(text);
-
-	auto displayProc = [pText]() {
-		MessageBox(0, pText->c_str(), CString(MAKEINTRESOURCE(IDS_APP_NAME)), 
-			MB_OK | MB_ICONASTERISK | MB_TOPMOST);
-	};
-
-	std::thread displayThread(displayProc);
-	displayThread.detach();
-}
-
 std::vector<tstring> getRunningProcessPaths() {
 	std::vector<tstring> result;
 

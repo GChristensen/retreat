@@ -48,7 +48,7 @@ export struct RestorePlan {
     time_t periodStartTime = 0;     // everything except Fresh
     int delaysRequested = 0;
     int lockDurationOverride = 0;   // full break length set by a cron event, 0 = default
-    tstring messageText;            // shown when the break ends
+    tstring messageText;            // shown during the break
     bool penalty = false;           // Locked imposed because a break was evaded
 };
 
