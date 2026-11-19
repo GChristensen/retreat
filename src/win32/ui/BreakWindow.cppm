@@ -5,6 +5,7 @@ module;
 
 #include "wtl.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -15,6 +16,7 @@ export module BreakWindow;
 import system;
 import Settings;
 import TimerWindow;
+import SettingsModel;
 
 export using BreakWindowPtr = std::shared_ptr<CTimerWindow>;
 
@@ -98,9 +100,12 @@ BreakWindowPtr createTimerWindow(BuildContext& ctx, CRect* pRect, bool primary)
 		COLORREF timerTextColor = settings.getInt(Settings::APPEARANCE_TIMER_TEXT_COLOR,
 			Settings::DEFAULT_APPEARANCE_TIMER_TEXT_COLOR);
 
+		int timerSize = std::clamp(settings.getInt(Settings::APPEARANCE_TIMER_SIZE,
+			Settings::DEFAULT_APPEARANCE_TIMER_SIZE), MIN_TIMER_SIZE, MAX_TIMER_SIZE);
+
 		pTimerWnd->SetTimerProperties(
 			DEFAULT_TIMER_FONT_FACE,
-			ctx.fullscreen ? DEFAULT_TIMER_FONT_SIZE : DEFAULT_TIMER_FONT_SIZE - 10,
+			ctx.fullscreen ? timerSize : windowedTimerSize(timerSize),
 			DEFAULT_CHARSET,
 			timerTextColor,
 			antialias,
@@ -108,7 +113,10 @@ BreakWindowPtr createTimerWindow(BuildContext& ctx, CRect* pRect, bool primary)
 			true
 		);
 
-		pTimerWnd->SetTimerPos(ctx.fullscreen ? DEFAULT_TIMER_X : DEFAULT_TIMER_X_WINDOWED,
+		pTimerWnd->SetTimerAnchor(
+			toTimerPosition(settings.getInt(Settings::APPEARANCE_TIMER_POSITION,
+				Settings::DEFAULT_APPEARANCE_TIMER_POSITION)),
+			ctx.fullscreen ? DEFAULT_TIMER_X : DEFAULT_TIMER_X_WINDOWED,
 			ctx.fullscreen ? DEFAULT_TIMER_Y : DEFAULT_TIMER_Y_WINDOWED);
 		pTimerWnd->SetTimer(ctx.durationSec - 1);
 	}

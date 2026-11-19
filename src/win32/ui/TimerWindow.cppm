@@ -11,6 +11,7 @@ export module TimerWindow;
 import TranslucentWindow;
 import TextBuffer;
 import Shapes;
+import SettingsModel;
 
 import algorithms;
 
@@ -46,6 +47,10 @@ public:
 	void SetShowTimer(bool show);
 	void SetTimerPos(int x, int y);
 
+	// Places the countdown at a corner or the center of the window instead of
+	// a fixed position; corners keep the given margins from the edges.
+	void SetTimerAnchor(TimerPosition position, int marginX, int marginY);
+
 	bool LoadBackground(const TCHAR* name, bool stretch, COLORREF canvas);
 	void DefaultBackground();
 
@@ -74,6 +79,10 @@ protected:
 	text_buff_ptr_t pTexBuffer;
 	COLORREF textColor;
 	CPoint timerPos;
+
+	bool hasAnchor = false;
+	TimerPosition anchor = TimerPosition::TopLeft;
+	CSize anchorMargin;
 
 	int displayDuration;
 
@@ -138,6 +147,13 @@ void CTimerWindow::SetTimer(int durationSec, bool showStar)
 void CTimerWindow::SetShowTimer(bool show)
 {
 	showTimer = show;
+}
+
+void CTimerWindow::SetTimerAnchor(TimerPosition position, int marginX, int marginY)
+{
+	hasAnchor = true;
+	anchor = position;
+	anchorMargin.SetSize(marginX, marginY);
 }
 
 void CTimerWindow::SetTimerPos(int x, int y)
@@ -282,6 +298,17 @@ void CTimerWindow::setTimer(int durationSec, bool showStar)
 		}
 
 		SetTransparentColor(TRANSPARENT_BACKGORUND_COLOR);
+	}
+
+	if (hasAnchor)
+	{
+		// the starting text is the widest one the countdown will show
+		CRect client;
+		GetClientRect(&client);
+
+		TimerOrigin origin = timerOrigin(anchor, client.Width(), client.Height(),
+			textSize.cx, textSize.cy, anchorMargin.cx, anchorMargin.cy);
+		timerPos.SetPoint(origin.x, origin.y);
 	}
 
 	CClientDC dc(m_hWnd);

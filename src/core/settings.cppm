@@ -51,6 +51,8 @@ public:
     static constexpr const TCHAR *APPEARANCE_BACKGROUND_COLOR = _T("appearance.background_color");
     static constexpr const TCHAR *APPEARANCE_IMAGE_DIRECTORY = _T("appearance.image_directory");
     static constexpr const TCHAR *APPEARANCE_USE_IMAGES = _T("appearance.use_images");
+    static constexpr const TCHAR *APPEARANCE_TIMER_POSITION = _T("appearance.timer_position");
+    static constexpr const TCHAR *APPEARANCE_TIMER_SIZE = _T("appearance.timer_size");
     static constexpr const TCHAR *APPEARANCE_STRETCH_IMAGES = _T("appearance.stretch_images");
     static constexpr const TCHAR *APPEARANCE_SHOW_TIMER = _T("appearance.show_timer");
     static constexpr const TCHAR *APPEARANCE_TIMER_TEXT_COLOR = _T("appearance.timer_text_color");
@@ -90,6 +92,8 @@ public:
     static constexpr const bool DEFAULT_APPEARANCE_STRETCH_IMAGES = true;
     static constexpr const bool DEFAULT_APPEARANCE_SHOW_TIMER = true;
     static constexpr const int DEFAULT_APPEARANCE_TIMER_TEXT_COLOR = 0x1B1BEF;
+    static constexpr const int DEFAULT_APPEARANCE_TIMER_POSITION = 0;   // TimerPosition::TopLeft
+    static constexpr const int DEFAULT_APPEARANCE_TIMER_SIZE = 32;      // points, full screen
 
     static constexpr const bool DEFAULT_SOUNDS_ENABLE = false;
 

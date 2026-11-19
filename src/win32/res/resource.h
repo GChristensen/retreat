@@ -137,6 +137,17 @@
 #define IDC_PLAY_SOUND                  2162
 #define IDC_BACKGROUND_LABEL            2163
 #define IDC_SCHEDULE_ENABLE             2164
+#define IDC_TIMER_POS_TL                2165
+#define IDC_TIMER_POS_TR                2166
+#define IDC_TIMER_POS_BL                2167
+#define IDC_TIMER_POS_BR                2168
+#define IDC_TIMER_POS_CENTER            2169
+#define IDC_TIMER_SIZE_S                2170
+#define IDC_TIMER_SIZE_M                2171
+#define IDC_TIMER_SIZE_L                2172
+#define IDC_TIMER_SIZE_XL               2173
+#define IDC_TIMER_POS_LABEL             2174
+#define IDC_TIMER_SIZE_LABEL            2175
 #define IDR_SHELL_MENU                  20300
 #define ID_MENU_DISABLE                 32771
 #define ID_MENU_SKIP                    32772
@@ -155,7 +166,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        304
 #define _APS_NEXT_COMMAND_VALUE         32800
-#define _APS_NEXT_CONTROL_VALUE         2165
+#define _APS_NEXT_CONTROL_VALUE         2176
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

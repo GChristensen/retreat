@@ -530,7 +530,12 @@ export struct PreviewModel {
 	bool transparentRegions = false;
 	bool showTimer = true;
 	COLORREF timerColor = RGB(0xEF, 0x1B, 0x1B);
+	TimerPosition timerPosition = TimerPosition::TopLeft;
+	int timerSize = 32;             // points, full screen
 };
+
+// WM_COMMAND notification code: the preview was clicked to move the countdown.
+export constexpr WORD BPN_TIMER_POSITION = 0x0101;
 
 export class CBreakPreview : public CPaintedControl<CBreakPreview> {
 public:
@@ -548,8 +553,51 @@ public:
 
 	void Draw(Graphics& g, RectF rc, Fonts& fonts, bool windowEnabled);
 
+	TimerPosition GetClickedPosition() const { return m_clicked; }
+
+	BEGIN_MSG_MAP(CBreakPreview)
+		MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLButtonDown)
+		MESSAGE_HANDLER(WM_SETCURSOR, OnSetCursor)
+		CHAIN_MSG_MAP(CPaintedControl<CBreakPreview>)
+	END_MSG_MAP()
+
 private:
 	PreviewModel m_model;
+	RectF m_overlay;                // the break-screen area of the last paint
+	TimerPosition m_clicked = TimerPosition::TopLeft;
+
+	bool canClick() const { return m_model.showTimer && m_overlay.Width > 0 && IsWindowEnabled(); }
+
+	// Corners by quadrant; the middle third of the screen means the center.
+	TimerPosition positionAt(REAL x, REAL y) const {
+		REAL fx = (x - m_overlay.X) / m_overlay.Width, fy = (y - m_overlay.Y) / m_overlay.Height;
+		if (fx > 1.0f / 3 && fx < 2.0f / 3 && fy > 1.0f / 3 && fy < 2.0f / 3)
+			return TimerPosition::Center;
+		bool right = fx >= 0.5f, bottom = fy >= 0.5f;
+		return bottom ? (right ? TimerPosition::BottomRight : TimerPosition::BottomLeft)
+		              : (right ? TimerPosition::TopRight : TimerPosition::TopLeft);
+	}
+
+	LRESULT OnLButtonDown(UINT, WPARAM, LPARAM lParam, BOOL&) {
+		REAL x = (REAL)GET_X_LPARAM(lParam), y = (REAL)GET_Y_LPARAM(lParam);
+		if (canClick() && m_overlay.Contains(x, y)) {
+			m_clicked = positionAt(x, y);
+			GetParent().SendMessage(WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(), BPN_TIMER_POSITION), (LPARAM)m_hWnd);
+		}
+		return 0;
+	}
+
+	LRESULT OnSetCursor(UINT, WPARAM, LPARAM, BOOL& bHandled) {
+		CPoint pt;
+		::GetCursorPos(&pt);
+		ScreenToClient(&pt);
+		if (canClick() && m_overlay.Contains((REAL)pt.x, (REAL)pt.y)) {
+			::SetCursor(::LoadCursor(NULL, IDC_HAND));
+			return TRUE;
+		}
+		bHandled = FALSE;
+		return 0;
+	}
 };
 
 static void fillStar(Graphics& g, REAL cx, REAL cy, REAL r, REAL angleDeg, const Color& color) {
@@ -649,14 +697,25 @@ void CBreakPreview::Draw(Graphics& g, RectF rc, Fonts& fonts, bool) {
 			         overlay.Width * s.r * 1.4f, (REAL)s.angle, fromColorRef(colors[s.color], alpha));
 	}
 
+	m_overlay = overlay;
+
 	if (m_model.showTimer) {
-		REAL x = (fullscreen ? DEFAULT_TIMER_X : DEFAULT_TIMER_X_WINDOWED) * k;
-		REAL y = (fullscreen ? DEFAULT_TIMER_Y : DEFAULT_TIMER_Y_WINDOWED) * k;
-		REAL size = (std::max)(7.0f, (fullscreen ? DEFAULT_TIMER_FONT_SIZE : DEFAULT_TIMER_FONT_SIZE - 10) * k * 1.6f);
+		int points = fullscreen ? m_model.timerSize : windowedTimerSize(m_model.timerSize);
+		// slightly larger than true scale so that it stays readable in the thumbnail
+		REAL size = (std::max)(6.0f, points * k * 1.6f);
 		FontFamily family(DEFAULT_TIMER_FONT_FACE);
-		Font timerFont(&family, size, FontStyleBold, UnitPixel);
+		Font timerFont(&family, size, FontStyleBoldItalic, UnitPixel);
+
+		RectF textBox;
+		g.MeasureString(L"09:42", 5, &timerFont, PointF(0, 0), &textBox);
+
+		TimerOrigin origin = timerOrigin(m_model.timerPosition,
+			(int)overlay.Width, (int)overlay.Height, (int)textBox.Width, (int)textBox.Height,
+			(int)((fullscreen ? DEFAULT_TIMER_X : DEFAULT_TIMER_X_WINDOWED) * k),
+			(int)((fullscreen ? DEFAULT_TIMER_Y : DEFAULT_TIMER_Y_WINDOWED) * k));
+
 		SolidBrush timerBrush(fromColorRef(m_model.timerColor, alpha));
-		g.DrawString(L"09:42", 5, &timerFont, PointF(overlay.X + x, overlay.Y + y), &timerBrush);
+		g.DrawString(L"09:42", 5, &timerFont, PointF(overlay.X + origin.x, overlay.Y + origin.y), &timerBrush);
 	}
 
 	g.Restore(state);

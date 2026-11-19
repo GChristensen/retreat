@@ -132,6 +132,34 @@ static void testSimpleSchedule() {
     CHECK(!parseSimpleSchedule(_T("0 9 * *")));
 }
 
+static void testTimerOrigin() {
+    // 1920x1080 screen, 100x40 text, full-screen margins
+    auto tl = timerOrigin(TimerPosition::TopLeft, 1920, 1080, 100, 40, 160, 140);
+    CHECK(tl.x == 160 && tl.y == 140);
+    auto tr = timerOrigin(TimerPosition::TopRight, 1920, 1080, 100, 40, 160, 140);
+    CHECK(tr.x == 1920 - 160 - 100 && tr.y == 140);
+    auto bl = timerOrigin(TimerPosition::BottomLeft, 1920, 1080, 100, 40, 160, 140);
+    CHECK(bl.x == 160 && bl.y == 1080 - 140 - 40);
+    auto br = timerOrigin(TimerPosition::BottomRight, 1920, 1080, 100, 40, 160, 140);
+    CHECK(br.x == 1660 && br.y == 900);
+    auto c = timerOrigin(TimerPosition::Center, 1920, 1080, 100, 40, 160, 140);
+    CHECK(c.x == 910 && c.y == 520);
+
+    // a small window keeps the text inside
+    auto small = timerOrigin(TimerPosition::BottomRight, 120, 50, 100, 40, 25, 25);
+    CHECK(small.x == 0 && small.y == 0);
+    auto big = timerOrigin(TimerPosition::TopLeft, 80, 30, 100, 40, 25, 25);
+    CHECK(big.x == 0 && big.y == 0);
+
+    CHECK(toTimerPosition(3) == TimerPosition::BottomRight);
+    CHECK(toTimerPosition(9) == TimerPosition::TopLeft);
+    CHECK(toTimerPosition(-1) == TimerPosition::TopLeft);
+
+    CHECK(windowedTimerSize(32) == 22);
+    CHECK(windowedTimerSize(72) == 50);
+    CHECK(windowedTimerSize(12) == MIN_TIMER_SIZE);
+}
+
 static void testClampCycle() {
     auto normal = clampCycle(60, 10, 1);
     CHECK(normal.periodMin == 60 && normal.breakMin == 10 && normal.alertMin == 1);
@@ -167,6 +195,7 @@ int main() {
     run("testStateMachine", testStateMachine);
     run("testSimpleSchedule", testSimpleSchedule);
     run("testClampCycle", testClampCycle);
+    run("testTimerOrigin", testTimerOrigin);
 
     if (failures)
         std::fprintf(stderr, "%d check(s) failed\n", failures);

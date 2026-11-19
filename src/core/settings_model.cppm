@@ -50,6 +50,27 @@ export constexpr int MIN_WORK_MIN = 5;
 // and the warning fits inside the work part.
 export CycleTiming clampCycle(int periodMin, int breakMin, int alertMin);
 
+// Where the break countdown is drawn. Stored as an int in
+// appearance.timer_position.
+export enum class TimerPosition { TopLeft = 0, TopRight, BottomLeft, BottomRight, Center };
+
+export TimerPosition toTimerPosition(int value);
+
+// Countdown sizes offered in the settings (points, full-screen mode).
+export constexpr int TIMER_SIZES[] = { 24, 32, 48, 72 };
+export constexpr int MIN_TIMER_SIZE = 12;
+export constexpr int MAX_TIMER_SIZE = 200;
+
+// Font size used in windowed mode, where the window is only as large as the image.
+export int windowedTimerSize(int fullscreenSize);
+
+export struct TimerOrigin { int x; int y; };
+
+// Top-left corner of the countdown text inside an area of areaW x areaH.
+// Corners keep marginX/marginY from the edges; the result never leaves the area.
+export TimerOrigin timerOrigin(TimerPosition position, int areaW, int areaH,
+                               int textW, int textH, int marginX, int marginY);
+
 module :private;
 
 namespace {
@@ -286,4 +307,35 @@ CycleTiming clampCycle(int periodMin, int breakMin, int alertMin) {
     t.breakMin = std::clamp(breakMin, 1, t.periodMin - MIN_WORK_MIN);
     t.alertMin = std::clamp(alertMin, 1, std::max(1, t.workMin() - 1));
     return t;
+}
+
+TimerPosition toTimerPosition(int value) {
+    if (value < (int)TimerPosition::TopLeft || value > (int)TimerPosition::Center)
+        return TimerPosition::TopLeft;
+    return (TimerPosition)value;
+}
+
+int windowedTimerSize(int fullscreenSize) {
+    // the original windowed timer was 10 pt smaller than the 32 pt full-screen one
+    return std::max(MIN_TIMER_SIZE, (fullscreenSize * 22 + 16) / 32);
+}
+
+TimerOrigin timerOrigin(TimerPosition position, int areaW, int areaH,
+                        int textW, int textH, int marginX, int marginY) {
+    int left = marginX, top = marginY;
+    int right = areaW - marginX - textW, bottom = areaH - marginY - textH;
+
+    TimerOrigin origin{ left, top };
+
+    switch (position) {
+    case TimerPosition::TopLeft:     origin = { left, top }; break;
+    case TimerPosition::TopRight:    origin = { right, top }; break;
+    case TimerPosition::BottomLeft:  origin = { left, bottom }; break;
+    case TimerPosition::BottomRight: origin = { right, bottom }; break;
+    case TimerPosition::Center:      origin = { (areaW - textW) / 2, (areaH - textH) / 2 }; break;
+    }
+
+    origin.x = std::clamp(origin.x, 0, std::max(0, areaW - textW));
+    origin.y = std::clamp(origin.y, 0, std::max(0, areaH - textH));
+    return origin;
 }

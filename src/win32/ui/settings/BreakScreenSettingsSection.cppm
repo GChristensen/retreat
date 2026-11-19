@@ -21,6 +21,7 @@ export module BreakScreenSettingsSection;
 import Settings;
 import SectionDlg;
 import SettingsControls;
+import SettingsModel;
 import system;
 
 // Posted to the main settings dialog to show the break screen briefly with
@@ -31,6 +32,19 @@ static const std::vector<tstring> IMAGE_EXTENSIONS = { _T("jp*"), _T("bmp"), _T(
 static const std::vector<tstring> SOUND_EXTENSIONS = { _T("wav"), _T("mp3"), _T("wma"), _T("flac") };
 
 static const UINT_PTR FOLDER_TIMER_ID = 1;
+
+// In TimerPosition order.
+static const int POSITION_IDS[] = {
+	IDC_TIMER_POS_TL, IDC_TIMER_POS_TR, IDC_TIMER_POS_BL, IDC_TIMER_POS_BR, IDC_TIMER_POS_CENTER };
+static const wchar_t* POSITION_GLYPHS[] = { L"↖", L"↗", L"↙", L"↘", L"●" };
+
+// In TIMER_SIZES order.
+static const int SIZE_IDS[] = { IDC_TIMER_SIZE_S, IDC_TIMER_SIZE_M, IDC_TIMER_SIZE_L, IDC_TIMER_SIZE_XL };
+
+static const int TIMER_CONTROLS[] = {
+	IDC_TIMER_TEXT_COLOR, IDC_TIMER_POS_LABEL, IDC_TIMER_SIZE_LABEL,
+	IDC_TIMER_POS_TL, IDC_TIMER_POS_TR, IDC_TIMER_POS_BL, IDC_TIMER_POS_BR, IDC_TIMER_POS_CENTER,
+	IDC_TIMER_SIZE_S, IDC_TIMER_SIZE_M, IDC_TIMER_SIZE_L, IDC_TIMER_SIZE_XL };
 
 static int alphaToPercent(int alpha) { return std::clamp((int)std::lround(alpha * 100.0 / 255), 10, 100); }
 static int percentToAlpha(int percent) { return std::clamp((int)std::lround(percent * 255.0 / 100), 0, 255); }
@@ -52,6 +66,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_BROWSE_SOUND_FOLDER, OnBrowseSoundFolder)
 		COMMAND_ID_HANDLER(IDC_PLAY_SOUND, OnPlaySound)
 		COMMAND_ID_HANDLER(IDC_TRY_BREAK, OnTryBreak)
+		COMMAND_HANDLER(IDC_BREAK_PREVIEW, BPN_TIMER_POSITION, OnPreviewClick)
 		COMMAND_HANDLER(IDC_IMAGE_FOLDER, EN_CHANGE, OnImageFolderChange)
 		COMMAND_HANDLER(IDC_SOUND_FOLDER, EN_CHANGE, OnSimpleChange)
 		COMMAND_CODE_HANDLER(BN_CLICKED, OnButtonClicked)
@@ -67,6 +82,7 @@ private:
 	CColorButton m_timerColor;
 	std::shared_ptr<Gdiplus::Bitmap> m_sampleImage;
 	int m_imageCount = 0;
+	int m_timerSize = Settings::DEFAULT_APPEARANCE_TIMER_SIZE;  // kept when not one of the presets
 
 	LRESULT OnInitDialog(UINT, WPARAM, LPARAM, BOOL&);
 	LRESULT OnHScroll(UINT, WPARAM, LPARAM, BOOL&);
@@ -76,12 +92,15 @@ private:
 	LRESULT OnBrowseSoundFolder(WORD, WORD, HWND, BOOL&);
 	LRESULT OnPlaySound(WORD, WORD, HWND, BOOL&);
 	LRESULT OnTryBreak(WORD, WORD, HWND, BOOL&);
+	LRESULT OnPreviewClick(WORD, WORD, HWND, BOOL&);
 	LRESULT OnImageFolderChange(WORD, WORD, HWND, BOOL&);
 	LRESULT OnSimpleChange(WORD, WORD, HWND, BOOL&);
 	LRESULT OnButtonClicked(WORD, WORD, HWND, BOOL&);
 	LRESULT OnColorChange(int, LPNMHDR, BOOL&);
 
 	tstring getText(int id);
+	TimerPosition timerPosition();
+	int timerSize();
 	bool browseFolder(int editId, int titleId);
 	void loadSampleImage();
 	void updateView();
@@ -121,6 +140,9 @@ LRESULT CBreakScreenSettingsSection::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 	m_timerColor.SetCustomText(customText);
 	m_timerColor.SetDefaultColor(Settings::DEFAULT_APPEARANCE_TIMER_TEXT_COLOR);
 
+	for (int i = 0; i < (int)std::size(POSITION_IDS); ++i)
+		::SetWindowTextW(GetDlgItem(POSITION_IDS[i]), POSITION_GLYPHS[i]);
+
 	CEdit(GetDlgItem(IDC_IMAGE_FOLDER)).SetCueBannerText(L"A folder with .jpg, .png, .gif or .bmp images");
 	CEdit(GetDlgItem(IDC_SOUND_FOLDER)).SetCueBannerText(L"Empty: play the system sound");
 
@@ -139,6 +161,15 @@ void CBreakScreenSettingsSection::read(Settings &settings)
 
 	SetChecked(IDC_SHOW_TIMER, settings.getBoolean(Settings::APPEARANCE_SHOW_TIMER, Settings::DEFAULT_APPEARANCE_SHOW_TIMER));
 	m_timerColor.SetColor(settings.getInt(Settings::APPEARANCE_TIMER_TEXT_COLOR, Settings::DEFAULT_APPEARANCE_TIMER_TEXT_COLOR));
+
+	TimerPosition position = toTimerPosition(settings.getInt(Settings::APPEARANCE_TIMER_POSITION,
+		Settings::DEFAULT_APPEARANCE_TIMER_POSITION));
+	CheckRadioButton(IDC_TIMER_POS_TL, IDC_TIMER_POS_CENTER, POSITION_IDS[(int)position]);
+
+	m_timerSize = std::clamp(settings.getInt(Settings::APPEARANCE_TIMER_SIZE, Settings::DEFAULT_APPEARANCE_TIMER_SIZE),
+		MIN_TIMER_SIZE, MAX_TIMER_SIZE);
+	for (int i = 0; i < (int)std::size(SIZE_IDS); ++i)
+		SetChecked(SIZE_IDS[i], TIMER_SIZES[i] == m_timerSize);
 
 	tstring imageDir = settings.getString(Settings::APPEARANCE_IMAGE_DIRECTORY, _T(""));
 	bool useImages = settings.getBoolean(Settings::APPEARANCE_USE_IMAGES, !imageDir.empty());
@@ -165,6 +196,8 @@ void CBreakScreenSettingsSection::write(Settings &settings)
 	settings.setInt(Settings::APPEARANCE_OPACITY_LEVEL, percentToAlpha(m_opacity.GetPos()));
 	settings.setBoolean(Settings::APPEARANCE_SHOW_TIMER, IsChecked(IDC_SHOW_TIMER));
 	settings.setInt(Settings::APPEARANCE_TIMER_TEXT_COLOR, m_timerColor.GetColor());
+	settings.setInt(Settings::APPEARANCE_TIMER_POSITION, (int)timerPosition());
+	settings.setInt(Settings::APPEARANCE_TIMER_SIZE, timerSize());
 	settings.setBoolean(Settings::APPEARANCE_USE_IMAGES, IsChecked(IDC_PICTURE_IMAGES));
 	settings.setString(Settings::APPEARANCE_IMAGE_DIRECTORY, getText(IDC_IMAGE_FOLDER));
 	settings.setBoolean(Settings::APPEARANCE_STRETCH_IMAGES, IsChecked(IDC_FIT_FILL));
@@ -179,6 +212,22 @@ tstring CBreakScreenSettingsSection::getText(int id)
 	GetDlgItemText(id, text);
 	text.Trim();
 	return (LPCTSTR)text;
+}
+
+TimerPosition CBreakScreenSettingsSection::timerPosition()
+{
+	for (int i = 0; i < (int)std::size(POSITION_IDS); ++i)
+		if (IsChecked(POSITION_IDS[i]))
+			return (TimerPosition)i;
+	return TimerPosition::TopLeft;
+}
+
+int CBreakScreenSettingsSection::timerSize()
+{
+	for (int i = 0; i < (int)std::size(SIZE_IDS); ++i)
+		if (IsChecked(SIZE_IDS[i]))
+			return TIMER_SIZES[i];
+	return m_timerSize;
 }
 
 void CBreakScreenSettingsSection::loadSampleImage()
@@ -239,7 +288,8 @@ void CBreakScreenSettingsSection::updateView()
 	for (int id : { IDC_IMAGE_FOLDER, IDC_BROWSE_IMAGE_FOLDER, IDC_FIT_FILL, IDC_FIT_ORIGINAL,
 	                IDC_BACKGROUND_LABEL, IDC_BACKGROUND_COLOR, IDC_TRANSPARENT_REGIONS, IDC_IMAGE_COUNT })
 		Enable(id, images);
-	Enable(IDC_TIMER_TEXT_COLOR, showTimer);
+	for (int id : TIMER_CONTROLS)
+		Enable(id, showTimer);
 
 	tstring count;
 	if (!images)
@@ -262,6 +312,8 @@ void CBreakScreenSettingsSection::updateView()
 	model.transparentRegions = IsChecked(IDC_TRANSPARENT_REGIONS);
 	model.showTimer = showTimer;
 	model.timerColor = m_timerColor.GetColor();
+	model.timerPosition = timerPosition();
+	model.timerSize = timerSize();
 	m_preview.SetModel(model);
 
 	tstring caption;
@@ -355,6 +407,14 @@ LRESULT CBreakScreenSettingsSection::OnTryBreak(WORD, WORD, HWND, BOOL&)
 	return 0;
 }
 
+LRESULT CBreakScreenSettingsSection::OnPreviewClick(WORD, WORD, HWND, BOOL&)
+{
+	CheckRadioButton(IDC_TIMER_POS_TL, IDC_TIMER_POS_CENTER, POSITION_IDS[(int)m_preview.GetClickedPosition()]);
+	updateView();
+	NotifyChanged();
+	return 0;
+}
+
 LRESULT CBreakScreenSettingsSection::OnImageFolderChange(WORD, WORD, HWND, BOOL&)
 {
 	if (m_loading)
@@ -378,6 +438,8 @@ LRESULT CBreakScreenSettingsSection::OnButtonClicked(WORD, WORD id, HWND, BOOL& 
 	case IDC_PICTURE_STARS: case IDC_PICTURE_IMAGES:
 	case IDC_FIT_FILL: case IDC_FIT_ORIGINAL:
 	case IDC_SHOW_TIMER: case IDC_TRANSPARENT_REGIONS:
+	case IDC_TIMER_POS_TL: case IDC_TIMER_POS_TR: case IDC_TIMER_POS_BL: case IDC_TIMER_POS_BR: case IDC_TIMER_POS_CENTER:
+	case IDC_TIMER_SIZE_S: case IDC_TIMER_SIZE_M: case IDC_TIMER_SIZE_L: case IDC_TIMER_SIZE_XL:
 		updateView();
 		NotifyChanged();
 		return 0;
